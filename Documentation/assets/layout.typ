@@ -10,7 +10,7 @@
 
           #let h2 = if h2s.len() > 0 { h2s.last() } else { none }
           #let h3 = if h3s.len() > 0 { h3s.last() } else { none }
-          
+
           #if counter(page).get().first() > 1 [
             #set text(size: 9pt)
 
@@ -28,6 +28,17 @@
 
     #set text(size: 12pt, lang: "de")
     #set par(justify: true)
+
+    #show table.cell.where(y: 0): strong
+    #set table(
+      stroke: (x, y) => (
+        top: if y > 0 { 0.7pt + black },
+        left: if x > 0 { 0.7pt + black },
+      ),
+      align: (x, y) => (
+        if x > 0 { center } else { left }
+      ),
+    )
 
     #let title-block() = {
       /* Make the title */
@@ -52,6 +63,7 @@
 
       block(line(length: 100%, stroke: 0.5pt))
     }
+
 
     #title-block()
     #doc
