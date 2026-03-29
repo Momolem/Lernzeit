@@ -24,7 +24,6 @@ Im Rahmen der Analyse wurden für das Backend die Programmiersprachen _Rust, Go_
     [
       - Höchste Performance
       - Memory-Safe (Ownership & Borrowing)
-      - Kein Garbage-Collector
     ],
     [
       - Noch keine Erfahrung im Team
