@@ -30,6 +30,7 @@
     #set par(justify: true)
 
     #show table.cell.where(y: 0): strong
+    #show table: set par(justify: false)
     #set table(
       stroke: (x, y) => (
         top: if y > 0 { 0.7pt + black },
