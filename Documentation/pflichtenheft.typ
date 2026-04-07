@@ -1,4 +1,6 @@
 #import "assets/layout.typ": layout
+#import "@preview/oxdraw:0.1.0": *
+#import "@preview/mmdr:0.2.1": mermaid
 #show: layout
 
 = Lernzeit
@@ -10,7 +12,69 @@ In der Praxis erfolgt die Terminfindung meist über Gruppenchats oder persönlic
 Die Anwendung *Lernzeit* adressiert dieses Problem, indem sie die Terminfindung automatisiert unterstützt. Nutzerinnen und Nutzer können Gruppen erstellen und ihre individuell blockierten Zeiten hinterlegen. Auf Basis dieser Informationen generiert die Anwendung geeignete Terminvorschläge, zu denen alle Gruppenmitglieder verfügbar sind. Ziel ist es, den Abstimmungsaufwand zu reduzieren und eine effiziente sowie transparente Terminplanung zu ermöglichen.
 
 == Architekturvorschlag
-Die vorgeschlagene Architektur für die Lernzeit-Anwendung basiert auf einem Client-Server-Modell. Das Frontend visualisiert die Kalenderdaten, während das Backend die Kalenderdaten abgleicht sowie Nutzerinformationen speichert und Gruppen verwaltet. Die Kommunikation zwischen beiden Komponenten erfolgt durch eine REST-Api.
+Es wurden im Rahmen des Pflichtenhefts verschiedene Systemarchitekturen verglichen. Eine Gegenüberstellung hierzu ist in #ref(<vergleich_architektur>) zu finden.
+
+Es wurde sich im Rahmen des Projekts für eine Client-Server Architektur entschieden. Die erhöhte Komplexität alternativer Architekturstile steht in keinem angemessenen Verhältnis zu deren potenziellen Vorteilen für das Lernzeitprojekt im Rahmen des Labors.
+
+Durch eine konsequente modulare Trennung der Funktionalitäten wird jedoch sichergestellt, dass eine spätere Migration zu einer Microservice-Architektur grundsätzlich möglich ist.
+
+#figure(
+  caption: [Vergleich System Architekturen],
+  table(
+    columns: 3,
+    align: left,
+    table.header([*Architektur*], [*Pro*], [*Kontra*]),
+
+    [*Client-Server*],
+    [
+      - Zentrale Kontrolle und Verwaltung
+      - Einfache Implementierung
+      - Gute Sicherheit durch Backend
+      - Anonymisierung zentral möglich
+    ],
+    [
+      - Single Point of Failure
+      - Skalierungsprobleme bei hoher Last
+      - Kann ggf. zu unwartbarem Monolithen wachsen
+    ],
+
+    [*Microservice Architektur*],
+    [
+      - Gute Skalierbarkeit
+      - Klare Trennung der Verantwortlichkeiten
+      - Services unabhängig entwickelbar
+      - Flexibel erweiterbar
+    ],
+    [
+      - Höhere Komplexität
+      - Aufwendiges Deployment
+      - Kommunikation zwischen Services notwendig
+      - Fehler schwerer zu debuggen
+    ],
+
+    [*Peer-to-Peer*],
+    [
+      - Keine zentrale Instanz nötig
+      - Gute Skalierbarkeit
+      - Geringe Serverlast
+      - Hohe Ausfallsicherheit
+    ],
+    [
+      - Komplexe Client-Logik
+      - Sicherheits- und Datenschutzprobleme
+      - Synchronisation schwierig
+      - Abhängigkeit von Client-Verfügbarkeit
+    ],
+  ),
+)<vergleich_architektur>
+
+Als Protokoll zur Kommunikation wird eine REST-Schnittstelle verwendet. Es wurde als Alternative GraphQL betrachtet, allerdings scheint auch hier durch die höhere Komplexität bei der Implementierung im Rahmen des Projekts keinen Mehrwert zu bieten.
+
+#figure(
+  image("assets/Client-Server.png"),
+  caption: "Systemarchitektur Lernzeit"
+
+)
 
 == Technologieauswahl
 Im Rahmen der Analyse wurden für das Backend die Programmiersprachen _Rust, Go_ und _C\#_ sowie für das Frontend die Frameworks _Blazor, Vue_ und _React_ evaluiert. Die Tabellen #ref(<vergleich_backend>) und #ref(<vergleich_frontend>) listen die jeweiligen Stärken und Schwächen übersichtlich auf.
@@ -31,6 +95,7 @@ Im Rahmen der Analyse wurden für das Backend die Programmiersprachen _Rust, Go_
       - Saubere Schichtentrennung komplex
       - Wenige SDKs / externe Bibliotheken
     ],
+
     [Go],
     [
       - Erfahrung im Team
@@ -115,7 +180,7 @@ Diese Entscheidung basiert auf folgenden Kriterien:
 
 == Use Cases
 *1. Stundenplan importieren:* Die App kann den eigenen Uni-Stundenplan übernehmen. Dafür meldet man sich auf der Hochschul-Plattform an, erstellt einen Freigabe-Link und fügt diesen in Lernzeit ein.\
-*2. Lerngruppe erstellen:* Um gemeinsame Termine zu planen, erstellt man eine neue Lerngruppe und gibt ihr einen aussagekräftigen Namen – zum Beispiel „Mathe-Lerngruppe".\
+*2. Lerngruppe erstellen:* Um gemeinsame Termine zu planen, erstellt man eine neue Lerngruppe und gibt ihr einen aussagekräftigen Namen - zum Beispiel „Mathe-Lerngruppe".\
 *3. Teilnehmer einladen:* Wer eine Gruppe erstellt hat, kann andere über einen Link oder QR-Code weitere Personen einladen. Der QR-Code dient zu einer schnellen und unkomplizierten Art einer Lerngruppe beizutreten.\
 *4. Freie Zeiten finden und buchen:* Die App zeigt Zeiten, in denen alle Gruppenmitglieder frei sind. Diese freien Zeiten kann man als gemeinsame Lernzeit auswählen und optional einen Treffpunkt sowie eine Uhrzeit festlegen.\
 
