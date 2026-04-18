@@ -1,0 +1,6 @@
+{
+  "appHost": {
+    "language": "csharp",
+    "path": "Lernzeit-Backend.AppHost/Lernzeit-Backend.AppHost.csproj"
+  }
+}
