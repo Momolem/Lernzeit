@@ -19,25 +19,25 @@ var registryEndpoint = builder.AddParameter("RegistryEndpoint");
 var registryRepository = builder.AddParameter("RegistryRepository");
 var registry = builder.AddContainerRegistry("ghcr", registryEndpoint, registryRepository);
 
+// URLs — configure per deployment via Parameters__BackendUrl / Parameters__FrontendUrl env vars
+// BackendUrl is baked into the React bundle at image build time (CRA limitation)
+var backendUrl = builder.AddParameter("BackendUrl");
+var frontendUrl = builder.AddParameter("FrontendUrl");
+
 var backend = builder
     .AddProject<Projects.Lernzeit_Backend>("lernzeit-backend")
     .WithContainerRegistry(registry)
     .WithReference(db)
     .WithEnvironment("Authentication__Google__ClientId", googleClientId)
     .WithEnvironment("Authentication__Google__ClientSecret", googleClientSecret)
-    .WithEnvironment("FrontendUrl", "http://localhost:3000")
+    .WithEnvironment("FrontendUrl", frontendUrl)
     .PublishAsDockerComposeService((resource, service) =>
     {
         service.Name = "lernzeit_backend";
-        service.Ports.Add("8080:8080");
-        service.Environment["HTTP_PORTS"] = "8080";
+        service.Ports.Clear();
         service.Expose.Clear();
         service.Expose.Add("8080");
     });
-
-// REACT_APP_BACKEND_URL is baked into the React bundle at image build time (CRA limitation).
-// Set via Parameters__BackendUrl env var in CI, or via user secrets locally.
-var backendUrl = builder.AddParameter("BackendUrl");
 
 var frontend = builder.AddDockerfile("lernzeit-frontend", "../../../frontend")
     .WithContainerRegistry(registry)
@@ -46,7 +46,6 @@ var frontend = builder.AddDockerfile("lernzeit-frontend", "../../../frontend")
     .PublishAsDockerComposeService((resource, service) =>
     {
         service.Name = "lernzeit_frontend";
-        service.Ports.Add("3000:80");
     });
 
 builder.Build().Run();
