@@ -56,8 +56,7 @@ jobs:
         run: |
           aspire do push \
             --apphost "${{ env.APPHOST }}" \
-            --non-interactive \
-            --no-build
+            --non-interactive
 
       - name: Determine pushed image tags
         id: tags
@@ -94,7 +93,8 @@ jobs:
           aspire publish \
             --apphost "${{ env.APPHOST }}" \
             --output-path "${OUTPUT_DIR}" \
-            --non-interactive
+            --non-interactive \
+            --no-build
 
           # Write .env with pinned SHA-tagged images and runtime secrets
           cat > "${OUTPUT_DIR}/.env" <<EOF
