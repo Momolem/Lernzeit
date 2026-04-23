@@ -2,7 +2,9 @@ name: Build and Publish
 
 on:
   push:
-    branches: [main]
+    branches: 
+      - main
+      - feature/authentication
   workflow_dispatch:
 
 env:
