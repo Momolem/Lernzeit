@@ -110,4 +110,5 @@ jobs:
         with:
           name: compose-stack
           path: Backend/Lernzeit-Backend/Lernzeit.AppHost/aspire-output/
+          include-hidden-files: true
           if-no-files-found: error
