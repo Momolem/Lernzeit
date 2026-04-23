@@ -1,0 +1,107 @@
+name: Build and Publish
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  APPHOST: Backend/Lernzeit-Backend/Lernzeit.AppHost/Lernzeit.AppHost.csproj
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Install Aspire CLI
+        run: dotnet tool install --global aspire-cli --prerelease
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push images via Aspire
+        env:
+          # Registry configuration read by Aspire as Parameters:RegistryEndpoint / Parameters:RegistryRepository
+          Parameters__RegistryEndpoint: ghcr.io
+          Parameters__RegistryRepository: ${{ github.repository_owner }}
+          # REACT_APP_BACKEND_URL is baked into the React bundle at image build time (CRA limitation).
+          # Configure BACKEND_URL as a GitHub Actions variable (vars.BACKEND_URL) in your repo settings.
+          Parameters__BackendUrl: ${{ vars.BACKEND_URL }}
+          # Placeholders — Google credentials are only needed at runtime, not at image build time
+          Parameters__GoogleClientId: placeholder
+          Parameters__GoogleClientSecret: placeholder
+        run: |
+          aspire do push \
+            --apphost "${{ env.APPHOST }}" \
+            --non-interactive \
+            --no-build
+
+      - name: Determine pushed image tags
+        id: tags
+        run: |
+          REPO=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          # Aspire tags images as <name>:aspire-deploy-<timestamp> — find the latest one
+          DEPLOY_TAG=$(docker images "ghcr.io/${REPO}/backend" \
+            --format "{{.Tag}}" | grep "aspire-deploy" | sort -r | head -1)
+          echo "deploy_tag=${DEPLOY_TAG}" >> $GITHUB_OUTPUT
+          echo "repo=${REPO}" >> $GITHUB_OUTPUT
+          echo "backend_image=ghcr.io/${REPO}/backend:${DEPLOY_TAG}" >> $GITHUB_OUTPUT
+          echo "frontend_image=ghcr.io/${REPO}/frontend:${DEPLOY_TAG}" >> $GITHUB_OUTPUT
+
+      - name: Also tag images with git SHA and latest
+        env:
+          REPO: ${{ steps.tags.outputs.repo }}
+          DEPLOY_TAG: ${{ steps.tags.outputs.deploy_tag }}
+        run: |
+          for NAME in backend frontend; do
+            docker tag "ghcr.io/${REPO}/${NAME}:${DEPLOY_TAG}" \
+              "ghcr.io/${REPO}/${NAME}:${{ github.sha }}"
+            docker tag "ghcr.io/${REPO}/${NAME}:${DEPLOY_TAG}" \
+              "ghcr.io/${REPO}/${NAME}:latest"
+            docker push "ghcr.io/${REPO}/${NAME}:${{ github.sha }}"
+            docker push "ghcr.io/${REPO}/${NAME}:latest"
+          done
+
+      - name: Generate compose artifact with pinned image tags
+        env:
+          REPO: ${{ steps.tags.outputs.repo }}
+          OUTPUT_DIR: Backend/Lernzeit-Backend/Lernzeit.AppHost/aspire-output
+        run: |
+          # Regenerate the compose file (no images built, just YAML generation)
+          aspire publish \
+            --apphost "${{ env.APPHOST }}" \
+            --output-path "${OUTPUT_DIR}" \
+            --no-build \
+            --non-interactive
+
+          # Write .env with pinned SHA-tagged images and runtime secrets
+          cat > "${OUTPUT_DIR}/.env" <<EOF
+          BACKEND_IMAGE=ghcr.io/${REPO}/backend:${{ github.sha }}
+          FRONTEND_IMAGE=ghcr.io/${REPO}/frontend:${{ github.sha }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          GOOGLECLIENTID=${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLECLIENTSECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+          EOF
+
+      - name: Upload compose stack artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: compose-stack
+          path: Backend/Lernzeit-Backend/Lernzeit.AppHost/aspire-output/
+          if-no-files-found: error
