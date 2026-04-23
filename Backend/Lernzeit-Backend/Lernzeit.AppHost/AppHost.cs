@@ -20,7 +20,7 @@ var registryRepository = builder.AddParameter("RegistryRepository");
 var registry = builder.AddContainerRegistry("ghcr", registryEndpoint, registryRepository);
 
 var backend = builder
-    .AddProject<Projects.Lernzeit_Backend>("Backend")
+    .AddProject<Projects.Lernzeit_Backend>("lernzeit-backend")
     .WithContainerRegistry(registry)
     .WithReference(db)
     .WithEnvironment("Authentication__Google__ClientId", googleClientId)
@@ -39,7 +39,7 @@ var backend = builder
 // Set via Parameters__BackendUrl env var in CI, or via user secrets locally.
 var backendUrl = builder.AddParameter("BackendUrl");
 
-var frontend = builder.AddDockerfile("frontend", "../../../frontend")
+var frontend = builder.AddDockerfile("lernzeit-frontend", "../../../frontend")
     .WithContainerRegistry(registry)
     .WithHttpEndpoint(port: 3000, targetPort: 80, name: "http")
     .WithBuildArg("REACT_APP_BACKEND_URL", backendUrl)
