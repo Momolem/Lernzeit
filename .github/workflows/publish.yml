@@ -51,8 +51,7 @@ jobs:
         run: |
           aspire do push \
             --apphost "${{ env.APPHOST }}" \
-            --non-interactive \
-            --no-build
+            --non-interactive
 
       - name: Determine pushed image tags
         id: tags
