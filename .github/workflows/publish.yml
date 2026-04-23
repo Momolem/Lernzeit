@@ -94,7 +94,6 @@ jobs:
           aspire publish \
             --apphost "${{ env.APPHOST }}" \
             --output-path "${OUTPUT_DIR}" \
-            --no-build \
             --non-interactive
 
           # Write .env with pinned SHA-tagged images and runtime secrets
