@@ -28,7 +28,7 @@ jobs:
           dotnet-version: "10.0.x"
 
       - name: Install Aspire CLI
-        run: dotnet tool install --global aspire-cli --prerelease
+        run: curl -sSL https://aspire.dev/install.sh | bash
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
