@@ -37,11 +37,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Lowercase owner for OCI registry
+        id: owner
+        run: echo "value=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       - name: Build and push images via Aspire
         env:
           # Registry configuration read by Aspire as Parameters:RegistryEndpoint / Parameters:RegistryRepository
+          # Repository owner must be lowercase — OCI registries reject uppercase image names
           Parameters__RegistryEndpoint: ghcr.io
-          Parameters__RegistryRepository: ${{ github.repository_owner }}
+          Parameters__RegistryRepository: ${{ steps.owner.outputs.value }}
           # REACT_APP_BACKEND_URL is baked into the React bundle at image build time (CRA limitation).
           # Configure BACKEND_URL as a GitHub Actions variable (vars.BACKEND_URL) in your repo settings.
           Parameters__BackendUrl: ${{ vars.BACKEND_URL }}
@@ -51,12 +56,13 @@ jobs:
         run: |
           aspire do push \
             --apphost "${{ env.APPHOST }}" \
-            --non-interactive
+            --non-interactive \
+            --no-build
 
       - name: Determine pushed image tags
         id: tags
         run: |
-          REPO=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO="${{ steps.owner.outputs.value }}"
           # Aspire tags images as <name>:aspire-deploy-<timestamp> — find the latest one
           DEPLOY_TAG=$(docker images "ghcr.io/${REPO}/backend" \
             --format "{{.Tag}}" | grep "aspire-deploy" | sort -r | head -1)
