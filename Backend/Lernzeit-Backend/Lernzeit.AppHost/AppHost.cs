@@ -15,8 +15,12 @@ var googleClientSecret = builder.AddParameter("GoogleClientSecret", secret: true
 
 // Container registry — set RegistryEndpoint to e.g. ghcr.io and
 // RegistryRepository to your GitHub org/user, e.g. ghcr.io/your-org
-var registryEndpoint = builder.AddParameter("RegistryEndpoint");
-var registryRepository = builder.AddParameter("RegistryRepository");
+string registryEndpoint = "dummy";
+string registryRepository = "dummy";
+#if !DEBUG
+registryEndpoint = builder.AddParameter("RegistryEndpoint");
+registryRepository = builder.AddParameter("RegistryRepository");
+#endif
 var registry = builder.AddContainerRegistry("ghcr", registryEndpoint, registryRepository);
 
 // URLs — configure per deployment via Parameters__BackendUrl / Parameters__FrontendUrl env vars
