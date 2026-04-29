@@ -43,9 +43,9 @@ var backend = builder
         service.Expose.Add("8080");
     });
 
-var frontend = builder.AddDockerfile("lernzeit-frontend", "../../../frontend")
+var frontend = builder.AddDockerfile("lernzeit-frontend", "../../../frontend", "Dockerfile")
     .WithContainerRegistry(registry)
-    .WithHttpEndpoint(port: 3000, targetPort: 80, name: "http")
+    .WithHttpEndpoint(port: 3000, targetPort: 3000, name: "http")
     .WithBuildArg("REACT_APP_BACKEND_URL", backendUrl)
     .PublishAsDockerComposeService((resource, service) =>
     {
