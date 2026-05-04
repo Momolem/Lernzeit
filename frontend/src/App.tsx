@@ -57,6 +57,13 @@ const sampleEvents: TimetableEvents = {
   sunday: [],
 };
 
+interface User {
+  isAuthenticated: boolean;
+  name?: string;
+  email?: string;
+  avatar?: string;
+}
+
 function App() {
   return <TimetableComponent initialEvents={sampleEvents} />;
 }

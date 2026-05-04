@@ -1,0 +1,118 @@
+name: Build and Publish
+
+on:
+  push:
+    branches: 
+      - main
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  APPHOST: Backend/Lernzeit-Backend/Lernzeit.AppHost/Lernzeit.AppHost.csproj
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Install Aspire CLI
+        run: curl -sSL https://aspire.dev/install.sh | bash
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Lowercase owner for OCI registry
+        id: owner
+        run: echo "value=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: Build and push images via Aspire
+        env:
+          # Registry configuration read by Aspire as Parameters:RegistryEndpoint / Parameters:RegistryRepository
+          # Repository owner must be lowercase — OCI registries reject uppercase image names
+          Parameters__RegistryEndpoint: ghcr.io
+          Parameters__RegistryRepository: ${{ steps.owner.outputs.value }}
+          # BackendUrl is baked into the React bundle at image build time (CRA limitation).
+          # FrontendUrl is only needed at runtime but required as a parameter — passed as placeholder here.
+          # Configure BACKEND_URL and FRONTEND_URL as GitHub Actions variables in your repo settings.
+          Parameters__BackendUrl: ${{ vars.BACKEND_URL }}
+          Parameters__FrontendUrl: ${{ vars.FRONTEND_URL }}
+          # Placeholders — Google credentials are only needed at runtime, not at image build time
+          Parameters__GoogleClientId: placeholder
+          Parameters__GoogleClientSecret: placeholder
+        run: |
+          aspire do push \
+            --apphost "${{ env.APPHOST }}" \
+            --non-interactive
+
+      - name: Determine pushed image tags
+        id: tags
+        run: |
+          REPO="${{ steps.owner.outputs.value }}"
+          # Aspire tags images as <name>:aspire-deploy-<timestamp> — find the latest one
+          DEPLOY_TAG=$(docker images "ghcr.io/${REPO}/lernzeit-backend" \
+            --format "{{.Tag}}" | grep "aspire-deploy" | sort -r | head -1)
+          echo "deploy_tag=${DEPLOY_TAG}" >> $GITHUB_OUTPUT
+          echo "repo=${REPO}" >> $GITHUB_OUTPUT
+
+      - name: Also tag images with git SHA and latest
+        env:
+          REPO: ${{ steps.tags.outputs.repo }}
+          DEPLOY_TAG: ${{ steps.tags.outputs.deploy_tag }}
+        run: |
+          for NAME in lernzeit-backend lernzeit-frontend; do
+            docker tag "ghcr.io/${REPO}/${NAME}:${DEPLOY_TAG}" \
+              "ghcr.io/${REPO}/${NAME}:${{ github.sha }}"
+            docker tag "ghcr.io/${REPO}/${NAME}:${DEPLOY_TAG}" \
+              "ghcr.io/${REPO}/${NAME}:latest"
+            docker push "ghcr.io/${REPO}/${NAME}:${{ github.sha }}"
+            docker push "ghcr.io/${REPO}/${NAME}:latest"
+          done
+
+      - name: Generate compose artifact with pinned image tags
+        env:
+          REPO: ${{ steps.tags.outputs.repo }}
+          OUTPUT_DIR: Backend/Lernzeit-Backend/Lernzeit.AppHost/aspire-output
+        run: |
+          # Regenerate the compose file (no images built, just YAML generation)
+          aspire publish \
+            --apphost "${{ env.APPHOST }}" \
+            --output-path "${OUTPUT_DIR}" \
+            --non-interactive \
+            --no-build
+
+          # Write .env with pinned SHA-tagged images and build-time variables.
+          # Runtime secrets (POSTGRES_PASSWORD, GOOGLECLIENTID, GOOGLECLIENTSECRET)
+          # are not included here — set them manually in the .env on the server.
+          cat > "${OUTPUT_DIR}/.env" <<EOF
+          LERNZEIT_BACKEND_IMAGE=ghcr.io/${REPO}/lernzeit-backend:${{ github.sha }}
+          LERNZEIT_FRONTEND_IMAGE=ghcr.io/${REPO}/lernzeit-frontend:${{ github.sha }}
+          LERNZEIT_BACKEND_PORT=8080
+          POSTGRES_PASSWORD=
+          GOOGLECLIENTID=
+          GOOGLECLIENTSECRET=
+          BACKENDURL=${{ vars.BACKEND_URL }}
+          FRONTENDURL=${{ vars.FRONTEND_URL }}
+          EOF
+
+      - name: Upload compose stack artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: compose-stack
+          path: Backend/Lernzeit-Backend/Lernzeit.AppHost/aspire-output/
+          include-hidden-files: true
+          if-no-files-found: error

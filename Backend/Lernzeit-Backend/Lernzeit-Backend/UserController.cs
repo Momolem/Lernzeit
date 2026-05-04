@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Lernzeit_Backend
+namespace LernzeitBackend
 {
     [Route("api/[controller]")]
     [ApiController]
