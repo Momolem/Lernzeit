@@ -5,19 +5,16 @@ import {
   Views,
   type SlotInfo,
 } from "react-big-calendar";
-import {
-  format,
-  parse,
-  startOfWeek,
-  getDay,
-  addWeeks,
-  subWeeks,
-  startOfWeek as startOfWeekFn,
-  endOfWeek as endOfWeekFn,
-} from "date-fns";
+import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enUS } from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { TimetableEvents, DAYS, type Day } from "../../types/timetable";
+import {
+  TimetableEvents,
+  timetableEventsToCalendarEvents,
+  type CalendarEvent,
+  DAYS,
+  type Day,
+} from "../../types/timetable";
 import { useTimetableICS } from "../../hooks/useTimetableICS";
 import styles from "./Timetable.module.css";
 
@@ -38,13 +35,11 @@ interface TimetableProps {
 interface NewEventFormData {
   title: string;
   startTime: string;
-  endTime: string;
   room: string;
 }
 
 export function TimetableComponent({ initialEvents }: TimetableProps) {
   const [showModal, setShowModal] = useState(false);
-  const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedSlot, setSelectedSlot] = useState<{
     start: Date;
     end: Date;
@@ -52,7 +47,6 @@ export function TimetableComponent({ initialEvents }: TimetableProps) {
   const [formData, setFormData] = useState<NewEventFormData>({
     title: "",
     startTime: "09:00",
-    endTime: "10:00",
     room: "",
   });
 
@@ -94,29 +88,14 @@ export function TimetableComponent({ initialEvents }: TimetableProps) {
     fileInput.click();
   };
 
-  const handlePrevWeek = () => {
-    setCurrentDate(subWeeks(currentDate, 1));
-  };
-
-  const handleNextWeek = () => {
-    setCurrentDate(addWeeks(currentDate, 1));
-  };
-
-  const handleToday = () => {
-    setCurrentDate(new Date());
-  };
-
   const handleSelectSlot = (slotInfo: SlotInfo) => {
     setSelectedSlot({ start: slotInfo.start, end: slotInfo.end });
     const hours = slotInfo.start.getHours();
     const minutes = slotInfo.start.getMinutes();
     const timeStr = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-    const endHour = (hours + 1) % 24;
-    const endTimeStr = `${String(endHour).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
     setFormData({
       title: "",
       startTime: timeStr,
-      endTime: endTimeStr,
       room: "",
     });
     setShowModal(true);
@@ -143,16 +122,10 @@ export function TimetableComponent({ initialEvents }: TimetableProps) {
     const [startHours, startMinutes] = formData.startTime
       .split(":")
       .map(Number);
-    const [endHours, endMinutes] = formData.endTime.split(":").map(Number);
+    const duration = selectedSlot.end.getTime() - selectedSlot.start.getTime();
     const startDate = new Date(selectedSlot.start);
     startDate.setHours(startHours, startMinutes, 0, 0);
-    const endDate = new Date(selectedSlot.start);
-    endDate.setHours(endHours, endMinutes, 0, 0);
-
-    if (endDate <= startDate) {
-      alert("End time must be after start time");
-      return;
-    }
+    const endDate = new Date(startDate.getTime() + duration);
 
     const day = determineDayFromDate(startDate);
     if (!DAYS.includes(day)) {
@@ -177,18 +150,14 @@ export function TimetableComponent({ initialEvents }: TimetableProps) {
     updateEvents(updatedEvents);
     setShowModal(false);
     setSelectedSlot(null);
-    setFormData({ title: "", startTime: "09:00", endTime: "10:00", room: "" });
+    setFormData({ title: "", startTime: "09:00", room: "" });
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedSlot(null);
-    setFormData({ title: "", startTime: "09:00", endTime: "10:00", room: "" });
+    setFormData({ title: "", startTime: "09:00", room: "" });
   };
-
-  const weekStart = startOfWeekFn(currentDate, { weekStartsOn: 1 });
-  const weekEnd = endOfWeekFn(currentDate, { weekStartsOn: 1 });
-  const headerTitle = `${format(weekStart, "d MMM")} - ${format(weekEnd, "d MMM yyyy")}`;
 
   return (
     <div className={styles.container}>
@@ -210,36 +179,18 @@ export function TimetableComponent({ initialEvents }: TimetableProps) {
       {error && <div className={styles.error}>{error}</div>}
       {isLoading && <div>Loading...</div>}
 
-      <div className={styles.calendarHeader}>
-        <button className={styles.navButton} onClick={handlePrevWeek}>
-          ←
-        </button>
-        <button
-          className={`${styles.navButton} ${styles.todayButton}`}
-          onClick={handleToday}
-        >
-          Today
-        </button>
-        <span className={styles.calendarTitle}>{headerTitle}</span>
-        <button className={styles.navButton} onClick={handleNextWeek}>
-          →
-        </button>
-      </div>
-
       <div className={styles.timetableWrapper}>
         <Calendar
           localizer={localizer}
           events={calendarEvents}
           startAccessor="start"
           endAccessor="end"
-          view={Views.WEEK}
-          views={[Views.WEEK]}
-          date={currentDate}
-          onNavigate={setCurrentDate}
+          defaultView={Views.WEEK}
+          views={[Views.WEEK, Views.DAY, Views.MONTH]}
           step={60}
           timeslots={1}
-          min={new Date(0, 0, 0, 6, 0, 0)}
-          max={new Date(0, 0, 0, 23, 59, 0)}
+          min={new Date(0, 0, 0, 7, 0, 0)}
+          max={new Date(0, 0, 0, 20, 0, 0)}
           selectable
           onSelectSlot={handleSelectSlot}
           onSelectEvent={handleSelectEvent}
@@ -278,17 +229,6 @@ export function TimetableComponent({ initialEvents }: TimetableProps) {
                 value={formData.startTime}
                 onChange={(e) =>
                   setFormData({ ...formData, startTime: e.target.value })
-                }
-              />
-            </div>
-            <div className={styles.formGroup}>
-              <label className={styles.label}>End Time</label>
-              <input
-                type="time"
-                className={styles.input}
-                value={formData.endTime}
-                onChange={(e) =>
-                  setFormData({ ...formData, endTime: e.target.value })
                 }
               />
             </div>
