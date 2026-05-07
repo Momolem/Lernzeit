@@ -1,3 +1,4 @@
+using Lernzeit.RaumzeitAPI;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 
@@ -8,6 +9,10 @@ builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddHttpClient();
+builder.Services.AddSingleton<RaumzeitService>();
+builder.Configuration.AddUserSecrets<Program>();
 
 builder.Services.AddAuthentication(options =>
     {
@@ -38,6 +43,10 @@ builder.Services.AddAuthentication(options =>
         options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? "placeholder";
         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? "placeholder";
     });
+
+builder.Services.AddSingleton<RaumzeitCredentials>(new RaumzeitCredentials(
+    builder.Configuration["Authentication:Raumzeit:Username"],
+    builder.Configuration["Authentication:Raumzeit:Password"]));
 
 builder.Services.AddCors(options =>
 {

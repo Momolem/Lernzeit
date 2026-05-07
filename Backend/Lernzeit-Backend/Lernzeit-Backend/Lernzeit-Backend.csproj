@@ -29,6 +29,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Lernzeit-Backend.ServiceDefaults\Lernzeit-Backend.ServiceDefaults.csproj" />
+      <ProjectReference Include="..\Lernzeit.RaumzeitAPI\Lernzeit.RaumzeitAPI.csproj" />
     </ItemGroup>
 
 </Project>

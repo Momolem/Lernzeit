@@ -2,4 +2,5 @@
   <Project Path="Lernzeit-Backend.ServiceDefaults/Lernzeit-Backend.ServiceDefaults.csproj" />
   <Project Path="Lernzeit-Backend/Lernzeit-Backend.csproj" />
   <Project Path="Lernzeit.AppHost/Lernzeit.AppHost.csproj" />
+  <Project Path="Lernzeit.RaumzeitAPI/Lernzeit.RaumzeitAPI.csproj" />
 </Solution>
