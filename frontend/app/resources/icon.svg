@@ -1,0 +1,10 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with your app's rounded aesthetic -->
+  <rect width="32" height="32" rx="8" fill="#FF6600"/>
+  
+  <!-- Stylized "L" for LernZeit -->
+  <path d="激M10 8V20C10 22.2091 11.7909 24 14 24H22" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Optional accent dot (matches the period in LernZeit.) -->
+  <circle cx="24" cy="24" r="2.5" fill="#FFFFFF"/>
+</svg>
