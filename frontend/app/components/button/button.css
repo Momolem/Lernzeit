@@ -1,13 +1,13 @@
 .btn-wrapper {
     display: flex;
     height: 56px;
+    width: 100%;
     padding: 0 17px 0 24px;
     align-items: center;
     gap: 12px;
 
     border-radius: 12px;
     border: 2px solid #000;
-
 }
 
 .btn-primary {
