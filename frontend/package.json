@@ -1,5 +1,6 @@
 {
-  "name": "my-react-router-app",
+  "name": "lernzeit",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,7 +15,10 @@
     "isbot": "^5.1.36",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-router": "7.14.0"
+    "react-router": "7.14.0",
+    "react-big-calendar": "^1.19.4",
+    "ts-ics": "^2.4.4",
+    "date-fns": "^4.1.0",
   },
   "devDependencies": {
     "@react-router/dev": "7.14.0",
@@ -22,6 +26,8 @@
     "@types/node": "^22",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@types/react-big-calendar": "^1.16.3",
+    "@vitejs/plugin-react": "^4.3.4",
     "tailwindcss": "^4.2.2",
     "typescript": "^5.9.3",
     "vite": "^8.0.3"

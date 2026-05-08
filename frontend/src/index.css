@@ -1,0 +1,23 @@
+
+/* React Big Calendar 24-hour format */
+.rbc-label {
+  font-size: 11px;
+}
+
+.rbc-time-content > .rbc-time-slot-group:first-child,
+.rbc-time-content > .rbc-time-slot-group:last-child {
+  display: none;
+}
+
+.rbc-time-view {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Hide default react-big-calendar toolbar */
+.rbc-toolbar {
+  display: none !important;
+}
+
+.rbc-btn-group {
+  display: none !important;
+}
