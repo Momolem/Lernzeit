@@ -1,6 +1,61 @@
-import React, { useEffect, useState } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { TimetableComponent } from './components/Timetable/Timetable';
+import { TimetableEvents } from './types/timetable';
+
+const sampleEvents: TimetableEvents = {
+  monday: [
+    {
+      id: 1,
+      name: 'Mathematics',
+      startTime: new Date('2024-01-01T09:00:00'),
+      endTime: new Date('2024-01-01T10:30:00'),
+      room: 'Room 101',
+    },
+    {
+      id: 2,
+      name: 'Physics',
+      startTime: new Date('2024-01-01T11:00:00'),
+      endTime: new Date('2024-01-01T12:30:00'),
+      room: 'Room 203',
+    },
+  ],
+  tuesday: [
+    {
+      id: 3,
+      name: 'Computer Science',
+      startTime: new Date('2024-01-02T10:00:00'),
+      endTime: new Date('2024-01-02T12:00:00'),
+      room: 'Lab 301',
+    },
+  ],
+  wednesday: [
+    {
+      id: 4,
+      name: 'Mathematics',
+      startTime: new Date('2024-01-03T09:00:00'),
+      endTime: new Date('2024-01-03T10:30:00'),
+      room: 'Room 101',
+    },
+  ],
+  thursday: [
+    {
+      id: 5,
+      name: 'Physics',
+      startTime: new Date('2024-01-04T11:00:00'),
+      endTime: new Date('2024-01-04T12:30:00'),
+      room: 'Room 203',
+    },
+    {
+      id: 6,
+      name: 'Computer Science',
+      startTime: new Date('2024-01-04T14:00:00'),
+      endTime: new Date('2024-01-04T16:00:00'),
+      room: 'Lab 301',
+    },
+  ],
+  friday: [],
+  saturday: [],
+  sunday: [],
+};
 
 interface User {
   isAuthenticated: boolean;
@@ -10,50 +65,7 @@ interface User {
 }
 
 function App() {
-  const [user, setUser] = useState<User | null>(null);
-
-  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ?? "https://localhost:7113";
-
-  useEffect(() => {
-    // Check if user is authenticated on load
-    fetch(`${BACKEND_URL}/api/auth/me`, { credentials: 'include' })
-      .then(res => res.json())
-      .then(data => setUser(data))
-      .catch(err => console.error("Failed to fetch auth status", err));
-  }, []);
-
-  const login = () => {
-    // Redirect to backend login endpoint
-    window.location.href = `${BACKEND_URL}/api/auth/login`;
-  };
-
-  const logout = () => {
-    fetch(`${BACKEND_URL}/api/auth/logout`, { credentials: 'include' })
-      .then(() => setUser({ isAuthenticated: false }))
-      .catch(err => console.error("Logout failed", err));
-  };
-
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        
-        {user?.isAuthenticated ? (
-          <div>
-            <p>Welcome, {user.name}!</p>
-            {user.avatar && <img src={user.avatar} alt="avatar" style={{ borderRadius: '50%', width: '50px' }} />}
-            <button onClick={logout} style={{ display: 'block', margin: '10px auto', padding: '10px' }}>Logout</button>
-          </div>
-        ) : (
-          <div>
-            <p>You are not logged in.</p>
-            <button onClick={login} style={{ padding: '10px 20px', fontSize: '16px' }}>Login with Google</button>
-          </div>
-        )}
-
-      </header>
-    </div>
-  );
+  return <TimetableComponent initialEvents={sampleEvents} />;
 }
 
 export default App;
