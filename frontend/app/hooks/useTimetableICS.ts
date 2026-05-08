@@ -1,11 +1,11 @@
 import { useCallback, useState } from 'react';
-import { TimetableEvents } from '../types/timetable';
+import type {TimetableEvents} from '~/types/timetable';
 import {
   timetableToIcs,
   icsToTimetable,
   downloadIcsFile,
   parseIcsFile,
-} from '../utils/icsUtils';
+} from '~/utils/icsUtils';
 
 export function useTimetableICS(initialEvents: TimetableEvents) {
   const [events, setEvents] = useState<TimetableEvents>(initialEvents);

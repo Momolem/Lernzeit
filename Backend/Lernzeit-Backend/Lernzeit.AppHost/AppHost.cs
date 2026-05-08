@@ -1,6 +1,4 @@
 
-using Aspire.Hosting.Docker.Resources.ServiceNodes;
-
 var builder = DistributedApplication.CreateBuilder(args);
 
 var compose = builder.AddDockerComposeEnvironment("compose")
@@ -43,13 +41,14 @@ var backend = builder
         service.Expose.Add("8080");
     });
 
-var frontend = builder.AddDockerfile("lernzeit-frontend", "../../../frontend", "Dockerfile")
+builder
+    .AddViteApp("frontend", "../../../frontend")
+    .WithEnvironment("REACT_APP_BACKEND_URL", backendUrl)
     .WithContainerRegistry(registry)
-    .WithHttpEndpoint(port: 3000, targetPort: 3000, name: "http")
-    .WithBuildArg("REACT_APP_BACKEND_URL", backendUrl)
     .PublishAsDockerComposeService((resource, service) =>
     {
         service.Name = "lernzeit_frontend";
-    });
+    });;
+    
 
 builder.Build().Run();

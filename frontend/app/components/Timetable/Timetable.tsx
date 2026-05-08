@@ -1,3 +1,5 @@
+import "./Timetable.module.css"
+
 import { useMemo, useState } from "react";
 import {
   Calendar,
@@ -9,13 +11,12 @@ import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enUS } from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import {
-  TimetableEvents,
   timetableEventsToCalendarEvents,
   type CalendarEvent,
   DAYS,
-  type Day,
-} from "../../types/timetable";
-import { useTimetableICS } from "../../hooks/useTimetableICS";
+  type Day, type TimetableEvents,
+} from "~/types/timetable";
+import { useTimetableICS } from "~/hooks/useTimetableICS";
 import styles from "./Timetable.module.css";
 
 const locales = { "en-US": enUS };
