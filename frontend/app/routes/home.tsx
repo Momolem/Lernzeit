@@ -51,8 +51,8 @@ export default function Home() {
       <>
         <div className="flex gap-4 flex-col">
           <Button variant="primary" icon={Icon(plusIcon, "plus icon")}>Gruppe erstellen</Button>
-          <Button variant="secondary" icon={Icon(qrCode, "qrcode icon")}>Gruppe beitreten</Button>
-          <NavLink to="/calendar" className="d"><Button variant="secondary" icon={Icon(calendarIcon, "calendar icon")}>Mein Kalender</Button></NavLink> 
+          <Button variant="ghost" icon={Icon(qrCode, "qrcode icon")}>Gruppe beitreten</Button>
+          <NavLink to="/calendar" className="d"><Button variant="ghost" icon={Icon(calendarIcon, "calendar icon")}>Mein Kalender</Button></NavLink> 
         </div>
 
           {user?.isAuthenticated ? (

@@ -7,17 +7,24 @@
     gap: 12px;
 
     border-radius: 12px;
-    border: 2px solid #000;
 }
 
 .btn-primary {
-    color: var(--white, #FFF);
-    background: var(--orange-5, #FD6001);
+    color: var(--white);
+    background: var(--orange-5);
+    border: 2px solid var(--neutral-700);
 }
 
 .btn-secondary {
-    color: var(--black, #000);
-    background: var(--white, #FFF);
+    color: var(--white);
+    background: var(--neutral-800);
+    border: 2px solid var(--neutral-700);
+}
+
+.btn-ghost {
+    color: var(--black);
+    background: var(--white);
+    border: 2px solid var(--neutral-700);
 }
 
 .btn-content {

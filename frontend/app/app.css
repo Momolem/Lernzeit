@@ -31,7 +31,7 @@ body {
 
 .paper-bg {
   min-height: 100vh;
-  background-color: #fffdf7;
+  background-color: var(--paper);
   background-image:
           linear-gradient(to right, rgba(0, 0, 0, 0.08) 1px, transparent 1px),
           linear-gradient(to bottom, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
@@ -47,7 +47,13 @@ body {
 
 :root {
   --orange-5: #FD6001;
+  --paper: #fffdf7;
   --white: #FFF;
   --black: #000;
+  --neutral-100: #F3F4F8;
+  --neutral-200: #D2D4DA;
   --neutral-700: #404252;
+  --neutral-800: #101223;
+  --Grey-Blue-35: #2D3C59;
+  --Grey-Blue-25: #202b40;
 }

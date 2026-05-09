@@ -8,7 +8,7 @@ import {
     type SlotInfo,
 } from "react-big-calendar";
 import {format, parse, startOfWeek, getDay} from "date-fns";
-import {enUS} from "date-fns/locale";
+import {enUS, de} from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import {
     timetableEventsToCalendarEvents,
@@ -18,8 +18,10 @@ import {
 } from "~/types/timetable";
 import {useTimetableICS} from "~/hooks/useTimetableICS";
 import styles from "./Timetable.module.css";
+import Button from "~/components/button/button";
+import Input from "~/components/input/input";
 
-const locales = {"en-US": enUS};
+const locales = {"de": de};
 
 const localizer = dateFnsLocalizer({
     format,
@@ -163,7 +165,6 @@ export function TimetableComponent({initialEvents}: TimetableProps) {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className={styles.title}>My Timetable</h1>
                 <div className={styles.actions}>
                 </div>
             </div>
@@ -174,6 +175,16 @@ export function TimetableComponent({initialEvents}: TimetableProps) {
             <div className={styles.timetableWrapper}>
                 <Calendar
                     localizer={localizer}
+                    formats={
+                        {
+                            timeGutterFormat: 'HH:mm',
+                            eventTimeRangeFormat: ({start, end}, culture, local) =>
+                                `${local?.format(start, 'HH:mm', culture)} – ${local?.format(end, 'HH:mm', culture)}`,
+                            dayFormat: 'dd.MM.',
+                            weekdayFormat: 'EEEE',
+                            monthHeaderFormat: 'MMMM yyyy',
+                        }
+                    }
                     events={calendarEvents}
                     startAccessor="start"
                     endAccessor="end"
@@ -186,11 +197,12 @@ export function TimetableComponent({initialEvents}: TimetableProps) {
                     selectable
                     onSelectSlot={handleSelectSlot}
                     onSelectEvent={handleSelectEvent}
-                    style={{height: 700}}
+                    style={{height: "100%"}}
                     eventPropGetter={() => ({
                         style: {
-                            backgroundColor: "#4f46e5",
-                            borderRadius: "4px",
+                            "border": "2px solid var(--Grey-Blue-35, #2D3C59)",
+                            "borderRadius": "5px",
+                            "background": "var(--Grey-Blue-25, #202B40)",
                         },
                     })}
                 />
@@ -198,54 +210,52 @@ export function TimetableComponent({initialEvents}: TimetableProps) {
 
             {showModal && (
                 <div className={styles.modalOverlay} onClick={handleCloseModal}>
-                    <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-                        <h2 className={styles.modalTitle}>Add New Event</h2>
-                        <div className={styles.formGroup}>
-                            <label className={styles.label}>Event Title</label>
-                            <input
-                                type="text"
-                                className={styles.input}
-                                value={formData.title}
-                                onChange={(e) =>
-                                    setFormData({...formData, title: e.target.value})
-                                }
-                                placeholder="e.g., Mathematics"
-                                autoFocus
-                            />
-                        </div>
-                        <div className={styles.formGroup}>
-                            <label className={styles.label}>Start Time</label>
-                            <input
-                                type="time"
-                                className={styles.input}
-                                value={formData.startTime}
-                                onChange={(e) =>
-                                    setFormData({...formData, startTime: e.target.value})
-                                }
-                            />
-                        </div>
-                        <div className={styles.formGroup}>
-                            <label className={styles.label}>Room</label>
-                            <input
-                                type="text"
-                                className={styles.input}
-                                value={formData.room}
-                                onChange={(e) =>
-                                    setFormData({...formData, room: e.target.value})
-                                }
-                                placeholder="e.g., Room 101"
-                            />
-                        </div>
-                        <div className={styles.modalActions}>
-                            <button className={styles.button} onClick={handleCloseModal}>
-                                Cancel
-                            </button>
-                            <button
-                                className={`${styles.button} ${styles.buttonPrimary}`}
-                                onClick={handleSaveEvent}
-                            >
-                                Save Event
-                            </button>
+                    <div className={styles.modalWrapper}>
+                        <div className={styles.modalBgLayer}>
+                            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                                <h2 className={styles.modalTitle}>Add New Event</h2>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.label}>Event Title</label>
+                                    <Input
+                                        type="text"
+                                        value={formData.title}
+                                        onChange={(e) =>
+                                            setFormData({...formData, title: e.target.value})
+                                        }
+                                        placeholder="e.g., Mathematics"
+                                        autoFocus
+                                    />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.label}>Start Time</label>
+                                    <Input
+                                        type="time"
+                                        value={formData.startTime}
+                                        onChange={(e) =>
+                                            setFormData({...formData, startTime: e.target.value})
+                                        }
+                                    />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.label}>Room</label>
+                                    <Input
+                                        type="text"
+                                        value={formData.room}
+                                        onChange={(e) =>
+                                            setFormData({...formData, room: e.target.value})
+                                        }
+                                        placeholder="e.g., Room 101"
+                                    />
+                                </div>
+                                <div className={styles.modalActions}>
+                                    <Button onClick={handleCloseModal} variant={"secondary"}>Cancel</Button>
+                                    <Button
+                                        onClick={handleSaveEvent}
+                                    >
+                                        Save Event
+                                    </Button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
