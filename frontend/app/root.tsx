@@ -54,9 +54,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-      <div className="max-w-4xl mx-auto min-hscreen paper-bg paper">
+      <div className="max-w-5xl mx-auto min-hscreen paper-bg paper">
         <Header />
-        <div className="p-4">
+        <div className="p-4 m-0">
           <Outlet />  
         </div>
       </div>);

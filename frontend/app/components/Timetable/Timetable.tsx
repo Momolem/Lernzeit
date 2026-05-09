@@ -174,6 +174,7 @@ export function TimetableComponent({initialEvents}: TimetableProps) {
 
             <div className={styles.timetableWrapper}>
                 <Calendar
+                    culture="de"
                     localizer={localizer}
                     formats={
                         {
