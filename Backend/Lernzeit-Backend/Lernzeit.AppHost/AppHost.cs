@@ -39,7 +39,7 @@ var backend = builder
     });
 
 builder
-    .AddViteApp("frontend", "../../../frontend")
+    .AddViteApp("lernzeit-frontend", "../../../frontend")
     .WithEnvironment("REACT_APP_BACKEND_URL", backendUrl)
     .WithContainerRegistry(registry)
     .PublishAsDockerComposeService((resource, service) =>
