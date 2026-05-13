@@ -45,7 +45,10 @@ builder
     .PublishAsDockerComposeService((resource, service) =>
     {
         service.Name = "lernzeit_frontend";
-    });;
+        service.Ports.Clear();
+        service.Expose.Clear();
+        service.Expose.Add("3000");
+    });
     
 
 builder.Build().Run();
