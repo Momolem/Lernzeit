@@ -1,5 +1,10 @@
+using System.Security.Claims;
+using FunicularSwitch;
 using Lernzeit.RaumzeitAPI;
+using LernzeitBackend.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 
 namespace LernzeitBackend
 {
@@ -9,28 +14,51 @@ namespace LernzeitBackend
     {
         private readonly IConfiguration configuration;
         private readonly RaumzeitService raumzeitService;
-        private readonly RaumzeitCredentials credentials;
 
-        public UserController(IConfiguration configuration, RaumzeitService raumzeitService, RaumzeitCredentials credentials)
+        public UserController(IConfiguration configuration, RaumzeitService raumzeitService)
         {
             this.configuration = configuration;
             this.raumzeitService = raumzeitService;
-            this.credentials = credentials;
         }
 
         [HttpGet]
         public IActionResult GetUser()
         {
             var name = configuration.GetRequiredSection("UserConfig").GetValue<string>("Name");
-            
-            return this.Ok(new { name = name });    
+
+            return this.Ok(new { name = name });
         }
 
+
+        // [Authorize]
+        [HttpPost("raumzeit/login")]
+        public async Task<IActionResult> Login([FromBody] RaumzeitLoginRequest request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return this.Unauthorized();
+            }
+            await this.raumzeitService.Login(userId, request.Username, request.Password);
+            return this.Ok();
+        }
+
+        [Authorize]
         [HttpGet("calendar")]
         public async Task<IActionResult> GetCalendar()
         {
-            var calendar = await this.raumzeitService.GetPersonalCalendar(credentials);
-            return this.Ok(calendar);
+            var calendarResult = await (
+                from userId in User.FindFirstValue(ClaimTypes.NameIdentifier).ToOption()
+                    .ToResult(() => "UserID not found")
+                from calendar in raumzeitService.GetPersonalCalendar(userId)
+                select calendar);
+
+            return calendarResult.Match<IActionResult>(
+                this.Ok,
+                this.Unauthorized
+            );
+
         }
+            
     }
 }

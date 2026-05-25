@@ -1,9 +1,9 @@
+using Lernzeit.Application.Contracts;
+using Lernzeit.DataProtection;
 using Lernzeit.PostgresAdapter;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Lernzeit.RaumzeitAPI;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +14,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpClient();
-builder.Services.AddSingleton<RaumzeitService>();
+builder.Services
+    .AddScoped<RaumzeitService>()
+    .AddSingleton<ITokenEncryptionService, TokenEncryptionService>()
+    .AddScoped<IRaumzeitTokenRepository, RaumzeitTokenRepository>();
+
+
 builder.Configuration.AddUserSecrets<Program>();
 
 builder.Services.AddAuthentication(options =>
@@ -46,10 +51,6 @@ builder.Services.AddAuthentication(options =>
         options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? "placeholder";
         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? "placeholder";
     });
-
-builder.Services.AddSingleton<RaumzeitCredentials>(new RaumzeitCredentials(
-    builder.Configuration["Authentication:Raumzeit:Username"],
-    builder.Configuration["Authentication:Raumzeit:Password"]));
 
 builder.Services.AddCors(options =>
 {
@@ -84,7 +85,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 using var scope = app.Services.CreateScope();
-var dbContext = scope.ServiceProvider.GetRequiredService<LernzeitDbContext>();
-var test = dbContext.Database.CanConnect();
+await using var dbContext = scope.ServiceProvider.GetRequiredService<LernzeitDbContext>();
+var test = await dbContext.Database.EnsureCreatedAsync();
 
 app.Run();

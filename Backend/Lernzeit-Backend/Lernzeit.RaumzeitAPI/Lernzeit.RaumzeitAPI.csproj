@@ -13,5 +13,8 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
     </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Lernzeit.Application\Lernzeit.Application.csproj" />
+    </ItemGroup>
 
 </Project>
