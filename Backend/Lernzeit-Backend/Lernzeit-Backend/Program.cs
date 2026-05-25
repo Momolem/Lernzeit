@@ -1,3 +1,6 @@
+using Lernzeit.PostgresAdapter;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 
@@ -50,6 +53,9 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+builder.AddNpgsqlDbContext<LernzeitDbContext>(connectionName: "postgres");
+
 var app = builder.Build();
 
 app.UseCors();
@@ -67,5 +73,9 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+using var scope = app.Services.CreateScope();
+var dbContext = scope.ServiceProvider.GetRequiredService<LernzeitDbContext>();
+var test = dbContext.Database.CanConnect();
 
 app.Run();
