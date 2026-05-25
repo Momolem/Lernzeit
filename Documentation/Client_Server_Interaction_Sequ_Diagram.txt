@@ -1,0 +1,50 @@
+
+
+//https://sequencediagram.org
+title Client Server Interaktion - Create Group
+actor "Bob" as b
+actor "Alice" as a
+rparticipant "Server" as s
+database "DB" as db
+
+abox over a, b:<align:center>- added calendar - \nif no calendar has been \nadded, creating or joining a group \nis not possible</align>
+
+a->s:create group "SWA"
+activate s
+s->db: save "SWA" in groups\nadd Alice to "SWA"
+deactivate s
+a->b: send invitation
+b->s: join group "SWA"
+activate s
+s->db: add Bob to "SWA"
+deactivate s
+note over s: "SWA" has 2 members
+
+activate s
+s->db: get ics from [Alice, Bob]
+activate db
+db->s: ics from [Alice, Bob]
+deactivate db
+s->s: combinde calendar\n [Alice, Bob]
+s->db: save "SWA" calendar
+deactivate s
+
+a->s: show "SWA" calendar
+activate s
+s->db: get ics from "SWA"
+db->s: ics from "SWA"
+s->a: ics from "SWA"
+deactivate s
+
+note over b,db: Alice add new event
+a->s:update "SWA"
+activate s
+s->db: update "SWA"
+deactivate s
+
+note over b,db: Bob leaves group
+b->s:leave "SWA"
+activate s
+s->db: rm Bob from "SWA"
+deactivate s
+

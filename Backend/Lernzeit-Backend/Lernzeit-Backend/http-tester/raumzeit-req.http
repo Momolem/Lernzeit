@@ -1,0 +1,13 @@
+POST https://{{raumzeit_host}}/private/api/v1/authentication HTTP/2
+Content-Type: application/json
+
+{
+  "login": "{{login}}",
+  "password": "{{password}}"
+}
+###
+
+GET https://{{raumzeit_host}}/cal
+Authorization: Bearer {{accessToken}}
+Content-Type: text/calendar
+
