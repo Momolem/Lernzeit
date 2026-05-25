@@ -1,6 +1,4 @@
 
-using Aspire.Hosting.Docker.Resources.ServiceNodes;
-
 var builder = DistributedApplication.CreateBuilder(args);
 
 var compose = builder.AddDockerComposeEnvironment("compose")
@@ -15,8 +13,12 @@ var googleClientSecret = builder.AddParameter("GoogleClientSecret", secret: true
 
 // Container registry — set RegistryEndpoint to e.g. ghcr.io and
 // RegistryRepository to your GitHub org/user, e.g. ghcr.io/your-org
-var registryEndpoint = builder.AddParameter("RegistryEndpoint");
-var registryRepository = builder.AddParameter("RegistryRepository");
+string registryEndpoint = "dummy";
+string registryRepository = "dummy";
+#if !DEBUG
+registryEndpoint = builder.AddParameter("RegistryEndpoint");
+registryRepository = builder.AddParameter("RegistryRepository");
+#endif
 var registry = builder.AddContainerRegistry("ghcr", registryEndpoint, registryRepository);
 
 // URLs — configure per deployment via Parameters__BackendUrl / Parameters__FrontendUrl env vars
@@ -39,13 +41,14 @@ var backend = builder
         service.Expose.Add("8080");
     });
 
-var frontend = builder.AddDockerfile("lernzeit-frontend", "../../../frontend")
+builder
+    .AddViteApp("frontend", "../../../frontend")
+    .WithEnvironment("REACT_APP_BACKEND_URL", backendUrl)
     .WithContainerRegistry(registry)
-    .WithHttpEndpoint(port: 3000, targetPort: 80, name: "http")
-    .WithBuildArg("REACT_APP_BACKEND_URL", backendUrl)
     .PublishAsDockerComposeService((resource, service) =>
     {
         service.Name = "lernzeit_frontend";
-    });
+    });;
+    
 
 builder.Build().Run();

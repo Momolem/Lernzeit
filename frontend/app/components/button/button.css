@@ -1,0 +1,30 @@
+.btn-wrapper {
+    display: flex;
+    height: 56px;
+    padding: 0 17px 0 24px;
+    align-items: center;
+    gap: 12px;
+
+    border-radius: 12px;
+    border: 2px solid #000;
+
+}
+
+.btn-primary {
+    color: var(--white, #FFF);
+    background: var(--orange-5, #FD6001);
+}
+
+.btn-secondary {
+    color: var(--black, #000);
+    background: var(--white, #FFF);
+}
+
+.btn-content {
+    text-align: center;
+    font-family: "Funnel Display";
+    font-size: 21px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px; /* 114.286% */
+}
