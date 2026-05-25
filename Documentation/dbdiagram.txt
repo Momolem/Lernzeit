@@ -1,0 +1,19 @@
+// https://dbml.dbdiagram.io/d
+
+Table users {
+  id integer [primary key]
+  username varchar
+  calendar varchar
+}
+
+Table groups {
+  id integer [primary key]
+  title varchar
+  calendar varchar
+  created_at timestamp
+}
+
+Table user_groups {
+  user_id integer [primary key, ref: > users.id]
+  group_id integer [primary key, ref: > groups.id]
+}
