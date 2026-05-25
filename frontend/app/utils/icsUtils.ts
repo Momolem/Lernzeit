@@ -1,4 +1,4 @@
-import { TimetableEvents, DAYS, type Day } from '../types/timetable';
+import {type TimetableEvents, DAYS, type Day } from '~/types/timetable';
 
 function formatIcsDate(date: Date): string {
   const year = date.getFullYear();
