@@ -11,3 +11,11 @@ GET https://{{raumzeit_host}}/cal
 Authorization: Bearer {{accessToken}}
 Content-Type: text/calendar
 
+###
+POST https://localhost/api/
+Content-Type: application/json
+
+{
+  "creatorId": "tim123",
+  "groupName": "Math Learning Group"
+}

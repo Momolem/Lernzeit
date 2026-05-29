@@ -1,0 +1,37 @@
+# UserController endpoints
+# Start the app: dotnet run --project Lernzeit-Backend/Lernzeit-Backend
+
+@baseUrl = http://localhost:5000
+
+### Get all users
+GET {{baseUrl}}/api/user
+
+### Create user (with calendar)
+POST {{baseUrl}}/api/user?name=Pete&calendar=work
+
+### Create user (without calendar - defaults to "")
+POST {{baseUrl}}/api/user?name=calvin
+
+### Get user by id
+GET {{baseUrl}}/api/user/1
+
+### Get user - not found (404)
+GET {{baseUrl}}/api/user/999
+
+### Update user - change name only
+PUT {{baseUrl}}/api/user/1?name=Alice+Smith
+
+### Update user - change calendar only
+PUT {{baseUrl}}/api/user/1?calendar=university
+
+### Update user - change both
+PUT {{baseUrl}}/api/user/1?name=Alice&calendar=work
+
+### Update user - not found (404)
+PUT {{baseUrl}}/api/user/999?name=Ghost
+
+### Delete user
+DELETE {{baseUrl}}/api/user/6
+
+### Delete user - not found (404)
+DELETE {{baseUrl}}/api/user/999
