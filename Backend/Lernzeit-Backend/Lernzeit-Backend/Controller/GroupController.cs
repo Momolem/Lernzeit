@@ -1,52 +1,43 @@
+using Lernzeit.Application.Contracts;
 using Lernzeit.Domain;
 using Lernzeit.PostgresAdapter;
+using LernzeitBackend.DTOs;
+using LernzeitBackend.Mappers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace LernzeitBackend;
+namespace LernzeitBackend.Controller;
 
 [ApiController]
 [Route("api/[controller]")]
 public class GroupController : ControllerBase
 {
     private readonly LernzeitDbContext _context;
+    private readonly IGroupRepository groupRepository;
 
-    public GroupController(LernzeitDbContext context)
+    public GroupController(LernzeitDbContext context, IGroupRepository groupRepository)
     {
         _context = context;
+        this.groupRepository = groupRepository;
     }
 
     [HttpGet]
-    public async Task<List<Group>> GetGroups()
+    public async Task<List<GroupDto>> GetGroups()
     {
-        return await _context.Groups.ToListAsync();
+        var groups = await this.groupRepository.GetAllGroups();
+        return groups.Select(g => g.ToDto()).ToList();
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult> GetGroup(int id)
     {
-        var group = await _context.Groups
-            .Include(g => g.UserGroups)
-            .ThenInclude(ug => ug.User)
-            .FirstOrDefaultAsync(g => g.Id == id);
-
+        var group = await this.groupRepository.GetGroupById(id);
         if (group == null)
         {
-            return NotFound();
+            return this.NotFound();
         }
-
-        return Ok(new
-        {
-            group.Id,
-            group.Name,
-            group.Calendar,
-            Members = group.UserGroups.Select(ug => new
-            {
-                ug.User!.Id,
-                ug.User.Name,
-                ug.User.Calendar
-            })
-        });
+        
+        return this.Ok(group.ToDto());
     }
 
     [HttpPost]

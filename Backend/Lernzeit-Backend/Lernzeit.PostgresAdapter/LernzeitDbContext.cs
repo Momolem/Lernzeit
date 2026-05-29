@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Lernzeit.Domain;
+using Lernzeit.PostgresAdapter.Entities;
 
 namespace Lernzeit.PostgresAdapter;
 
@@ -7,18 +8,18 @@ public class LernzeitDbContext : DbContext
 {
     public LernzeitDbContext(DbContextOptions<LernzeitDbContext> options) : base(options) { }
 
-        public DbSet<User> Users { get; set; }
-        public DbSet<Group> Groups { get; set; }
-        public DbSet<UserGroups> UserGroups { get; set; }
+        public DbSet<UserEntity> Users { get; set; }
+        public DbSet<GroupEntity> Groups { get; set; }
+        public DbSet<UserGroupEntity> UserGroups { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<UserGroups>()
+            modelBuilder.Entity<UserGroupEntity>()
                 .HasKey(ug => new { ug.UserId, ug.GroupId });
-            modelBuilder.Entity<UserGroups>()
+            modelBuilder.Entity<UserGroupEntity>()
                 .HasOne(ug => ug.User)
                 .WithMany(u => u.UserGroups)
                 .HasForeignKey(ug => ug.UserId);
-            modelBuilder.Entity<UserGroups>()
+            modelBuilder.Entity<UserGroupEntity>()
                 .HasOne(ug => ug.Group)
                 .WithMany(g => g.UserGroups)
                 .HasForeignKey(ug => ug.GroupId);

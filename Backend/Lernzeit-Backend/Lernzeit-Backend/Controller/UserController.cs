@@ -33,7 +33,7 @@ public class UserController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> CreateUser(string name, string? calUrl)
     {
-        var newUser = new User(Id: 0, Name: name, CalUrl: calUrl ?? "");
+        var newUser = new User(Id: 0, Name: name, CalUrl: calUrl ?? "", Calendar: "");
         // if calUrl provided, retrieve .ics
         _context.Users.Add(newUser);
         await _context.SaveChangesAsync();
