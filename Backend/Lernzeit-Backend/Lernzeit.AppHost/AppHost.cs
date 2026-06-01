@@ -5,7 +5,7 @@ var compose = builder.AddDockerComposeEnvironment("compose")
     .WithDashboard();
 
 var db = builder
-    .AddPostgres("postgres")
+    .AddPostgres("postgres").WithPgAdmin(pgAdmin => pgAdmin.WithHostPort(5100))
     .PublishAsDockerComposeService((r, s) => { s.Name = "lernzeit_postgres"; });
 
 var googleClientId = builder.AddParameter("GoogleClientId", secret: true);

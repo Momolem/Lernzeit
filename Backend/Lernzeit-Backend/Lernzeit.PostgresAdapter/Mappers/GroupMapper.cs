@@ -32,4 +32,6 @@ public static class GroupMapper
 public static class UserMapper
 {
     public static User ToDomain(this UserEntity entity) => new(entity.Id, entity.Name, entity.CalUrl, entity.Calendar);
+    
+    public static UserEntity ToDbEntity(this User entity) => new(entity.Id, entity.Name, entity.Calendar);
 }

@@ -1,5 +1,8 @@
+using Lernzeit.Application.Contracts;
 using Lernzeit.Domain;
 using Lernzeit.PostgresAdapter;
+using LernzeitBackend.DTOs;
+using LernzeitBackend.Mappers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,33 +13,34 @@ namespace LernzeitBackend;
 public class UserController : ControllerBase
 {
     private readonly LernzeitDbContext _context;
+    private readonly IUserRepository userRepository;
 
     public UserController(LernzeitDbContext context)
     {
         _context = context;
+        this.userRepository = userRepository
     }
 
     [HttpGet]
-    public async Task<List<User>> GetUsers()
+    public async Task<List<UserDto>> GetUsers()
     {
-        return await _context.Users.ToListAsync();
+        var users = await userRepository.GetAllUsers();
+        return users.Select(u => u.ToDto()).ToList();
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<User>> GetUser(int id)
     {
-        var user = await _context.Users.FindAsync(id);
+        var user = await userRepository.GetUserById(id);
         if (user == null) return NotFound();
-        return user;
+        
+        return this.Ok(user.ToDto());
     }
 
     [HttpPost]
     public async Task<ActionResult> CreateUser(string name, string? calUrl)
     {
-        var newUser = new User(Id: 0, Name: name, CalUrl: calUrl ?? "", Calendar: "");
-        // if calUrl provided, retrieve .ics
-        _context.Users.Add(newUser);
-        await _context.SaveChangesAsync();
+        
         return Ok();
     }
 
