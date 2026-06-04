@@ -1,0 +1,24 @@
+.input-wrapper {
+    border-radius: 8px;
+    border: 2px solid var(--neutral-200, #D2D4DA);
+    background: var(--neutral-100, #F3F4F8);
+
+    display: flex;
+    width: 100%;
+    height: 43px;
+    padding: 0 12px;
+    align-items: center;
+}
+
+.input-wrapper:focus {
+    outline-color: var(--orange-5);
+}
+
+.input-content {
+    text-align: center;
+    font-family: "Funnel Display";
+    font-size: 21px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px; /* 114.286% */
+}
