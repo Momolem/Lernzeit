@@ -13,12 +13,9 @@ var googleClientSecret = builder.AddParameter("GoogleClientSecret", secret: true
 
 // Container registry — set RegistryEndpoint to e.g. ghcr.io and
 // RegistryRepository to your GitHub org/user, e.g. ghcr.io/your-org
-string registryEndpoint = "dummy";
-string registryRepository = "dummy";
-#if !DEBUG
-registryEndpoint = builder.AddParameter("RegistryEndpoint");
-registryRepository = builder.AddParameter("RegistryRepository");
-#endif
+
+var registryEndpoint = builder.AddParameter("RegistryEndpoint");
+var registryRepository = builder.AddParameter("RegistryRepository");
 var registry = builder.AddContainerRegistry("ghcr", registryEndpoint, registryRepository);
 
 // URLs — configure per deployment via Parameters__BackendUrl / Parameters__FrontendUrl env vars
@@ -42,13 +39,16 @@ var backend = builder
     });
 
 builder
-    .AddViteApp("frontend", "../../../frontend")
+    .AddViteApp("lernzeit-frontend", "../../../frontend")
     .WithEnvironment("REACT_APP_BACKEND_URL", backendUrl)
     .WithContainerRegistry(registry)
     .PublishAsDockerComposeService((resource, service) =>
     {
         service.Name = "lernzeit_frontend";
-    });;
+        service.Ports.Clear();
+        service.Expose.Clear();
+        service.Expose.Add("3000");
+    });
     
 
 builder.Build().Run();
