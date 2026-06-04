@@ -1,4 +1,4 @@
-import {TimetableComponent} from "~/components/Timetable/Timetable";
+import {TimetableComponent} from "~/components/timetable/timetable";
 import type {TimetableEvents} from "~/types/timetable";
 
 export const handle = {

@@ -1,4 +1,4 @@
-import "./Timetable.module.css"
+import "./timetable.module.css"
 
 import {useMemo, useState} from "react";
 import {
@@ -17,9 +17,10 @@ import {
     type Day, type TimetableEvents,
 } from "~/types/timetable";
 import {useTimetableICS} from "~/hooks/useTimetableICS";
-import styles from "./Timetable.module.css";
+import styles from "./timetable.module.css";
 import Button from "~/components/button/button";
 import Input from "~/components/input/input";
+import { Modal } from "~/components/modal/modal";
 
 const locales = {"de": de};
 
@@ -209,58 +210,49 @@ export function TimetableComponent({initialEvents}: TimetableProps) {
                 />
             </div>
 
-            {showModal && (
-                <div className={styles.modalOverlay} onClick={handleCloseModal}>
-                    <div className={styles.modalWrapper}>
-                        <div className={styles.modalBgLayer}>
-                            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-                                <h2 className={styles.modalTitle}>Add New Event</h2>
-                                <div className={styles.formGroup}>
-                                    <label className={styles.label}>Event Title</label>
-                                    <Input
-                                        type="text"
-                                        value={formData.title}
-                                        onChange={(e) =>
-                                            setFormData({...formData, title: e.target.value})
-                                        }
-                                        placeholder="e.g., Mathematics"
-                                        autoFocus
-                                    />
-                                </div>
-                                <div className={styles.formGroup}>
-                                    <label className={styles.label}>Start Time</label>
-                                    <Input
-                                        type="time"
-                                        value={formData.startTime}
-                                        onChange={(e) =>
-                                            setFormData({...formData, startTime: e.target.value})
-                                        }
-                                    />
-                                </div>
-                                <div className={styles.formGroup}>
-                                    <label className={styles.label}>Room</label>
-                                    <Input
-                                        type="text"
-                                        value={formData.room}
-                                        onChange={(e) =>
-                                            setFormData({...formData, room: e.target.value})
-                                        }
-                                        placeholder="e.g., Room 101"
-                                    />
-                                </div>
-                                <div className={styles.modalActions}>
-                                    <Button onClick={handleCloseModal} variant={"secondary"}>Cancel</Button>
-                                    <Button
-                                        onClick={handleSaveEvent}
-                                    >
-                                        Save Event
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <Modal isOpen={showModal} onClose={handleCloseModal} title="Add New Event">
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>Event Title</label>
+                    <Input
+                        type="text"
+                        value={formData.title}
+                        onChange={(e) =>
+                            setFormData({...formData, title: e.target.value})
+                        }
+                        placeholder="e.g., Mathematics"
+                        autoFocus
+                    />
                 </div>
-            )}
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>Start Time</label>
+                    <Input
+                        type="time"
+                        value={formData.startTime}
+                        onChange={(e) =>
+                            setFormData({...formData, startTime: e.target.value})
+                        }
+                    />
+                </div>
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>Room</label>
+                    <Input
+                        type="text"
+                        value={formData.room}
+                        onChange={(e) =>
+                            setFormData({...formData, room: e.target.value})
+                        }
+                        placeholder="e.g., Room 101"
+                    />
+                </div>
+                <div className={styles.modalActions}>
+                    <Button onClick={handleCloseModal} variant={"secondary"}>Cancel</Button>
+                    <Button
+                        onClick={handleSaveEvent}
+                    >
+                        Save Event
+                    </Button>
+                </div>
+            </Modal>
         </div>
     );
 }

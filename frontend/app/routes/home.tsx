@@ -5,8 +5,6 @@ import calendarIcon from '../resources/Calendar.svg';
 import qrCode from '../resources/QR_Code.svg';
 import Button from "~/components/button/button";
 import Icon from "~/components/Icon";
-import {TimetableComponent} from "~/components/Timetable/Timetable";
-import type {TimetableEvents} from "~/types/timetable";
 import {Link, NavLink} from "react-router";
 
 
