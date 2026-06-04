@@ -27,7 +27,7 @@ const locales = {"de": de};
 const localizer = dateFnsLocalizer({
     format,
     parse,
-    startOfWeek: () => startOfWeek(new Date(), {weekStartsOn: 1}),
+    startOfWeek,
     getDay,
     locales,
 });
@@ -53,6 +53,9 @@ export function TimetableComponent({initialEvents}: TimetableProps) {
         startTime: "09:00",
         room: "",
     });
+
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const [currentView, setCurrentView] = useState<any>(Views.WEEK);
 
     const defaultEvents: TimetableEvents = useMemo(
         () => ({
@@ -163,6 +166,9 @@ export function TimetableComponent({initialEvents}: TimetableProps) {
         setFormData({title: "", startTime: "09:00", room: ""});
     };
 
+    const minTime = useMemo(() => new Date(0, 0, 0, 7, 0, 0), []);
+    const maxTime = useMemo(() => new Date(0, 0, 0, 20, 0, 0), []);
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -177,6 +183,10 @@ export function TimetableComponent({initialEvents}: TimetableProps) {
                 <Calendar
                     culture="de"
                     localizer={localizer}
+                    date={currentDate}
+                    onNavigate={(newDate) => setCurrentDate(newDate)}
+                    view={currentView}
+                    onView={(newView) => setCurrentView(newView)}
                     formats={
                         {
                             timeGutterFormat: 'HH:mm',
@@ -194,8 +204,8 @@ export function TimetableComponent({initialEvents}: TimetableProps) {
                     views={[Views.WEEK, Views.DAY, Views.MONTH]}
                     step={60}
                     timeslots={1}
-                    min={new Date(0, 0, 0, 7, 0, 0)}
-                    max={new Date(0, 0, 0, 20, 0, 0)}
+                    min={minTime}
+                    max={maxTime}
                     selectable
                     onSelectSlot={handleSelectSlot}
                     onSelectEvent={handleSelectEvent}

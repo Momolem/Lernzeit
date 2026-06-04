@@ -1,6 +1,7 @@
 using Lernzeit.Application.Contracts;
 using Lernzeit.DataProtection;
 using Lernzeit.PostgresAdapter;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Lernzeit.RaumzeitAPI;
@@ -50,6 +51,7 @@ builder.Services.AddAuthentication(options =>
     {
         options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? "placeholder";
         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? "placeholder";
+        options.ClaimActions.MapJsonKey("picture", "picture", "url");
     });
 
 builder.Services.AddCors(options =>

@@ -6,6 +6,8 @@ var compose = builder.AddDockerComposeEnvironment("compose")
 
 var db = builder
     .AddPostgres("postgres")
+    .WithDataVolume("lernzeit-pg-data")
+    .WithPgAdmin(pgAdmin => pgAdmin.WithHostPort(5400))
     .PublishAsDockerComposeService((r, s) => { s.Name = "lernzeit_postgres"; });
 
 var googleClientId = builder.AddParameter("GoogleClientId", secret: true);
@@ -26,6 +28,7 @@ var frontendUrl = builder.AddParameter("FrontendUrl");
 var backend = builder
     .AddProject<Projects.Lernzeit_Backend>("lernzeit-backend")
     .WithContainerRegistry(registry)
+    .WaitFor(db)
     .WithReference(db)
     .WithEnvironment("Authentication__Google__ClientId", googleClientId)
     .WithEnvironment("Authentication__Google__ClientSecret", googleClientSecret)
@@ -39,9 +42,9 @@ var backend = builder
     });
 
 builder
-    .AddViteApp("lernzeit-frontend", "../../../frontend")
-    .WithEnvironment("REACT_APP_BACKEND_URL", backendUrl)
-    .WithContainerRegistry(registry)
+    .AddViteApp("lernzeit-frontend", "../../../frontend", runScriptName: "dev")
+    .WithContainerRegistry(registry)    
+    .WithEndpoint(name: "https", scheme: "http", port: 3000, targetPort: 3000, isProxied: false)
     .PublishAsDockerComposeService((resource, service) =>
     {
         service.Name = "lernzeit_frontend";
@@ -49,6 +52,5 @@ builder
         service.Expose.Clear();
         service.Expose.Add("3000");
     });
-    
 
 builder.Build().Run();

@@ -49,31 +49,14 @@ export function timetableEventsToCalendarEvents(events: TimetableEvents): Calend
   const calendarEvents: CalendarEvent[] = [];
 
   DAYS.forEach((day) => {
-    const dayEvents = events[day];
-    const referenceDate = getReferenceDateForDay(day);
+    const dayEvents = events[day] || [];
 
     dayEvents.forEach((event) => {
-      const startDate = new Date(referenceDate);
-      startDate.setHours(
-        event.startTime.getHours(),
-        event.startTime.getMinutes(),
-        0,
-        0
-      );
-
-      const endDate = new Date(referenceDate);
-      endDate.setHours(
-        event.endTime.getHours(),
-        event.endTime.getMinutes(),
-        0,
-        0
-      );
-
       calendarEvents.push({
         id: String(event.id),
         title: event.name,
-        start: startDate,
-        end: endDate,
+        start: new Date(event.startTime),
+        end: new Date(event.endTime),
         resource: {
           room: event.room,
           day: day,

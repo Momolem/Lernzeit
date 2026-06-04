@@ -4,7 +4,6 @@ using Lernzeit.RaumzeitAPI;
 using LernzeitBackend.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
 
 namespace LernzeitBackend
 {
@@ -21,16 +20,7 @@ namespace LernzeitBackend
             this.raumzeitService = raumzeitService;
         }
 
-        [HttpGet]
-        public IActionResult GetUser()
-        {
-            var name = configuration.GetRequiredSection("UserConfig").GetValue<string>("Name");
-
-            return this.Ok(new { name = name });
-        }
-
-
-        // [Authorize]
+        [Authorize]
         [HttpPost("raumzeit/login")]
         public async Task<IActionResult> Login([FromBody] RaumzeitLoginRequest request)
         {
@@ -51,11 +41,17 @@ namespace LernzeitBackend
                 from userId in User.FindFirstValue(ClaimTypes.NameIdentifier).ToOption()
                     .ToResult(() => "UserID not found")
                 from calendar in raumzeitService.GetPersonalCalendar(userId)
-                select calendar);
+                select calendar.Events.Select(e => new TimetableEventDto(
+                    Guid.NewGuid().ToString(),
+                    e.Name,
+                    e.Start,
+                    e.End,
+                    null
+                )).ToList());
 
             return calendarResult.Match<IActionResult>(
                 this.Ok,
-                this.Unauthorized
+                this.NotFound
             );
 
         }
