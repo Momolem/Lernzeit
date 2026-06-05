@@ -16,29 +16,30 @@
 **Labor-/Projektbericht**
 • Abgabe am Ende des Semesters, Umfang: ca. 15-20 Seiten
 • Inhalt / Strukturierung (kann an Struktur eines Pflichtenhefts angelehnt sein)
-1. [ ] Einleitung
-2. [ ] Motivation, Zielsetzung
-3. [ ] Detaillierte Problemstellung
-4. [ ] Technologieauswahl (mit Begründung)
-5. [ ] Use Cases
+1. [x] Einleitung
+2. [x] Motivation, Zielsetzung
+3. [x] Detaillierte Problemstellung
+4. [x] Technologieauswahl (mit Begründung)
+5. [ ] Use Cases (bissen ausformulierien)
 6. [ ] Muss-/Kann-Kriterien
 7. [ ] Umsetzung / Implementierung
   1. Frontend (React):
-    1. [ ] Designprozess (Figma)
-    2. [ ] Komponenten (Kalender Komponente...)
-    3. [ ] Requests zum Backend Server
+    1. [ ] Designprozess (Figma) - Simon
+    2. [ ] Komponenten (Kalender Komponente...) - M
+    3. [ ] Requests zum Backend Server - M
   2. Backend (.NET API):
-    1. [ ] API Endpunkte
-    2. [ ] Kalenderdaten-Verarbeitung
-    3. [ ] Gruppenverwaltung
-    4. [ ] Datenbank (PostgreSQL): Datenbankstruktur
-    5. [ ] Kommunikation zu anderen Systemen (Google Auth, RaumZeit API)
+    1. [ ] API Endpunkte - S
+    2. [ ] Kalenderdaten-Verarbeitung - Moritz
+    3. [ ] Gruppenverwaltung - S
+    4. [ ] Datenbank (PostgreSQL): Datenbankstruktur - S
+    5. [ ] Authentifizierung (Google Auth) - M
+    5. [ ] Kommunikation zu anderen Systemen (RaumZeit API) - M
   3. Deployment
-    1. [ ] In welcher Umgebung wurde es deployed
-    2. [ ] Containerisierung (neues Feature von dotnet erwähnen?)
+    1. [ ] In welcher Umgebung wurde es deployed - M
+    2. [ ] Containerisierung (ASPIRE) - M
 8. [ ] Fazit
-  - [ ] Was lief gut / wo gab es Herausforderungen?
-  - [ ] Ausblick (siehe Leitfragen, was sind Vorteile & was sind Schwächen des aktuellen Architektur-Designs?)
+  - [ ] Was lief gut / wo gab es Herausforderungen? - S
+  - [ ] Ausblick (siehe Leitfragen, was sind Vorteile & was sind Schwächen des aktuellen Architektur-Designs?) - S
 9. [ ] Literaturverzeichnis (+ Verweise wo AI eingesetzt wurde)
 
 

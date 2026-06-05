@@ -40,9 +40,9 @@ public class GroupRepository : IGroupRepository
 
     public async Task CreateGroup(string groupName, int creatorId)
     {
-        var creator = _context.Users.Find(creatorId);
+        var creator = await _context.Users.FindAsync(creatorId);
         if (creator == null)
-            throw new UserNotFoundException(creatorId);
+            throw new Exception("User not found");
         if (string.IsNullOrEmpty(creator.Calendar))
             throw new Exception("User has no calendar");
 
@@ -57,12 +57,12 @@ public class GroupRepository : IGroupRepository
 
     public async Task AddUserToGroup(int userId, int groupId)
     {
-        var user = _context.Users.Find(userId);
+        var user = await _context.Users.FindAsync(userId);
         if (user == null) throw new Exception("User not found");
         if (string.IsNullOrEmpty(user.Calendar)) throw new Exception("User has no calendar");
         if (!GroupExists(groupId)) throw new Exception("Group not found");
         
-        var isAlreadyInGroup = _context.UserGroups.Find(userId, groupId);
+        var isAlreadyInGroup = await _context.UserGroups.FindAsync(userId, groupId);
         if (isAlreadyInGroup != null) return;
         
         var userGroup = new UserGroupEntity(UserId: userId, GroupId: groupId);
@@ -72,7 +72,7 @@ public class GroupRepository : IGroupRepository
 
     public async Task RemoveUserFromGroup(int userId, int groupId)
     {
-        var userGroup = _context.UserGroups.Find(userId, groupId);
+        var userGroup = await _context.UserGroups.FindAsync(userId, groupId);
         if (userGroup == null) throw new Exception("User not in group");
         
         _context.UserGroups.Remove(userGroup);

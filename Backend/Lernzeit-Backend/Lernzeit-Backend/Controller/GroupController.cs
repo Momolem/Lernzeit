@@ -10,12 +10,10 @@ namespace LernzeitBackend.Controller;
 [Route("api/[controller]")]
 public class GroupController : ControllerBase
 {
-    private readonly LernzeitDbContext _context;
     private readonly IGroupRepository groupRepository;
 
-    public GroupController(LernzeitDbContext context, IGroupRepository groupRepository)
+    public GroupController(IGroupRepository groupRepository)
     {
-        _context = context;
         this.groupRepository = groupRepository;
     }
 

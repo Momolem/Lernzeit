@@ -12,80 +12,39 @@ namespace LernzeitBackend;
 [ApiController]
 public class UserController : ControllerBase
 {
-    private readonly LernzeitDbContext _context;
     private readonly IUserRepository userRepository;
 
-    public UserController(LernzeitDbContext context)
+    public UserController(IUserRepository userRepository)
     {
-        _context = context;
-        this.userRepository = userRepository
+        this.userRepository = userRepository;
     }
 
     [HttpGet]
     public async Task<List<UserDto>> GetUsers()
     {
-        var users = await userRepository.GetAllUsers();
+        var users = await this.userRepository.GetAllUsers();
         return users.Select(u => u.ToDto()).ToList();
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<User>> GetUser(int id)
     {
-        var user = await userRepository.GetUserById(id);
-        if (user == null) return NotFound();
-        
+        var user = await this.userRepository.GetUser(id);
         return this.Ok(user.ToDto());
     }
 
-    [HttpPost]
-    public async Task<ActionResult> CreateUser(string name, string? calUrl)
-    {
-        
-        return Ok();
-    }
-
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateUser(int id, string name)
+    public async Task<ActionResult> UpdateUser(int id, [FromBody] UserDto userDto)
     {
-        var user = await _context.Users.FindAsync(id);
-        if (user == null) return NotFound();
-
-        var updated = user with
-        {
-            Name = !string.IsNullOrEmpty(name) ? name : user.Name
-        };
-
-        _context.Entry(user).CurrentValues.SetValues(updated);
-        await _context.SaveChangesAsync();
+        var user = userDto.ToDomain();
+        await this.userRepository.UpdateUser(user);
         return Ok();
     }
-    [HttpPut("calendar/{id}")]
-    public async Task<ActionResult> UpdateCalUrl(int id, string calUrl)
-    {
-        var user = await _context.Users.FindAsync(id);
-        if (user == null) return NotFound();
-        // if calUrl provided, retrieve .ics
-
-        var updated = user with
-        {
-            CalUrl = !string.IsNullOrEmpty(calUrl) ? calUrl : user.CalUrl
-        };
-
-        _context.Entry(user).CurrentValues.SetValues(updated);
-        await _context.SaveChangesAsync();
-        return Ok();
-    }
-
+    
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteUser(int id)
     {
-        var user = await _context.Users.FindAsync(id);
-        if (user == null) return NotFound();
-
-        var userGroups = _context.UserGroups.Where(ug => ug.UserId == id);
-        _context.UserGroups.RemoveRange(userGroups);
-        _context.Users.Remove(user);
-        await _context.SaveChangesAsync();
+        await this.userRepository.DeleteUser(id);
         return Ok();
     }
 }

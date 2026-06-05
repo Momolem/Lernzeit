@@ -67,7 +67,7 @@ app.UseExceptionHandler(exceptionHandlerApp =>
     exceptionHandlerApp.Run(async context =>
     {
         var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
-        if (exception is UserNotFoundException)
+        if (exception != null)
         {
             context.Response.StatusCode = 404;
             await context.Response.WriteAsJsonAsync(new { error = exception.Message });

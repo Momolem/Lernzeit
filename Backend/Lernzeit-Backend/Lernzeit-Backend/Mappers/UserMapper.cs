@@ -9,6 +9,10 @@ public static class UserMapper
         => new(
             user.Id,
             user.Name,
+            user.CalUrl,
             user.Calendar
         );
+
+    public static User ToDomain(this UserDto userDto)
+        => new(userDto.Id, userDto.Name, userDto.CalUrl, userDto.Calendar);
 }
