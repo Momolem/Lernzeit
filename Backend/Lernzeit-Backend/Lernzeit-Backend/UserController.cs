@@ -11,12 +11,10 @@ namespace LernzeitBackend
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IConfiguration configuration;
         private readonly RaumzeitService raumzeitService;
 
-        public UserController(IConfiguration configuration, RaumzeitService raumzeitService)
+        public UserController(RaumzeitService raumzeitService)
         {
-            this.configuration = configuration;
             this.raumzeitService = raumzeitService;
         }
 
@@ -55,6 +53,5 @@ namespace LernzeitBackend
             );
 
         }
-            
     }
 }
