@@ -1,5 +1,5 @@
 using Lernzeit.Application.Contracts;
-using Lernzeit.PostgresAdapter;
+using Lernzeit.Application.ResultTypes;
 using LernzeitBackend.DTOs;
 using LernzeitBackend.Mappers;
 using Microsoft.AspNetCore.Mvc;
@@ -25,34 +25,46 @@ public class GroupController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult> GetGroup(int id)
+    public async Task<ActionResult> GetGroup(string id)
     {
-        var group = await this.groupRepository.GetGroupById(id);
-        if (group == null)
-        {
-            return this.NotFound();
-        }
-        
-        return this.Ok(group.ToDto());
+        var group = await this.groupRepository.GetGroupById(Guid.Parse(id));
+        return group.Match<ActionResult>(
+            some: g => this.Ok(g.ToDto()),
+            none: this.NotFound);
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateGroup(int creatorId, string groupName)
+    public async Task<ActionResult> CreateGroup(string creatorId, string groupName)
     {
-        await groupRepository.CreateGroup(groupName, creatorId);
+        var createResult = await groupRepository.CreateGroup(groupName, creatorId: Guid.Parse(creatorId));
+        createResult.Match(
+            ok: _ => this.Ok(),
+            error: MapRepositoryErrorToActionResult);
         return this.Ok();
     }
-    
+
     [HttpPut("join/{groupId}")]
-    public async Task<IActionResult> AddUserToGroup(int groupId, int userId)
+    public async Task<IActionResult> AddUserToGroup(string groupId, string userId)
     {
-        await groupRepository.AddUserToGroup(groupId, userId);
-        return this.Ok();
+        var addResult = await groupRepository.AddUserToGroup(userId: Guid.Parse(userId), groupId: Guid.Parse(groupId));
+        return addResult.Match(
+            ok: _ => this.Ok(),
+            error: MapRepositoryErrorToActionResult
+        );
     }
+
     [HttpPut("leave/{groupId}")]
-    public async Task<IActionResult> LeaveGroup(int groupId, int userId)
+    public async Task<IActionResult> LeaveGroup(string groupId, string userId)
     {
-        await groupRepository.RemoveUserFromGroup(groupId, userId);
-        return this.Ok();
+        var removeResult = await groupRepository.RemoveUserFromGroup(userId: Guid.Parse(userId), groupId: Guid.Parse(groupId));
+        return removeResult.Match(
+            ok: _ => this.Ok(),
+            error: MapRepositoryErrorToActionResult);
     }
+
+    private IActionResult MapRepositoryErrorToActionResult(RepositoryError e)
+        => e.Match<IActionResult>(
+            notFound: nf => this.NotFound(nf.Message),
+            badRequest: br => this.BadRequest(br.Message)
+        );
 }

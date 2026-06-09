@@ -1,4 +1,6 @@
+using FunicularSwitch;
 using Lernzeit.Application.Contracts;
+using Lernzeit.Application.ResultTypes;
 using Lernzeit.Domain;
 using Lernzeit.PostgresAdapter.Entities;
 using Lernzeit.PostgresAdapter.Mappers;
@@ -8,87 +10,106 @@ namespace Lernzeit.PostgresAdapter;
 
 public class GroupRepository : IGroupRepository
 {
-    private readonly LernzeitDbContext _context;
+    private readonly LernzeitDbContext context;
 
     public GroupRepository(LernzeitDbContext context)
     {
-        this._context = context;
+        this.context = context;
     }
 
 
     public async Task<List<Group>> GetAllGroups()
     {
-        var groups = await _context.Groups.ToListAsync();
+        var groups = await context.Groups.ToListAsync();
         
         return groups.Select(g => g.ToDomain()).ToList();
     }
 
-    public async Task<Group?> GetGroupById(int id)
+    public async Task<Option<Group>> GetGroupById(Guid id)
     {
-        var group = await _context.Groups
+        var group = await context.Groups
             .Include(g => g.UserGroups)
             .ThenInclude(ug => ug.User)
             .FirstOrDefaultAsync(g => g.Id == id);
-
-        if (group == null)
-        {
-            return null;
-        }
         
-        return group.ToDomain();
+        return group.ToOption().Map(g => g.ToDomain());
     }
 
-    public async Task CreateGroup(string groupName, int creatorId)
+    public async Task<RepositoryResult<Unit>> CreateGroup(string groupName, Guid creatorId)
     {
-        var creator = await _context.Users.FindAsync(creatorId);
+        var creator = await context.Users.FindAsync(creatorId);
         if (creator == null)
-            throw new Exception("User not found");
+        {
+            return RepositoryResult.Error(RepositoryError.NotFound($"User with id {creatorId.ToString()} not found"));
+        }
+            
         if (string.IsNullOrEmpty(creator.Calendar))
-            throw new Exception("User has no calendar");
+        {
+            return RepositoryResult.Error(RepositoryError.BadRequest($"User with id {creatorId.ToString()} has no calendar"));
+        }
 
         var newGroup = Group.Create(groupName, creator.Calendar);
-        _context.Groups.Add(newGroup.ToDbEntity());
-        await _context.SaveChangesAsync();
+        context.Groups.Add(newGroup.ToDbEntity());
+        await context.SaveChangesAsync();
 
         var userGroup = new UserGroupEntity(UserId: creatorId, GroupId: newGroup.Id);
-        _context.UserGroups.Add(userGroup);
-        await _context.SaveChangesAsync();
+        context.UserGroups.Add(userGroup);
+        await context.SaveChangesAsync();
+        return RepositoryResult.Ok(No.Thing);
     }
 
-    public async Task AddUserToGroup(int userId, int groupId)
+    public async Task<RepositoryResult<Unit>> AddUserToGroup(Guid userId, Guid groupId)
     {
-        var user = await _context.Users.FindAsync(userId);
-        if (user == null) throw new Exception("User not found");
-        if (string.IsNullOrEmpty(user.Calendar)) throw new Exception("User has no calendar");
-        if (!GroupExists(groupId)) throw new Exception("Group not found");
+        var user = await context.Users.FindAsync(userId);
+        if (user == null)
+        {
+            return RepositoryResult.Error(RepositoryError.NotFound($"User with id {userId.ToString()} not found"));
+        }
+
+        if (string.IsNullOrEmpty(user.Calendar))
+        {
+            return RepositoryResult.Error(RepositoryError.BadRequest($"User with id {userId.ToString()} has no calendar"));
+        }
+
+        if (!GroupExists(groupId))
+            return RepositoryResult.Error(RepositoryError.NotFound($"Group with id {groupId.ToString()} not found"));
         
-        var isAlreadyInGroup = await _context.UserGroups.FindAsync(userId, groupId);
-        if (isAlreadyInGroup != null) return;
+        var isAlreadyInGroup = await context.UserGroups.FindAsync(userId, groupId);
+        if (isAlreadyInGroup != null)
+        {
+            return RepositoryResult.Error(RepositoryError.BadRequest($"User with id {userId.ToString()} is already in group with id {groupId.ToString()}"));
+        }
         
         var userGroup = new UserGroupEntity(UserId: userId, GroupId: groupId);
-        _context.UserGroups.Add(userGroup);
-        await _context.SaveChangesAsync();
+        context.UserGroups.Add(userGroup);
+        await context.SaveChangesAsync();
+        return RepositoryResult.Ok(No.Thing);
     }
 
-    public async Task RemoveUserFromGroup(int userId, int groupId)
+    public async Task<RepositoryResult<Unit>> RemoveUserFromGroup(Guid userId, Guid groupId)
     {
-        var userGroup = await _context.UserGroups.FindAsync(userId, groupId);
-        if (userGroup == null) throw new Exception("User not in group");
-        
-        _context.UserGroups.Remove(userGroup);
-        await _context.SaveChangesAsync();
-        var remainingMembers = await _context.UserGroups.CountAsync(ug => ug.GroupId == groupId);
+        var userGroup = await context.UserGroups.FindAsync(userId, groupId);
+        if (userGroup == null)
+        {
+            return RepositoryResult.Error(
+                RepositoryError.BadRequest(
+                    $"User with id {userId.ToString()} not found in group with id {groupId.ToString()}"));
+        }
+
+        context.UserGroups.Remove(userGroup);
+        await context.SaveChangesAsync();
+        var remainingMembers = await context.UserGroups.CountAsync(ug => ug.GroupId == groupId);
         if (remainingMembers == 0)
         {
-            var group = await _context.Groups.FindAsync(groupId);
+            var group = await context.Groups.FindAsync(groupId);
             if (group != null)
             {
-                _context.Groups.Remove(group);
-                await _context.SaveChangesAsync();
+                context.Groups.Remove(group);
+                await context.SaveChangesAsync();
             }
-        }    }
-    private bool GroupExists(int id)
-    {
-        return _context.Groups.Any(e => e.Id == id);
+        }
+        return RepositoryResult.Ok(No.Thing);  
     }
+
+    private bool GroupExists(Guid id) => context.Groups.Any(e => e.Id == id);
 }

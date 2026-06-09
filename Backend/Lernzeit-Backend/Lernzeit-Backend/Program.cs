@@ -1,5 +1,3 @@
-using System.Configuration;
-using Lernzeit.Domain;
 using Lernzeit.PostgresAdapter;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -13,7 +11,6 @@ builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//builder.Services.AddDbContext<LernzeitDbContext>(options =>     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAuthentication(options =>
     {
@@ -58,6 +55,9 @@ builder.Services.AddCors(options =>
 
 builder.AddNpgsqlDbContext<LernzeitDbContext>("postgres");
 
+builder.Services.AddScoped<Lernzeit.Application.Contracts.IGroupRepository, Lernzeit.PostgresAdapter.GroupRepository>();
+builder.Services.AddScoped<Lernzeit.Application.Contracts.IUserRepository, Lernzeit.PostgresAdapter.UserRepository>();
+
 var app = builder.Build();
 
 app.UseCors();
@@ -89,11 +89,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-
-using var scope = app.Services.CreateScope();
-
-var dbContext = scope.ServiceProvider.GetRequiredService<LernzeitDbContext>();
-await dbContext.Database.EnsureCreatedAsync();
-await dbContext.Database.MigrateAsync();
+// Migrate is problematic in integration tests
+if (app.Environment.EnvironmentName != "Testing")
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<LernzeitDbContext>();
+    await dbContext.Database.MigrateAsync();
+}
 
 app.Run();

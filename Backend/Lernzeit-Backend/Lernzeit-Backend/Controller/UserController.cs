@@ -1,12 +1,9 @@
 using Lernzeit.Application.Contracts;
-using Lernzeit.Domain;
-using Lernzeit.PostgresAdapter;
 using LernzeitBackend.DTOs;
 using LernzeitBackend.Mappers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
-namespace LernzeitBackend;
+namespace LernzeitBackend.Controller;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -20,31 +17,37 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<List<UserDto>> GetUsers()
+    public async Task<IActionResult> GetUsers()
     {
         var users = await this.userRepository.GetAllUsers();
-        return users.Select(u => u.ToDto()).ToList();
+        return this.Ok(users.Select(u => u.ToDto()).ToList());
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<User>> GetUser(int id)
+    public async Task<IActionResult> GetUser(string id)
     {
-        var user = await this.userRepository.GetUser(id);
-        return this.Ok(user.ToDto());
+        var user = await this.userRepository.GetUser(Guid.Parse(id));
+        return user.Match<IActionResult>(
+            ok: u => this.Ok(u.ToDto()),
+            error: this.NotFound);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateUser(int id, [FromBody] UserDto userDto)
+    public async Task<IActionResult> UpdateUser(string id, [FromBody] UserDto userDto)
     {
-        var user = userDto.ToDomain();
-        await this.userRepository.UpdateUser(user);
-        return Ok();
+        var updateResult = await this.userRepository.UpdateUser(userDto.ToDomain());
+        return updateResult.Match<IActionResult>(
+            ok: _ => this.Ok(),
+            error: this.NotFound
+        );
     }
-    
+
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteUser(int id)
+    public async Task<IActionResult> DeleteUser(string id)
     {
-        await this.userRepository.DeleteUser(id);
-        return Ok();
+        var removeResult = await this.userRepository.DeleteUser(Guid.Parse(id));
+        return removeResult.Match<IActionResult>(
+            ok: _ => this.Ok(),
+            error: this.NotFound);
     }
 }

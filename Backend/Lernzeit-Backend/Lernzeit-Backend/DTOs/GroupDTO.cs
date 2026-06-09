@@ -1,7 +1,7 @@
 namespace LernzeitBackend.DTOs;
 
 public record GroupDto(
-    int Id, 
+    string Id, 
     string Name,
     string Calendar,
     List<UserDto> Members);

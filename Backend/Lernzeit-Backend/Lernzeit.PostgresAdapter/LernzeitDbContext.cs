@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Lernzeit.Domain;
 using Lernzeit.PostgresAdapter.Entities;
 
 namespace Lernzeit.PostgresAdapter;

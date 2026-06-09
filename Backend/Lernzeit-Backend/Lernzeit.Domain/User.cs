@@ -1,5 +1,5 @@
 namespace Lernzeit.Domain;
 
-public record User(int Id, string Name, string CalUrl, string Calendar)
+public record User(Guid Id, string Name, string CalUrl, string Calendar)
 {
 };

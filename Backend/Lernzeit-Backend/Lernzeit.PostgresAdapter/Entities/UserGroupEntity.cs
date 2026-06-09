@@ -1,8 +1,8 @@
 namespace Lernzeit.PostgresAdapter.Entities;
 
 public record UserGroupEntity(
-    int UserId,
-    int GroupId
+    Guid UserId,
+    Guid GroupId
 )
 {
     public UserEntity? User { get; set; }

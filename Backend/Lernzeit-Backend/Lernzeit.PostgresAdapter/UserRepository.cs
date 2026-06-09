@@ -1,3 +1,4 @@
+using FunicularSwitch;
 using Lernzeit.Application.Contracts;
 using Lernzeit.Domain;
 using Lernzeit.PostgresAdapter.Mappers;
@@ -7,49 +8,55 @@ namespace Lernzeit.PostgresAdapter;
 
 public class UserRepository : IUserRepository
 {
-    private readonly LernzeitDbContext _context;
+    private readonly LernzeitDbContext context;
     public UserRepository(LernzeitDbContext context)
     {
-        this._context = context;
+        this.context = context;
     }
     public async Task<List<User>> GetAllUsers()
     {
-        var users = await _context.Users.ToListAsync();
+        var users = await context.Users.ToListAsync();
         
         return users.Select(u => u.ToDomain()).ToList();
     }
 
-    public async Task<User> GetUser(int id)
+    public async Task<Result<User>> GetUser(Guid id)
     {
-        var user = await this._context.Users.FindAsync(id);
-        if (user == null) throw new Exception("User not found");
-        return user.ToDomain();    
+        var user = await this.context.Users.FindAsync(id);
+        if (user == null)
+        {
+            return Result.Error("User not found");
+        }
+
+        return Result.Ok(user.ToDomain());    
     }
 
-    public async Task CreateUser(int id, string username, string? calUrl, string? Calendar)
+    public async Task<Result<Unit>> UpdateUser(User updatedUser)
     {
-        var newUser = new User(id, Name: username, calUrl, Calendar);
-        _context.Users.Add(newUser.ToDbEntity());
-        await _context.SaveChangesAsync();
+        var oldUser = await context.Users.FindAsync(updatedUser.Id);
+        
+        if (oldUser == null)
+        {
+            return Result.Error("User not found");
+        }
+
+        context.Entry(oldUser).CurrentValues.SetValues(updatedUser);
+        await context.SaveChangesAsync();
+        return Result.Ok(No.Thing);
     }
 
-    public async Task UpdateUser(User updatedUser)
+    public async Task<Result<Unit>> DeleteUser(Guid id)
     {
-        var oldUser = await _context.Users.FindAsync(updatedUser.Id);
-        if (oldUser == null) throw new Exception("User not found");
+        var user = await this.context.Users.FindAsync(id);
+        if (user == null)
+        {
+            return Result.Error("User not found");
+        }
 
-        _context.Entry(oldUser).CurrentValues.SetValues(updatedUser);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task DeleteUser(int id)
-    {
-        var user = await this._context.Users.FindAsync(id);
-        if (user == null) throw new Exception("User not found");
-
-        var userGroups = _context.UserGroups.Where(ug => ug.UserId == id);
-        _context.UserGroups.RemoveRange(userGroups);
-        _context.Users.Remove(user);
-        await _context.SaveChangesAsync();
+        var userGroups = context.UserGroups.Where(ug => ug.UserId == id);
+        context.UserGroups.RemoveRange(userGroups);
+        context.Users.Remove(user);
+        await context.SaveChangesAsync();
+        return Result.Ok(No.Thing);   
     }
 }
