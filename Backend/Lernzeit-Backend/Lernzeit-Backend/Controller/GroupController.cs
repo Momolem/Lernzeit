@@ -34,9 +34,9 @@ public class GroupController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateGroup(string creatorId, string groupName)
+    public async Task<ActionResult> CreateGroup([FromBody] CreateGroupDto createGroupDto)
     {
-        var createResult = await groupRepository.CreateGroup(groupName, creatorId: Guid.Parse(creatorId));
+        var createResult = await groupRepository.CreateGroup(createGroupDto.GroupName, creatorId: Guid.Parse(createGroupDto.CreatorId));
         createResult.Match(
             ok: _ => this.Ok(),
             error: MapRepositoryErrorToActionResult);
@@ -44,7 +44,7 @@ public class GroupController : ControllerBase
     }
 
     [HttpPut("join/{groupId}")]
-    public async Task<IActionResult> AddUserToGroup(string groupId, string userId)
+    public async Task<IActionResult> AddUserToGroup(string groupId, [FromBody] string userId)
     {
         var addResult = await groupRepository.AddUserToGroup(userId: Guid.Parse(userId), groupId: Guid.Parse(groupId));
         return addResult.Match(
@@ -54,7 +54,7 @@ public class GroupController : ControllerBase
     }
 
     [HttpPut("leave/{groupId}")]
-    public async Task<IActionResult> LeaveGroup(string groupId, string userId)
+    public async Task<IActionResult> LeaveGroup(string groupId, [FromBody] string userId)
     {
         var removeResult = await groupRepository.RemoveUserFromGroup(userId: Guid.Parse(userId), groupId: Guid.Parse(groupId));
         return removeResult.Match(

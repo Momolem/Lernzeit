@@ -71,7 +71,9 @@ public class UserControllerTests
             await db.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 
-        var response = await client.DeleteAsync($"/api/User/{userId}", TestContext.Current.CancellationToken);
+        var request = new HttpRequestMessage(HttpMethod.Delete, $"/api/User/{userId.ToString()}");
+            
+        var response = await client.SendAsync(request, TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Verify it's gone
@@ -80,6 +82,32 @@ public class UserControllerTests
             var db = scope.ServiceProvider.GetRequiredService<LernzeitDbContext>();
             var userInDb = await db.Users.FindAsync([userId], TestContext.Current.CancellationToken);
             userInDb.Should().BeNull();
+        }
+    }
+    
+    [Fact]
+    public async Task UpdateUser_UpdatesUser_WhenExists()
+    {
+        var userId = Guid.NewGuid();
+        using (var scope = waf.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<LernzeitDbContext>();
+            var user = new UserEntity(userId, "Old Name", "", "{}");
+            db.Users.Add(user);
+            await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+        }
+
+        var updateDto = new UserDto(userId.ToString(), "New Name", "newUrl", "{}");
+        var response = await System.Net.Http.Json.HttpClientJsonExtensions.PutAsJsonAsync(client, "/api/User", updateDto, TestContext.Current.CancellationToken);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        using (var scope = waf.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<LernzeitDbContext>();
+            var userInDb = await db.Users.FindAsync([userId], TestContext.Current.CancellationToken);
+            userInDb.Should().NotBeNull();
+            userInDb!.Name.Should().Be("New Name");
+            userInDb.CalUrl.Should().Be("newUrl");
         }
     }
 }

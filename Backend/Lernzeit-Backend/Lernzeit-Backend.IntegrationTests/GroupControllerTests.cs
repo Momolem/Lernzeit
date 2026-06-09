@@ -44,7 +44,7 @@ public class GroupControllerTests
             await db.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 
-        var response = await client.PostAsync($"/api/Group?creatorId={userId}&groupName=TestGroup", null, TestContext.Current.CancellationToken);
+        var response = await HttpClientJsonExtensions.PostAsJsonAsync(client, $"/api/Group", new { CreatorId = userId, GroupName = "TestGroup"}, TestContext.Current.CancellationToken);
         
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -88,7 +88,7 @@ public class GroupControllerTests
             await db.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 
-        var response = await client.PutAsync($"/api/Group/join/{groupId}?userId={userId}", null, TestContext.Current.CancellationToken);
+        var response = await System.Net.Http.Json.HttpClientJsonExtensions.PutAsJsonAsync(client, $"/api/Group/join/{groupId}", userId.ToString(), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 }

@@ -32,8 +32,8 @@ public class UserController : ControllerBase
             error: this.NotFound);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUser(string id, [FromBody] UserDto userDto)
+    [HttpPut]
+    public async Task<IActionResult> UpdateUser([FromBody] UserDto userDto)
     {
         var updateResult = await this.userRepository.UpdateUser(userDto.ToDomain());
         return updateResult.Match<IActionResult>(
