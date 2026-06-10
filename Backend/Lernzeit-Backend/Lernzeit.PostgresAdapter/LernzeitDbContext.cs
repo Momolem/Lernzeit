@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 using Lernzeit.PostgresAdapter.Entities;
 
 namespace Lernzeit.PostgresAdapter;
@@ -7,6 +8,7 @@ public class LernzeitDbContext : DbContext
 {
     public LernzeitDbContext(DbContextOptions<LernzeitDbContext> options) : base(options) { }
 
+        public DbSet<RaumzeitToken> RaumzeitTokens { get; set; }
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<GroupEntity> Groups { get; set; }
         public DbSet<UserGroupEntity> UserGroups { get; set; }
@@ -23,4 +25,15 @@ public class LernzeitDbContext : DbContext
                 .WithMany(g => g.UserGroups)
                 .HasForeignKey(ug => ug.GroupId);
         }
+}
+
+public class RaumzeitToken
+{
+    [Key]
+    public required string UserId { get; set; }
+    
+    public required string EncryptedToken { get; set; }
+    
+    public DateTimeOffset Expiration { get; set; }
+    
 }

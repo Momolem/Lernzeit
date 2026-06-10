@@ -31,7 +31,9 @@
     <ItemGroup>
       <ProjectReference Include="..\Lernzeit-Backend.ServiceDefaults\Lernzeit-Backend.ServiceDefaults.csproj" />
       <ProjectReference Include="..\Lernzeit.Application\Lernzeit.Application.csproj" />
+      <ProjectReference Include="..\Lernzeit.DataProtection\Lernzeit.DataProtection.csproj" />
       <ProjectReference Include="..\Lernzeit.PostgresAdapter\Lernzeit.PostgresAdapter.csproj" />
+      <ProjectReference Include="..\Lernzeit.RaumzeitAPI\Lernzeit.RaumzeitAPI.csproj" />
     </ItemGroup>
 
 </Project>

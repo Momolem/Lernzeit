@@ -41,7 +41,7 @@ public class AuthController(IConfiguration configuration) : ControllerBase
                 IsAuthenticated = true,
                 Name = User.Identity.Name,
                 Email = User.FindFirstValue(ClaimTypes.Email),
-                Avatar = User.FindFirstValue("picture") // Google often provides this
+                Avatar = User.FindFirstValue("picture")
             });
         }
 

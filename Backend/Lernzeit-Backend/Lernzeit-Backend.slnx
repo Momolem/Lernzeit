@@ -6,6 +6,8 @@
   <Project Path="Lernzeit-Backend/Lernzeit-Backend.csproj" />
   <Project Path="Lernzeit.AppHost/Lernzeit.AppHost.csproj" />
   <Project Path="Lernzeit.Application/Lernzeit.Application.csproj" />
+  <Project Path="Lernzeit.DataProtection/Lernzeit.DataProtection.csproj" />
   <Project Path="Lernzeit.Domain/Lernzeit.Domain.csproj" />
   <Project Path="Lernzeit.PostgresAdapter/Lernzeit.PostgresAdapter.csproj" />
+  <Project Path="Lernzeit.RaumzeitAPI/Lernzeit.RaumzeitAPI.csproj" />
 </Solution>

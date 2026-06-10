@@ -1,8 +1,11 @@
+using Lernzeit.Application.Contracts;
+using Lernzeit.DataProtection;
 using Lernzeit.PostgresAdapter;
-using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.EntityFrameworkCore;
+using Lernzeit.RaumzeitAPI;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +14,15 @@ builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddHttpClient();
+builder.Services
+    .AddScoped<RaumzeitService>()
+    .AddSingleton<ITokenEncryptionService, TokenEncryptionService>()
+    .AddScoped<IRaumzeitTokenRepository, RaumzeitTokenRepository>();
+
+
+builder.Configuration.AddUserSecrets<Program>();
 
 builder.Services.AddAuthentication(options =>
     {
@@ -40,6 +52,7 @@ builder.Services.AddAuthentication(options =>
     {
         options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? "placeholder";
         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? "placeholder";
+        options.ClaimActions.MapJsonKey("picture", "picture", "url");
     });
 
 builder.Services.AddCors(options =>
@@ -89,12 +102,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// Migrate is problematic in integration tests
-if (app.Environment.EnvironmentName != "Testing")
-{
-    using var scope = app.Services.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<LernzeitDbContext>();
-    await dbContext.Database.MigrateAsync();
-}
+using var scope = app.Services.CreateScope();
+await using var dbContext = scope.ServiceProvider.GetRequiredService<LernzeitDbContext>();
+var test = await dbContext.Database.EnsureCreatedAsync();
 
 app.Run();
