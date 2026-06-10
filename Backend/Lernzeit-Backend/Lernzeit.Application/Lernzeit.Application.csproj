@@ -10,4 +10,12 @@
       <ProjectReference Include="..\Lernzeit.Domain\Lernzeit.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="FunicularSwitch" Version="6.4.1" />
+      <PackageReference Include="FunicularSwitch.Generators" Version="4.6.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+
 </Project>
