@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LernzeitBackend;
+namespace LernzeitBackend.Controller;
 
 [ApiController]
 [Route("api/[controller]")]

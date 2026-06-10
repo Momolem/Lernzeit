@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Lernzeit.RaumzeitAPI;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,12 +66,27 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.AddNpgsqlDbContext<LernzeitDbContext>("postgres");
 
-builder.AddNpgsqlDbContext<LernzeitDbContext>(connectionName: "postgres");
+builder.Services.AddScoped<Lernzeit.Application.Contracts.IGroupRepository, Lernzeit.PostgresAdapter.GroupRepository>();
+builder.Services.AddScoped<Lernzeit.Application.Contracts.IUserRepository, Lernzeit.PostgresAdapter.UserRepository>();
 
 var app = builder.Build();
 
 app.UseCors();
+
+app.UseExceptionHandler(exceptionHandlerApp =>
+{
+    exceptionHandlerApp.Run(async context =>
+    {
+        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+        if (exception != null)
+        {
+            context.Response.StatusCode = 404;
+            await context.Response.WriteAsJsonAsync(new { error = exception.Message });
+        }
+    });
+});
 
 if (app.Environment.IsDevelopment())
 {
