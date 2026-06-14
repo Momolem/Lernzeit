@@ -17,7 +17,7 @@ public class RaumzeitTokenRepository : IRaumzeitTokenRepository
         this.timeProvider = timeProvider;
     }
 
-    public async Task<Result<string>> GetRaumzeitToken(string userId)
+    public async Task<Result<string>> GetRaumzeitToken(Guid userId)
     {
         var raumzeitTokenOption = (await dbContext.RaumzeitTokens.FindAsync(userId)).ToOption();
         return raumzeitTokenOption
@@ -35,7 +35,7 @@ public class RaumzeitTokenRepository : IRaumzeitTokenRepository
             );
     }
 
-    public async Task<Result<Unit>> SaveRaumzeitToken(string userId, string token, DateTimeOffset expiration)
+    public async Task<Result<Unit>> SaveRaumzeitToken(Guid userId, string token, DateTimeOffset expiration)
         => await Result.Try(async () => await (await dbContext.RaumzeitTokens.FindAsync(userId)).ToOption()
                 .Match(async dbObject =>
                 {

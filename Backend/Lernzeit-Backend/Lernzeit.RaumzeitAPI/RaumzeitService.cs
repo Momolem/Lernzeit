@@ -8,7 +8,7 @@ using Lernzeit.Domain.Calendar;
 
 namespace Lernzeit.RaumzeitAPI;
 
-public class RaumzeitService
+public class RaumzeitService : ICalendarService
 {
     private readonly HttpClient httpClient;
     private readonly IRaumzeitTokenRepository raumzeitTokenRepository;
@@ -42,12 +42,12 @@ public class RaumzeitService
         => await
             from token in await GetToken(username, password)
             from unit in this.raumzeitTokenRepository.SaveRaumzeitToken(
-                userId: userId,
+                userId: new Guid(userId),
                 token: token,
                 expiration: timeProvider.GetUtcNow().AddDays(185))
             select unit;
 
-    public async Task<Result<Calendar>> GetPersonalCalendar(string userId)
+    public async Task<Result<Calendar>> GetPersonalCalendar(Guid userId)
         => await
             from token in this.raumzeitTokenRepository.GetRaumzeitToken(userId)
             from iCalStream in RequestRaumzeitICal(token)
