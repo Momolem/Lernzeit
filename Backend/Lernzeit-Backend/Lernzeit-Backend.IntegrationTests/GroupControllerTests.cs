@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Lernzeit.PostgresAdapter;
 using Lernzeit.PostgresAdapter.Entities;
+using Microsoft.EntityFrameworkCore;
+using NuGet.Versioning;
 
 namespace Lernzeit_Backend.IntegrationTests;
 
@@ -51,6 +53,12 @@ public class GroupControllerTests : IAsyncLifetime
         var response = await HttpClientJsonExtensions.PostAsJsonAsync(client, "api/Group", new { CreatorId = userId, GroupName = "TestGroup"}, TestContext.Current.CancellationToken);
         
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        using (var scope = waf.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<LernzeitDbContext>();
+            (await db.Groups.FirstOrDefaultAsync(g => g.Name == "TestGroup", cancellationToken: TestContext.Current.CancellationToken)).Should().NotBeNull();
+        }
     }
 
     [Fact]
@@ -60,7 +68,7 @@ public class GroupControllerTests : IAsyncLifetime
         using (var scope = waf.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<LernzeitDbContext>();
-            var group = new GroupEntity(groupId, "ExistingGroup", "{}");
+            var group = new GroupEntity(groupId, "ExistingGroup", "");
             db.Groups.Add(group);
             await db.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
@@ -68,6 +76,9 @@ public class GroupControllerTests : IAsyncLifetime
         var response = await client.GetAsync($"api/Group/{groupId}", TestContext.Current.CancellationToken);
         
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var groupDto = await response.Content.ReadFromJsonAsync<GroupDto>(cancellationToken: TestContext.Current.CancellationToken);
+        groupDto.Should().NotBeNull();
+        groupDto.Name.Should().Be("ExistingGroup");
     }
 
     [Fact]
@@ -94,5 +105,10 @@ public class GroupControllerTests : IAsyncLifetime
 
         var response = await System.Net.Http.Json.HttpClientJsonExtensions.PutAsJsonAsync(client, $"api/Group/join/{groupId}", userId.ToString(), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var groupDto = await client.GetFromJsonAsync<GroupDto>($"api/Group/{groupId}",
+            cancellationToken: TestContext.Current.CancellationToken);
+        groupDto.Should().NotBeNull();
+        groupDto.Members.Should().ContainSingle(m => m.Id == userId.ToString());
     }
 }
