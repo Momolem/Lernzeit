@@ -10,22 +10,26 @@ using Lernzeit.PostgresAdapter.Entities;
 
 namespace Lernzeit_Backend.IntegrationTests;
 
-[Collection("Database collection")]
-public class GroupControllerTests
+public class GroupControllerTests : IAsyncLifetime
 {
-    private readonly HttpClient client;
-    private readonly LernzeitWaf waf;
+    private HttpClient client = null!;
+    private LernzeitWaf waf = null!;
 
-    public GroupControllerTests(LernzeitWaf waf)
+    public async ValueTask InitializeAsync()
     {
-        this.waf = waf;
+        this.waf = new LernzeitWaf();
         client = waf.CreateClient();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await waf.DisposeAsync();
     }
 
     [Fact]
     public async Task GetGroups_ReturnsEmpty_WhenNoGroupsExist()
     {
-        var response = await client.GetAsync("/api/Group", TestContext.Current.CancellationToken);
+        var response = await client.GetAsync("api/Group", TestContext.Current.CancellationToken);
         
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var groups = await response.Content.ReadFromJsonAsync<List<GroupDto>>(cancellationToken: TestContext.Current.CancellationToken);
@@ -44,7 +48,7 @@ public class GroupControllerTests
             await db.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 
-        var response = await HttpClientJsonExtensions.PostAsJsonAsync(client, $"/api/Group", new { CreatorId = userId, GroupName = "TestGroup"}, TestContext.Current.CancellationToken);
+        var response = await HttpClientJsonExtensions.PostAsJsonAsync(client, "api/Group", new { CreatorId = userId, GroupName = "TestGroup"}, TestContext.Current.CancellationToken);
         
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -61,7 +65,7 @@ public class GroupControllerTests
             await db.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 
-        var response = await client.GetAsync($"/api/Group/{groupId}", TestContext.Current.CancellationToken);
+        var response = await client.GetAsync($"api/Group/{groupId}", TestContext.Current.CancellationToken);
         
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -69,7 +73,7 @@ public class GroupControllerTests
     [Fact]
     public async Task GetGroupById_ReturnsNotFound_WhenDoesNotExist()
     {
-        var response = await client.GetAsync($"/api/Group/{Guid.NewGuid()}", TestContext.Current.CancellationToken);
+        var response = await client.GetAsync($"api/Group/{Guid.NewGuid()}", TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
     
@@ -88,7 +92,7 @@ public class GroupControllerTests
             await db.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 
-        var response = await System.Net.Http.Json.HttpClientJsonExtensions.PutAsJsonAsync(client, $"/api/Group/join/{groupId}", userId.ToString(), TestContext.Current.CancellationToken);
+        var response = await System.Net.Http.Json.HttpClientJsonExtensions.PutAsJsonAsync(client, $"api/Group/join/{groupId}", userId.ToString(), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 }
