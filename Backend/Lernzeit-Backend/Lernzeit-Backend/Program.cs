@@ -57,7 +57,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins(builder.Configuration["FrontendUrl"] ?? "http://localhost:3000")
             .AllowAnyHeader()
@@ -73,8 +73,6 @@ builder.Services.AddScoped<Lernzeit.Application.Contracts.IUserRepository, Lernz
 
 var app = builder.Build();
 
-app.UseCors();
-
 app.UseExceptionHandler(exceptionHandlerApp =>
 {
     exceptionHandlerApp.Run(async context =>
@@ -88,6 +86,34 @@ app.UseExceptionHandler(exceptionHandlerApp =>
     });
 });
 
+app.UseHttpsRedirection();
+
+// Manual CORS headers — ensures cross-origin requests work even if the
+// official CORS middleware doesn't apply correctly
+app.Use(async (context, next) =>
+{
+    var origin = context.Request.Headers.Origin.FirstOrDefault();
+    if (!string.IsNullOrEmpty(origin))
+    {
+        context.Response.Headers["Access-Control-Allow-Origin"] = origin;
+        context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
+        context.Response.Headers["Access-Control-Allow-Headers"] = "*";
+        context.Response.Headers["Access-Control-Allow-Methods"] = "*";
+
+        if (context.Request.Method == "OPTIONS")
+        {
+            context.Response.StatusCode = 204;
+            return;
+        }
+    }
+
+    await next();
+});
+
+app.UseRouting();
+
+app.UseCors("AllowFrontend");
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -95,8 +121,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

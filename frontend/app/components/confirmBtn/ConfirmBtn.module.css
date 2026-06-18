@@ -1,0 +1,28 @@
+.button {
+  display: flex;
+  width: 67px;
+  height: 56px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  border: 2px solid var(--black, #000);
+  box-shadow: 0 6px 0 0 #000;
+}
+.button:active {
+  box-shadow: 0 1px 0 0 #000;
+  transform: translate(0px, 5px);
+}
+
+.btnYes {
+  background: var(--green-5, #59db53);
+}
+.btnYes:hover {
+  background: var(--green-5, #80ff77);
+}
+
+.btnNo {
+  background: var(--red-5, #f93d1c);
+}
+.btnNo:hover {
+  background: var(--red-5, #ff838e);
+}
