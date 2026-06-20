@@ -25,7 +25,7 @@
 .title {
   color: var(--blue-8);
   font-family: Jua;
-  font-size: 40px;
+  font-size: 24px;
   font-style: normal;
   font-weight: 400;
   line-height: 27px; /* 67.5% */
@@ -40,7 +40,7 @@
   background: var(--blue-6);
   color: var(--white);
   font-family: Jua;
-  font-size: 28px;
+  font-size: 21px;
   font-style: normal;
   font-weight: 400;
   line-height: 27px; /* 96.429% */

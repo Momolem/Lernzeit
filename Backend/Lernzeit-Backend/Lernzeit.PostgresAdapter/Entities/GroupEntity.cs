@@ -1,7 +1,6 @@
 namespace Lernzeit.PostgresAdapter.Entities;
 
-public record GroupEntity(Guid Id, string Name = "", string Calendar = "")
+public record GroupEntity(Guid Id, string Name)
 {
-    public IList<UserGroupEntity> UserGroups { get; } = new List<UserGroupEntity>();
-};
-
+    public List<UserEntity> Members { get; init; } = new();
+}

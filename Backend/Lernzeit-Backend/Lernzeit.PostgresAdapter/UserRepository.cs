@@ -63,14 +63,15 @@ public class UserRepository : IUserRepository
 
     public async Task<Result<Unit>> DeleteUser(Guid id)
     {
-        var user = await this.context.Users.FindAsync(id);
+        var user = await this.context.Users
+            .Include(u => u.Groups)
+            .FirstOrDefaultAsync(u => u.Id == id);
         if (user == null)
         {
             return Result.Error("User not found");
         }
 
-        var userGroups = context.UserGroups.Where(ug => ug.UserId == id);
-        context.UserGroups.RemoveRange(userGroups);
+        user.Groups.Clear();
         context.Users.Remove(user);
         await context.SaveChangesAsync();
         return Result.Ok(No.Thing);   

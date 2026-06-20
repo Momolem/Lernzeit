@@ -1,4 +1,5 @@
 import type { TimetableEvents } from "~/types/timetable";
+import type {Group} from "~/types/groups";
 
 const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL ?? "https://localhost:7113";
 
@@ -112,63 +113,18 @@ export const apiClient = {
         }
     },
     
-    async getGroups(): Promise<{ status: number; data: TimetableEvents | null }> {
+    async getGroups(): Promise<{ status: number; data: Group[] }> {
         try {
-            const response = await fetch(`${BACKEND_URL}/api/user/calendar`, {
+            const response = await fetch(`${BACKEND_URL}/api/group`, {
                 credentials: "include",
             });
 
             if (!response.ok) {
-                return { status: response.status, data: null };
+                return { status: response.status, data: [] };
             }
-
-            const rawData = await response.json();
+            const groupsResponse: Group[] = await response.json();
             
-            const parsedData: TimetableEvents = {
-                monday: [],
-                tuesday: [],
-                wednesday: [],
-                thursday: [],
-                friday: [],
-                saturday: [],
-                sunday: []
-            };
-
-            const dayMap: Record<number, keyof TimetableEvents> = {
-                0: "sunday",
-                1: "monday",
-                2: "tuesday",
-                3: "wednesday",
-                4: "thursday",
-                5: "friday",
-                6: "saturday",
-            };
-
-            // Backend returns a Calendar object with an 'events' array
-            const eventList = Array.isArray(rawData) ? rawData : (Array.isArray(rawData?.events) ? rawData.events : []);
-
-            for (const [index, item] of eventList.entries()) {
-                const startTime = new Date(item.start || item.startTime);
-                const endTime = new Date(item.end || item.endTime);
-                
-                if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) continue;
-
-                const dayOfWeek = startTime.getDay();
-                const dayKey = dayMap[dayOfWeek];
-
-                if (dayKey) {
-                    parsedData[dayKey].push({
-                        id: item.id || `event-${index}`,
-                        name: item.name || "Unnamed Event",
-                        type: item.type,
-                        startTime,
-                        endTime,
-                        room: item.room
-                    });
-                }
-            }
-
-            return { status: response.status, data: parsedData };
+            return { status: response.status, data: groupsResponse };
         } catch (error) {
             console.error("Calendar fetch error:", error);
             throw error;

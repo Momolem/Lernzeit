@@ -18,18 +18,25 @@ public class GroupRepository : IGroupRepository
     }
 
 
-    public async Task<List<Group>> GetAllGroups()
+    public async Task<List<Group>> GetGroupsForUser(GoogleUserId googleUserId)
     {
-        var groups = await context.Groups.ToListAsync();
+        var user = await context.Users
+            .Include(u => u.Groups)
+            .ThenInclude(g => g.Members)
+            .FirstOrDefaultAsync(u => u.GoogleUserId == googleUserId.Id);
+
+        if (user == null)
+        {
+            return [];
+        }
         
-        return groups.Select(g => g.ToDomain()).ToList();
+        return user.Groups.Select(g => g.ToDomain()).ToList();
     }
 
     public async Task<Option<Group>> GetGroupById(Guid id)
     {
         var group = await context.Groups
-            .Include(g => g.UserGroups)
-            .ThenInclude(ug => ug.User)
+            .Include(g => g.Members)
             .FirstOrDefaultAsync(g => g.Id == id);
         
         return group.ToOption().Map(g => g.ToDomain());
@@ -37,14 +44,20 @@ public class GroupRepository : IGroupRepository
 
     public async Task<RepositoryResult<Unit>> CreateGroup(string groupName, GoogleUserId creatorId)
     {
-        var user = (await context.Users.FirstOrDefaultAsync(u => u.GoogleUserId == creatorId.Id)).ToOption().Map(u => u.ToDomain());
-        if (user.IsNone())
+        var user = await context.Users.FirstOrDefaultAsync(u => u.GoogleUserId == creatorId.Id);
+        if (user == null)
         {
             return RepositoryResult.Error(RepositoryError.NotFound($"User with id {creatorId} not found"));
         }
 
-        var newGroup = Group.Create(groupName, user.GetValueOrThrow());
-        context.Groups.Add(newGroup.ToDbEntity());
+        var newGroup = Group.Create(groupName, user.ToDomain());
+        var newGroupEntity = newGroup.ToDbEntity();
+        
+        newGroupEntity.Members.Clear();
+        newGroupEntity.Members.Add(user);
+        
+        context.Groups.Add(newGroupEntity);
+        
         await context.SaveChangesAsync();
 
         return RepositoryResult.Ok(No.Thing);
@@ -63,42 +76,43 @@ public class GroupRepository : IGroupRepository
             return RepositoryResult.Error(RepositoryError.BadRequest($"User with id {userId.ToString()} has no calendar"));
         }
 
-        if (!GroupExists(groupId))
+        var group = await context.Groups.Include(g => g.Members).FirstOrDefaultAsync(g => g.Id == groupId);
+        if (group == null)
             return RepositoryResult.Error(RepositoryError.NotFound($"Group with id {groupId.ToString()} not found"));
         
-        var isAlreadyInGroup = await context.UserGroups.FindAsync(userId, groupId);
-        if (isAlreadyInGroup != null)
+        if (group.Members.Any(m => m.Id == userId))
         {
             return RepositoryResult.Error(RepositoryError.BadRequest($"User with id {userId.ToString()} is already in group with id {groupId.ToString()}"));
         }
         
-        var userGroup = new UserGroupEntity(UserId: userId, GroupId: groupId);
-        context.UserGroups.Add(userGroup);
+        group.Members.Add(user);
         await context.SaveChangesAsync();
         return RepositoryResult.Ok(No.Thing);
     }
 
     public async Task<RepositoryResult<Unit>> RemoveUserFromGroup(Guid userId, Guid groupId)
     {
-        var userGroup = await context.UserGroups.FindAsync(userId, groupId);
-        if (userGroup == null)
+        var group = await context.Groups.Include(g => g.Members).FirstOrDefaultAsync(g => g.Id == groupId);
+        if (group == null)
+        {
+            return RepositoryResult.Error(RepositoryError.NotFound($"Group with id {groupId.ToString()} not found"));
+        }
+
+        var user = group.Members.FirstOrDefault(m => m.Id == userId);
+        if (user == null)
         {
             return RepositoryResult.Error(
                 RepositoryError.BadRequest(
                     $"User with id {userId.ToString()} not found in group with id {groupId.ToString()}"));
         }
 
-        context.UserGroups.Remove(userGroup);
+        group.Members.Remove(user);
         await context.SaveChangesAsync();
-        var remainingMembers = await context.UserGroups.CountAsync(ug => ug.GroupId == groupId);
-        if (remainingMembers == 0)
+        
+        if (group.Members.Count == 0)
         {
-            var group = await context.Groups.FindAsync(groupId);
-            if (group != null)
-            {
-                context.Groups.Remove(group);
-                await context.SaveChangesAsync();
-            }
+            context.Groups.Remove(group);
+            await context.SaveChangesAsync();
         }
         return RepositoryResult.Ok(No.Thing);  
     }

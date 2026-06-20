@@ -18,6 +18,7 @@ export default function CreateGroupPopUp({
 
   const confirmGroup = async () => {
     await apiClient.createGroup(groupName)
+      window.location.reload();
   }
 
   function selectGroup() {}

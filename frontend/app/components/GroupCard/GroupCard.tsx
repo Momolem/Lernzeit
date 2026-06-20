@@ -22,7 +22,7 @@ export default function GroupCard({
   return (
     <div className={styles.card} onClick={onClick}>
       <div className={styles.header}>
-        <div className={styles.title}>Mathe</div>
+        <div className={styles.title}>{groupName}</div>
         <QRcodeBtn onClick={onQRcodeClick} />
       </div>
       {members.map((m, index) => (

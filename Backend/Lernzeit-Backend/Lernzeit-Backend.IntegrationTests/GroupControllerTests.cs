@@ -56,7 +56,7 @@ public class GroupControllerTests
         using (var scope = waf.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<LernzeitDbContext>();
-            var group = new GroupEntity(groupId, "ExistingGroup", "{}");
+            var group = new GroupEntity(groupId, "ExistingGroup");
             db.Groups.Add(group);
             await db.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
@@ -82,7 +82,7 @@ public class GroupControllerTests
         {
             var db = scope.ServiceProvider.GetRequiredService<LernzeitDbContext>();
             var user = new UserEntity(userId, "Test User", "", "{}");
-            var group = new GroupEntity(groupId, "TestGroup", "{}");
+            var group = new GroupEntity(groupId, "TestGroup");
             db.Users.Add(user);
             db.Groups.Add(group);
             await db.SaveChangesAsync(TestContext.Current.CancellationToken);

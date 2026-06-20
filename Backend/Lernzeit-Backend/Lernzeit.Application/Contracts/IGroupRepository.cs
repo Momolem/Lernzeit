@@ -6,7 +6,7 @@ namespace Lernzeit.Application.Contracts;
 
 public interface IGroupRepository
 {
-    public Task<List<Group>> GetAllGroups();
+    public Task<List<Group>> GetGroupsForUser(GoogleUserId userId);
     public Task<Option<Group>> GetGroupById(Guid id);
     public Task<RepositoryResult<Unit>> CreateGroup(string groupName, GoogleUserId creatorId);
     public Task<RepositoryResult<Unit>> AddUserToGroup(Guid userId, Guid groupId);

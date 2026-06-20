@@ -21,11 +21,18 @@ public class GroupController : ControllerBase
         this.groupRepository = groupRepository;
     }
 
+    [Authorize]
     [HttpGet]
-    public async Task<List<GroupDto>> GetGroups()
+    public async Task<IActionResult> GetGroups()
     {
-        var groups = await this.groupRepository.GetAllGroups();
-        return groups.Select(g => g.ToDto()).ToList();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return NotFound("User not logged in");
+        }
+        
+        var groups = await this.groupRepository.GetGroupsForUser(new GoogleUserId(userId));
+        return this.Ok(groups.Select(g => g.ToDto()).ToList());
     }
 
     [HttpGet("{id}")]

@@ -5,15 +5,14 @@ import calendarIcon from "../resources/Calendar.svg";
 import Button from "~/components/button/button";
 import Icon from "~/components/Icon";
 import { NavLink, useOutletContext } from "react-router";
-import { Modal } from "~/components/modal/modal";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import styles from "./home.module.css";
 
-import Input from "~/components/input/input";
-import ConfirmBtn from "~/components/confirmBtn/ConfirmBtn";
 import GroupCard from "~/components/GroupCard/GroupCard";
 import CreateGroupPopUp from "~/components/CreateGroupPopUp/CreateGroupPopUp";
 import InvitationPopUp from "~/components/InvitationPopUp/InvitationPopUp";
+import {apiClient} from "~/api/client";
+import type {Group} from "~/types/groups";
 
 interface User {
   isAuthenticated: boolean;
@@ -31,11 +30,29 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
   const { user } = useOutletContext<{ user: User }>();
-  console.log("user", user);
 
   const [createModalIsOpen, setCreateModalIsOpen] = useState(false);
   const [inviPopUpIsOpen, setInviPopUpIsOpen] = useState(false);
   const [groupName, setGroupName] = useState("");
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  
+  useEffect(() => {
+    const fetchGroups = async (): Promise<void> => {
+      try {
+        setLoading(true);
+        const response: Group[] = (await apiClient.getGroups()).data;
+        setGroups(response);
+      } catch (err: unknown) {
+        console.error("Failed to fetch groups:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGroups();
+  }, []);
+  
 
   function confirmGroup() {
     //  requ to backend
@@ -82,13 +99,18 @@ export default function Home() {
         </NavLink>
         <p className={styles.meineGruppen}>Meine Gruppen</p>
         <div className={styles.groupWrapper}>
-          <GroupCard
-            groupId={1}
-            groupName="Mathe"
-            members={["Marie", "Peter"]}
-            onClick={selectGroup}
-            handleQRCodeClick={() => setInviPopUpIsOpen(true)}
-          />
+          {loading && <p>Lade Gruppen...</p>}
+          {!loading &&
+              groups.map((group: Group) => (
+                  <GroupCard
+                      key={group.id}
+                      groupId={group.id}
+                      groupName={group.name}
+                      members={group.members}
+                      onClick={selectGroup}
+                      handleQRCodeClick={() => setInviPopUpIsOpen(true)}
+                  />
+              ))}
         </div>
       </div>
     </>

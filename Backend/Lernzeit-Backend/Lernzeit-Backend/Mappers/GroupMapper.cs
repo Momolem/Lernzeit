@@ -9,5 +9,5 @@ public static class GroupMapper
         => new(
             group.Id.ToString(),
             group.Name,
-            group.Members.Select(m => m.ToDto()).ToList());
+            group.Members.Select(m => m.Name).ToList());
 }
