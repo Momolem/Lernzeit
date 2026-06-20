@@ -35,26 +35,18 @@ public class GroupRepository : IGroupRepository
         return group.ToOption().Map(g => g.ToDomain());
     }
 
-    public async Task<RepositoryResult<Unit>> CreateGroup(string groupName, Guid creatorId)
+    public async Task<RepositoryResult<Unit>> CreateGroup(string groupName, GoogleUserId creatorId)
     {
-        var creator = await context.Users.FindAsync(creatorId);
-        if (creator == null)
+        var user = (await context.Users.FirstOrDefaultAsync(u => u.GoogleUserId == creatorId.Id)).ToOption().Map(u => u.ToDomain());
+        if (user.IsNone())
         {
-            return RepositoryResult.Error(RepositoryError.NotFound($"User with id {creatorId.ToString()} not found"));
-        }
-            
-        if (string.IsNullOrEmpty(creator.Calendar))
-        {
-            return RepositoryResult.Error(RepositoryError.BadRequest($"User with id {creatorId.ToString()} has no calendar"));
+            return RepositoryResult.Error(RepositoryError.NotFound($"User with id {creatorId} not found"));
         }
 
-        var newGroup = Group.Create(groupName, creator.Calendar);
+        var newGroup = Group.Create(groupName, user.GetValueOrThrow());
         context.Groups.Add(newGroup.ToDbEntity());
         await context.SaveChangesAsync();
 
-        var userGroup = new UserGroupEntity(UserId: creatorId, GroupId: newGroup.Id);
-        context.UserGroups.Add(userGroup);
-        await context.SaveChangesAsync();
         return RepositoryResult.Ok(No.Thing);
     }
 

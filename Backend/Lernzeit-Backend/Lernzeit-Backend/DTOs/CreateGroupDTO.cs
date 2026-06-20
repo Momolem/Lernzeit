@@ -1,3 +1,3 @@
 namespace LernzeitBackend.DTOs;
 
-public record CreateGroupDto(string CreatorId, string GroupName);
+public record CreateGroupDto(string GroupName);

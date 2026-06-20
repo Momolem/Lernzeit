@@ -57,7 +57,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", policy =>
+    options.AddDefaultPolicy(policy =>
     {
         policy.WithOrigins(builder.Configuration["FrontendUrl"] ?? "http://localhost:3000")
             .AllowAnyHeader()
@@ -86,33 +86,11 @@ app.UseExceptionHandler(exceptionHandlerApp =>
     });
 });
 
+app.UseCors();
+
 app.UseHttpsRedirection();
 
-// Manual CORS headers — ensures cross-origin requests work even if the
-// official CORS middleware doesn't apply correctly
-app.Use(async (context, next) =>
-{
-    var origin = context.Request.Headers.Origin.FirstOrDefault();
-    if (!string.IsNullOrEmpty(origin))
-    {
-        context.Response.Headers["Access-Control-Allow-Origin"] = origin;
-        context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
-        context.Response.Headers["Access-Control-Allow-Headers"] = "*";
-        context.Response.Headers["Access-Control-Allow-Methods"] = "*";
-
-        if (context.Request.Method == "OPTIONS")
-        {
-            context.Response.StatusCode = 204;
-            return;
-        }
-    }
-
-    await next();
-});
-
 app.UseRouting();
-
-app.UseCors("AllowFrontend");
 
 if (app.Environment.IsDevelopment())
 {

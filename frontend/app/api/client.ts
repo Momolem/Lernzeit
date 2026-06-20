@@ -1,6 +1,6 @@
 import type { TimetableEvents } from "~/types/timetable";
 
-const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL ?? "https://localhost:5161";
+const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL ?? "https://localhost:7113";
 
 export const apiClient = {
     async loginRaumzeit(username: string, password: string): Promise<boolean> {
@@ -88,6 +88,30 @@ export const apiClient = {
             throw error;
         }
     },
+    async createGroup(name: string) : Promise<boolean> {
+        try {
+            console.log("create group")
+            const response = await fetch(`${BACKEND_URL}/api/group`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({ groupName: name }),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Login failed: ${response.status} ${errorText}`);
+            }
+
+            return true;
+        } catch (error) {
+            console.error("Raumzeit login error:", error);
+            throw error;
+        }
+    },
+    
     async getGroups(): Promise<{ status: number; data: TimetableEvents | null }> {
         try {
             const response = await fetch(`${BACKEND_URL}/api/user/calendar`, {

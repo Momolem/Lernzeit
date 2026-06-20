@@ -15,15 +15,16 @@ public class UserRepository : IUserRepository
     {
         this.context = context;
     }
-    public async Task<RepositoryResult<Unit>> CreateUser(string name, string email, string? calUrl, string? calendar)
+    
+    public async Task<RepositoryResult<Unit>> CreateUserIfNotExists(GoogleUserId googleUserId, string name)
     {
-        var user = await this.context.Users.FindAsync(email);
+        var user = await this.context.Users.FirstOrDefaultAsync(u => u.GoogleUserId == googleUserId.Id);
         if (user != null)
         {
-            return RepositoryResult.Error(RepositoryError.NotFound($"User with email {email} already exists"));
+            return RepositoryResult.Ok(No.Thing);
         }
 
-        var newUser = User.Create(name, email, calUrl, calendar);
+        var newUser = User.Create(name, googleUserId);
         context.Users.Add(newUser.ToDbEntity());
         await context.SaveChangesAsync();
         return RepositoryResult.Ok(No.Thing);

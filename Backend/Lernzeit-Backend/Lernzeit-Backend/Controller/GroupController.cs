@@ -1,7 +1,11 @@
+using System.Security.Claims;
+using FunicularSwitch;
 using Lernzeit.Application.Contracts;
 using Lernzeit.Application.ResultTypes;
+using Lernzeit.Domain;
 using LernzeitBackend.DTOs;
 using LernzeitBackend.Mappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LernzeitBackend.Controller;
@@ -33,14 +37,22 @@ public class GroupController : ControllerBase
             none: this.NotFound);
     }
 
+    [Authorize]
     [HttpPost]
-    public async Task<ActionResult> CreateGroup([FromBody] CreateGroupDto createGroupDto)
+    public async Task<IActionResult> CreateGroup([FromBody] CreateGroupDto createGroupDto)
     {
-        var createResult = await groupRepository.CreateGroup(createGroupDto.GroupName, creatorId: Guid.Parse(createGroupDto.CreatorId));
-        createResult.Match(
-            ok: _ => this.Ok(),
-            error: MapRepositoryErrorToActionResult);
-        return this.Ok();
+        var googleUserIdOption =
+            User.FindFirstValue(ClaimTypes.NameIdentifier).ToOption().Map(g => new GoogleUserId(g));
+        return await googleUserIdOption.Match<IActionResult>(async googleUserId =>
+            {
+                var createResult =
+                    await groupRepository.CreateGroup(createGroupDto.GroupName, creatorId: googleUserId);
+                return createResult.Match(
+                    ok: _ => this.Ok(),
+                    error: MapRepositoryErrorToActionResult);
+            },
+            () => this.BadRequest("User not logged in")
+        );
     }
 
     [HttpPut("join/{groupId}")]
@@ -56,7 +68,8 @@ public class GroupController : ControllerBase
     [HttpPut("leave/{groupId}")]
     public async Task<IActionResult> LeaveGroup(string groupId, [FromBody] string userId)
     {
-        var removeResult = await groupRepository.RemoveUserFromGroup(userId: Guid.Parse(userId), groupId: Guid.Parse(groupId));
+        var removeResult =
+            await groupRepository.RemoveUserFromGroup(userId: Guid.Parse(userId), groupId: Guid.Parse(groupId));
         return removeResult.Match(
             ok: _ => this.Ok(),
             error: MapRepositoryErrorToActionResult);

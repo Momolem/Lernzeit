@@ -9,7 +9,6 @@ public static class GroupMapper
     public static Group ToDomain(this GroupEntity entity) => new(
         entity.Id,
         entity.Name,
-        entity.Calendar,
         entity.UserGroups.Select(s => s.User.ToDomain()).ToImmutableList()
     );    
     
@@ -17,8 +16,7 @@ public static class GroupMapper
     {
         var groupEntity = new GroupEntity(
             entity.Id,
-            entity.Name,
-            entity.Calendar ?? string.Empty);
+            entity.Name);
 
         foreach (var userGroupEntity in entity.Members.Select(m => new UserGroupEntity(m.Id, entity.Id)))
         {

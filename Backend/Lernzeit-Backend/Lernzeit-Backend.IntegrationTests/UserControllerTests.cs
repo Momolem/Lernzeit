@@ -26,9 +26,10 @@ public class UserControllerTests
     public async Task GetUsers_ReturnsSuccess()
     {
         var response = await client.GetAsync("/api/User", TestContext.Current.CancellationToken);
-        
+
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var users = await response.Content.ReadFromJsonAsync<List<UserDto>>(cancellationToken: TestContext.Current.CancellationToken);
+        var users = await response.Content.ReadFromJsonAsync<List<UserDto>>(
+            cancellationToken: TestContext.Current.CancellationToken);
         users.Should().NotBeNull();
     }
 
@@ -45,9 +46,10 @@ public class UserControllerTests
         }
 
         var response = await client.GetAsync($"/api/User/{userId}", TestContext.Current.CancellationToken);
-        
+
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var userDto = await response.Content.ReadFromJsonAsync<UserDto>(cancellationToken: TestContext.Current.CancellationToken);
+        var userDto =
+            await response.Content.ReadFromJsonAsync<UserDto>(cancellationToken: TestContext.Current.CancellationToken);
         userDto.Should().NotBeNull();
         userDto!.Name.Should().Be("Test User");
     }
@@ -72,7 +74,7 @@ public class UserControllerTests
         }
 
         var request = new HttpRequestMessage(HttpMethod.Delete, $"/api/User/{userId.ToString()}");
-            
+
         var response = await client.SendAsync(request, TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -84,7 +86,7 @@ public class UserControllerTests
             userInDb.Should().BeNull();
         }
     }
-    
+
     [Fact]
     public async Task UpdateUser_UpdatesUser_WhenExists()
     {
@@ -97,8 +99,9 @@ public class UserControllerTests
             await db.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 
-        var updateDto = new UserDto(userId.ToString(), "New Name", "newUrl", "{}");
-        var response = await System.Net.Http.Json.HttpClientJsonExtensions.PutAsJsonAsync(client, "/api/User", updateDto, TestContext.Current.CancellationToken);
+        var updateDto = new UserDto(userId.ToString(), "", "New Name", "newUrl", "{}");
+        var response = await System.Net.Http.Json.HttpClientJsonExtensions.PutAsJsonAsync(client, "/api/User",
+            updateDto, TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         using (var scope = waf.Services.CreateScope())

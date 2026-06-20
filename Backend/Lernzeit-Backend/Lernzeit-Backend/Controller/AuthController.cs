@@ -1,5 +1,7 @@
 using System.Security.Claims;
+using FunicularSwitch;
 using Lernzeit.Application.Contracts;
+using Lernzeit.Domain;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -11,8 +13,6 @@ namespace LernzeitBackend.Controller;
 [Route("api/[controller]")]
 public class AuthController(IConfiguration configuration, IUserRepository userRepository) : ControllerBase
 {
-    private readonly IUserRepository userRepository = userRepository;
-    
     [HttpGet("login")]
     public IActionResult Login([FromQuery] string? returnUrl)
     {
@@ -35,18 +35,25 @@ public class AuthController(IConfiguration configuration, IUserRepository userRe
     }
 
     [HttpGet("me")]
-    public IActionResult GetCurrentUser()
+    public async Task<IActionResult> GetCurrentUser()
     {
         if (User.Identity?.IsAuthenticated == true)
         {
-            
-            return Ok(new
-            {
-                IsAuthenticated = true,
-                Name = User.Identity.Name,
-                Email = User.FindFirstValue(ClaimTypes.Email),
-                Avatar = User.FindFirstValue("picture")
-            });
+            var googleId = User.FindFirstValue(ClaimTypes.NameIdentifier).ToOption();
+            return await googleId.Match(async g =>
+                {
+                    await userRepository.CreateUserIfNotExists(new GoogleUserId(g), User.Identity.Name ?? string.Empty);
+
+                    return Ok(new
+                    {
+                        IsAuthenticated = true,
+                        Name = User.Identity.Name,
+                        Email = User.FindFirstValue(ClaimTypes.Email),
+                        Avatar = User.FindFirstValue("picture")
+                    });
+                },
+                () => Ok(new { IsAuthenticated = false })
+            );
         }
 
         return Ok(new { IsAuthenticated = false });

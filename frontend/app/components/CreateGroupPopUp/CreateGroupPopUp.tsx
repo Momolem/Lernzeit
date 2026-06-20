@@ -3,6 +3,7 @@ import { useState } from "react";
 import Input from "~/components/input/input";
 import ConfirmBtn from "~/components/confirmBtn/ConfirmBtn";
 import styles from "./CreateGroupPopUp.module.css";
+import {apiClient} from "~/api/client";
 
 export interface CreateGroupPopUpProps {
   isOpen: boolean;
@@ -15,9 +16,8 @@ export default function CreateGroupPopUp({
 }: CreateGroupPopUpProps) {
   const [groupName, setGroupName] = useState("");
 
-  function confirmGroup() {
-    //  requ to backend
-    // create group comp in home
+  const confirmGroup = async () => {
+    await apiClient.createGroup(groupName)
   }
 
   function selectGroup() {}
@@ -44,7 +44,7 @@ export default function CreateGroupPopUp({
           <ConfirmBtn
             yes={true}
             onClick={() => {
-              confirmGroup;
+              confirmGroup();
               setIsOpen(false);
               setGroupName("");
             }}
