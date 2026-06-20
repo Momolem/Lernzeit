@@ -1,13 +1,11 @@
 import { Modal } from "~/components/modal/modal";
 import { useEffect, useState } from "react";
-import Input from "~/components/input/input";
-import ConfirmBtn from "~/components/confirmBtn/ConfirmBtn";
 import styles from "./InvitationPopUp.module.css";
-import qrCodeExample from "~/resources/qr_code_example.png";
 import copyIcon from "~/resources/Copy_Icon.svg";
 import Button from "../button/button";
 import Icon from "../Icon";
 import crossIcon from "~/resources/No_Icon.svg";
+import { QRCodeSVG } from "qrcode.react";
 
 export interface InvitationPopUpProps {
   isOpen: boolean;
@@ -22,17 +20,12 @@ export default function InvitationPopUp({
   groupId,
   groupName,
 }: InvitationPopUpProps) {
-  // const [qrCode, setQRcode] = useState(null);
+  const [isCopied, setIsCopied] = useState(false);
+  const inviteLink = "https://iegendwas.lnages/hier/könnte/ihrlinksein";
 
-  function confirmGroup() {
-    //  requ to backend
-    // create group comp in home
-  }
-
-  function selectGroup() {}
-
-  function handleChange(e: any) {
-    setGroupName(e.target.value);
+  function copyLink() {
+    navigator.clipboard.writeText(inviteLink);
+    setIsCopied(true);
   }
 
   useEffect(() => {
@@ -47,19 +40,32 @@ export default function InvitationPopUp({
       }}
     >
       <div className={styles.modalContent}>
-        <div className={styles.upperWraper}>
-          <div className={styles.qrCodeWrapper}>
-            <img src={qrCodeExample} alt="QR Code" />
+        <div className={styles.upperFrame}>
+          <div className={styles.qrCodeFrame}>
+            <QRCodeSVG value={inviteLink} size={200} />
           </div>
-          <p>Trete {groupName} bei</p>
-          <div>
-            <Input />
-            <button>
+          <p className={styles.joinGroupText}>Trete {groupName} bei</p>
+          <div className={styles.linkContainer}>
+            <div className={styles.linkWindow}>{inviteLink}</div>
+            <button
+              className={`${styles.iconcopy} ${isCopied ? styles.iconcopyCopied : ""}`}
+              onClick={copyLink}
+              type="button"
+            >
               <img src={copyIcon} alt="Copy Icon" />
             </button>
           </div>
         </div>
-        <Button variant="primary" icon={Icon(crossIcon, "Cancel")} />
+        <Button
+          variant="secondary"
+          centred={true}
+          onClick={() => {
+            setIsOpen(false);
+            setIsCopied(false);
+          }}
+          icon={Icon(crossIcon, "Cancel")}
+          children={undefined}
+        />
       </div>
     </Modal>
   );

@@ -5,31 +5,10 @@
   gap: 10px;
   flex-direction: column;
 }
-.frameParent {
-  width: 100%;
-  height: 485px;
-  position: relative;
-  box-shadow: 0px 25px 0px #fd6001;
-  border-radius: 37px;
-  background-color: var(--color-white);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px;
-  box-sizing: border-box;
-  gap: 4px;
-  text-align: center;
-  font-size: 25px;
-  color: var(--color-white);
-  font-family: var(--font-jua);
-}
-.frameGroup {
+.upperFrame {
   align-self: stretch;
-  height: 400px;
   border-radius: 32px;
-  background-color: var(--color-gray);
-  overflow: hidden;
+  background-color: var(--neutral-800);
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -38,6 +17,26 @@
   box-sizing: border-box;
   gap: 15px;
 }
+.qrCodeFrame {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 1/1;
+  border-radius: 28px;
+  overflow: hidden;
+  /* flex-shrink: 0; */
+  object-fit: cover;
+  padding: 15px;
+  background-color: var(--white);
+}
+.joinGroupText {
+  font-size: 25px;
+  line-height: 32px;
+  font-family: Jua;
+  color: var(--white);
+  text-align: center;
+  display: inline-block;
+}
 .frameChild {
   width: 235px;
   height: 233px;
@@ -45,74 +44,57 @@
   object-fit: cover;
   flex-shrink: 0;
 }
-.treteMatheBei {
-  width: 201px;
-  height: 35px;
-  position: relative;
-  line-height: 32px;
-  display: inline-block;
-  flex-shrink: 0;
-}
-.linkcontainer {
-  width: 255px;
-  overflow: hidden;
+
+.linkContainer {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   flex-shrink: 0;
-  text-align: left;
-  font-size: 18px;
-  color: var(--color-gray);
-  font-family: var(--font-funnel-display);
 }
-.input {
-  align-self: stretch;
-  width: 201px;
-  border-radius: 8px;
-  background-color: var(--color-white);
+
+.linkWindow {
   overflow: hidden;
-  flex-shrink: 0;
+  white-space: nowrap; /* Don't forget this one */
+  text-overflow: ellipsis;
+  width: 100%;
+  height: 42px;
+  line-height: 42px;
+  /* max-width: 100%; */
+  position: relative;
+  border-radius: 8px;
+  background-color: var(--white);
   display: flex;
   align-items: center;
   padding: 0px 12px;
   box-sizing: border-box;
-}
-.tolleGruppe {
-  position: relative;
-}
-.copy {
-  height: 42px;
-  width: 42px;
-  border-radius: 7px;
-  background-color: var(--color-white);
-  overflow: hidden;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  text-align: left;
+  font-size: 18px;
+  color: var(--neutral-800);
+  font-family: var(--font-funnel-display);
 }
 .iconcopy {
-  align-self: stretch;
   height: 42px;
-  position: relative;
-  max-width: 100%;
+  border-radius: 7px;
+  background-color: var(--white);
   overflow: hidden;
   flex-shrink: 0;
-}
-.button {
-  align-self: stretch;
-  height: 56px;
-  border-radius: 17px;
-  background-color: var(--color-gray);
-  border: 2px solid var(--color-gray);
-  box-sizing: border-box;
+  aspect-ratio: 1/1;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  color: var(--black);
+  padding: 10px;
 }
-.iconno {
-  height: 31px;
-  width: 31px;
-  position: relative;
+.iconcopy:hover {
+  cursor: pointer;
+}
+
+.iconcopy:active,
+.iconcopyCopied {
+  background-color: var(--neutral-700);
+}
+.iconcopyCopied img {
+  filter: brightness(0) invert(1);
 }

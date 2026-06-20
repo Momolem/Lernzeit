@@ -6,10 +6,26 @@
   display: flex;
   gap: 1rem;
   flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   margin-bottom: 2rem;
+  width: 100%;
+}
+.buttonStack {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+}
+.navLink {
+  width: 100%;
 }
 
 .meineGruppen {
+  align-self: flex-start;
   font-family: Jua;
   color: var(--black);
   font-size: 20px;
@@ -19,6 +35,10 @@
 }
 
 .groupWrapper {
+  margin: auto;
+  width: 80%;
+  max-width: 600px;
+  min-width: 225px;
   display: flex;
   padding: 12px 10px;
   flex-direction: column;
