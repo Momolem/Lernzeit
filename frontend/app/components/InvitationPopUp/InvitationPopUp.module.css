@@ -1,4 +1,4 @@
-.modalContent {
+.upperWraper{
   display: flex;
   align-items: center;
   justify-content: center;
@@ -115,4 +115,13 @@
   height: 31px;
   width: 31px;
   position: relative;
+}
+
+.title {
+  text-align: center;
+  font-family: "Funnel Display";
+  font-size: 21px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px; /* 114.286% */
 }

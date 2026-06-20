@@ -129,6 +129,24 @@ export const apiClient = {
             console.error("Calendar fetch error:", error);
             throw error;
         }
+    },
+    async joinGroup(groupId: string) {
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/group/join/${groupId}`, {
+                method: "POST",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Login failed: ${response.status} ${errorText}`);
+            }
+
+            return true;
+        } catch (error) {
+            console.error("Error joining group", error);
+            throw error;
+        }
     }
 };
 

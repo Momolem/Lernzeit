@@ -30,7 +30,7 @@ public class GroupController : ControllerBase
         {
             return NotFound("User not logged in");
         }
-        
+
         var groups = await this.groupRepository.GetGroupsForUser(new GoogleUserId(userId));
         return this.Ok(groups.Select(g => g.ToDto()).ToList());
     }
@@ -62,17 +62,23 @@ public class GroupController : ControllerBase
         );
     }
 
-    [HttpPut("join/{groupId}")]
-    public async Task<IActionResult> AddUserToGroup(string groupId, [FromBody] string userId)
+    [Authorize]
+    [HttpPost("join/{groupId}")]
+    public async Task<IActionResult> AddUserToGroup(string groupId)
     {
-        var addResult = await groupRepository.AddUserToGroup(userId: Guid.Parse(userId), groupId: Guid.Parse(groupId));
-        return addResult.Match(
-            ok: _ => this.Ok(),
-            error: MapRepositoryErrorToActionResult
-        );
+        var userIdOption = User.FindFirstValue(ClaimTypes.NameIdentifier)
+            .ToOption()
+            .Map(g => new GoogleUserId(g));
+
+        return await userIdOption
+            .Match(async userId => await groupRepository.AddUserToGroup(userId: userId, groupId: Guid.Parse(groupId)),
+                () => RepositoryResult.Error(RepositoryError.BadRequest("User not logged in")))
+            .Match(ok: _ => this.Ok(),
+                error: MapRepositoryErrorToActionResult
+            );
     }
 
-    [HttpPut("leave/{groupId}")]
+    [HttpPost("leave/{groupId}")]
     public async Task<IActionResult> LeaveGroup(string groupId, [FromBody] string userId)
     {
         var removeResult =

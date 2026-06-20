@@ -22,3 +22,7 @@
     font-weight: 600;
     line-height: 24px; /* 114.286% */
 }
+
+.input {
+    border: none;
+}

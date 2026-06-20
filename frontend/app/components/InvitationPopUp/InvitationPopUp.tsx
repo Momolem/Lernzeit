@@ -1,13 +1,8 @@
 import { Modal } from "~/components/modal/modal";
 import { useEffect, useState } from "react";
 import Input from "~/components/input/input";
-import ConfirmBtn from "~/components/confirmBtn/ConfirmBtn";
 import styles from "./InvitationPopUp.module.css";
-import qrCodeExample from "~/resources/qr_code_example.png";
-import copyIcon from "~/resources/Copy_Icon.svg";
-import Button from "../button/button";
-import Icon from "../Icon";
-import crossIcon from "~/resources/No_Icon.svg";
+import QRCode from "react-qr-code";
 
 export interface InvitationPopUpProps {
   isOpen: boolean;
@@ -22,21 +17,14 @@ export default function InvitationPopUp({
   groupId,
   groupName,
 }: InvitationPopUpProps) {
-  // const [qrCode, setQRcode] = useState(null);
 
-  function confirmGroup() {
-    //  requ to backend
-    // create group comp in home
-  }
 
-  function selectGroup() {}
-
-  function handleChange(e: any) {
-    setGroupName(e.target.value);
-  }
+  const [origin, setOrigin] = useState("");
 
   useEffect(() => {
-    // generate QR code
+    if (typeof window !== "undefined") {
+      setOrigin(window.location.origin);
+    }
   }, []);
 
   return (
@@ -48,18 +36,15 @@ export default function InvitationPopUp({
     >
       <div className={styles.modalContent}>
         <div className={styles.upperWraper}>
+          <span className={styles.title}>Trete {groupName} bei</span>
           <div className={styles.qrCodeWrapper}>
-            <img src={qrCodeExample} alt="QR Code" />
+            <QRCode value={`${origin}/join/${groupId}`} />
           </div>
-          <p>Trete {groupName} bei</p>
+          <p className="font-semibold m-2">oder über diesen Link beitreten</p>
           <div>
-            <Input />
-            <button>
-              <img src={copyIcon} alt="Copy Icon" />
-            </button>
+            <Input value={`${origin}/join/${groupId}`} showCopy />
           </div>
         </div>
-        <Button variant="primary" icon={Icon(crossIcon, "Cancel")} />
       </div>
     </Modal>
   );

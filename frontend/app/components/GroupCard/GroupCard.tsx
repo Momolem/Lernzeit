@@ -2,7 +2,7 @@ import styles from "./GroupCard.module.css";
 import QRcodeBtn from "../QRcodeBtn/QRcodeBtn";
 
 export interface GroupCardProps {
-  groupId: number;
+  groupId: string;
   groupName: string;
   members: Array<string>;
   onClick: () => void;

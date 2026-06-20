@@ -2,7 +2,6 @@ using FunicularSwitch;
 using Lernzeit.Application.Contracts;
 using Lernzeit.Application.ResultTypes;
 using Lernzeit.Domain;
-using Lernzeit.PostgresAdapter.Entities;
 using Lernzeit.PostgresAdapter.Mappers;
 using Microsoft.EntityFrameworkCore;
 
@@ -63,26 +62,21 @@ public class GroupRepository : IGroupRepository
         return RepositoryResult.Ok(No.Thing);
     }
 
-    public async Task<RepositoryResult<Unit>> AddUserToGroup(Guid userId, Guid groupId)
+    public async Task<RepositoryResult<Unit>> AddUserToGroup(GoogleUserId userId, Guid groupId)
     {
-        var user = await context.Users.FindAsync(userId);
+        var user = await context.Users.FirstOrDefaultAsync(u => u.GoogleUserId == userId.Id);
         if (user == null)
         {
-            return RepositoryResult.Error(RepositoryError.NotFound($"User with id {userId.ToString()} not found"));
-        }
-
-        if (string.IsNullOrEmpty(user.Calendar))
-        {
-            return RepositoryResult.Error(RepositoryError.BadRequest($"User with id {userId.ToString()} has no calendar"));
+            return RepositoryResult.Error(RepositoryError.NotFound($"User with id {userId} not found"));
         }
 
         var group = await context.Groups.Include(g => g.Members).FirstOrDefaultAsync(g => g.Id == groupId);
         if (group == null)
             return RepositoryResult.Error(RepositoryError.NotFound($"Group with id {groupId.ToString()} not found"));
         
-        if (group.Members.Any(m => m.Id == userId))
+        if (group.Members.Any(m => m.GoogleUserId == userId.Id))
         {
-            return RepositoryResult.Error(RepositoryError.BadRequest($"User with id {userId.ToString()} is already in group with id {groupId.ToString()}"));
+            return RepositoryResult.Error(RepositoryError.BadRequest($"User with id {userId} is already in group with id {groupId.ToString()}"));
         }
         
         group.Members.Add(user);
