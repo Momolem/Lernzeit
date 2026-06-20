@@ -10,6 +10,11 @@
     align-items: center;
 }
 
+.input-wrapper::placeholder {
+    color: var(--neutral-700, #404252);
+    opacity: 1;
+}
+
 .input-wrapper:focus {
     outline-color: var(--orange-5);
 }

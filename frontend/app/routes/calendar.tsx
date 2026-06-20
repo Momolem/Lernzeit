@@ -126,7 +126,7 @@ export default function Calendar() {
     }
 
     return (
-        <div className="h-full">
+        <div className="h-full w-full">
             <TimetableComponent initialEvents={events || undefined} />
         </div>
     );

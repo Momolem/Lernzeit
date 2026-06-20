@@ -1,6 +1,8 @@
 .card {
+  cursor: pointer;
   display: flex;
   width: 100%;
+  min-width: 120px;
   height: fit-content;
   padding: 18px 14px;
   flex-direction: column;
@@ -16,7 +18,7 @@
 
 .header {
   display: flex;
-  width: 321px;
+  width: 100%;
   padding: 10px 8px;
   justify-content: space-between;
   align-items: center;
@@ -33,7 +35,7 @@
 
 .nameLabel {
   display: flex;
-  width: 313px;
+  width: 100%;
   padding: 5px 25px;
   align-items: center;
   border-radius: 20px;

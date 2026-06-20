@@ -16,20 +16,24 @@ export default function Input({fullWidth, isLoading, showCopy, ...props}: InputP
         }
     };
 
-    return (
-        <div className={`input-wrapper ${fullWidth ? 'w-full' : ''}`}>
-            <input
-                type="text"
-                className={`input ${isLoading ? 'loading' : ''}`}
-                {...props}
-            />
-            {showCopy && (
+    if (showCopy) {
+        return (
+            <div className={`input-wrapper ${fullWidth ? 'w-full' : ''}`}>
+                <input
+                    type="text"
+                    className={`input ${isLoading ? 'loading' : ''}`}
+                    {...props}
+                />
                 <button
                     onClick={handleCopy}
                 >
-                    <img src={copyIcon} width="24px" alt="Copy Icon" />
+                    <img src={copyIcon} width="24px" alt="Copy Icon"/>
                 </button>
-            )}
-        </div>
-    );
+            </div>
+        );
+    } else {
+        return <input type="text" className={`input-wrapper`} {...props}></input>;
+    }
+
+
 }

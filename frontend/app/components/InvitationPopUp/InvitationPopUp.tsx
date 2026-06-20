@@ -1,8 +1,11 @@
 import { Modal } from "~/components/modal/modal";
 import { useEffect, useState } from "react";
-import Input from "~/components/input/input";
 import styles from "./InvitationPopUp.module.css";
-import QRCode from "react-qr-code";
+import copyIcon from "~/resources/Copy_Icon.svg";
+import Button from "../button/button";
+import Icon from "../Icon";
+import crossIcon from "~/resources/No_Icon.svg";
+import { QRCodeSVG } from "qrcode.react";
 
 export interface InvitationPopUpProps {
   isOpen: boolean;
@@ -17,9 +20,13 @@ export default function InvitationPopUp({
   groupId,
   groupName,
 }: InvitationPopUpProps) {
-
-
+  const [isCopied, setIsCopied] = useState(false);
   const [origin, setOrigin] = useState("");
+
+  function copyLink() {
+    navigator.clipboard.writeText(`${origin}/join/${groupId}`);
+    setIsCopied(true);
+  }
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -35,16 +42,32 @@ export default function InvitationPopUp({
       }}
     >
       <div className={styles.modalContent}>
-        <div className={styles.upperWraper}>
-          <span className={styles.title}>Trete {groupName} bei</span>
-          <div className={styles.qrCodeWrapper}>
-            <QRCode value={`${origin}/join/${groupId}`} />
+        <div className={styles.upperFrame}>
+          <div className={styles.qrCodeFrame}>
+            <QRCodeSVG value={`${origin}/join/${groupId}`} size={200} />
           </div>
-          <p className="font-semibold m-2">oder über diesen Link beitreten</p>
-          <div>
-            <Input value={`${origin}/join/${groupId}`} showCopy />
+          <p className={styles.joinGroupText}>Trete {groupName} bei</p>
+          <div className={styles.linkContainer}>
+            <div className={styles.linkWindow}>{`${origin}/join/${groupId}`}</div>
+            <button
+              className={`${styles.iconcopy} ${isCopied ? styles.iconcopyCopied : ""}`}
+              onClick={copyLink}
+              type="button"
+            >
+              <img src={copyIcon} alt="Copy Icon" />
+            </button>
           </div>
         </div>
+        <Button
+          variant="secondary"
+          centred={true}
+          onClick={() => {
+            setIsOpen(false);
+            setIsCopied(false);
+          }}
+          icon={Icon(crossIcon, "Cancel")}
+          children={undefined}
+        />
       </div>
     </Modal>
   );

@@ -75,27 +75,28 @@ export default function Home() {
                 setIsOpen={setCreateModalIsOpen}
             />
             <div className={styles.verticalStack}>
-                <Button
-                    onClick={() => {
-                        setCreateModalIsOpen(true);
-                    }}
-                    variant="primary"
-                    icon={Icon(plusIcon, "plus icon")}
-                >
-                    Gruppe erstellen
-                </Button>
-                <NavLink to="/groups" className="d">
-                    <Button variant="ghost" icon={Icon(QRcodeIcon, "qrcode icon")}>
-                        Gruppe beitreten
+                <div className={styles.buttonStack}>
+                    <Button
+                        onClick={() => {
+                            setCreateModalIsOpen(true);
+                        }}
+                        variant="primary"
+                        icon={Icon(plusIcon, "plus icon")}
+                    >
+                        Gruppe erstellen
                     </Button>
-                </NavLink>
-                <NavLink to="/calendar" className="d">
-                    <Button variant="ghost" icon={Icon(calendarIcon, "calendar icon")}>
-                        Mein Kalender
-                    </Button>
-                </NavLink>
-                <p className={styles.meineGruppen}>Meine Gruppen</p>
+                    <NavLink to="/joinGroup" className={styles.navLink}>
+                        <Button variant="ghost" icon={Icon(QRcodeIcon, "qrcode icon")}>
+                            Gruppe beitreten
+                        </Button>
+                    </NavLink>
+                    <NavLink to="/calendar" className={styles.navLink}>
+                        <Button variant="ghost" icon={Icon(calendarIcon, "calendar icon")}>
+                            Mein Kalender
+                        </Button>
+                    </NavLink></div>
                 <div className={styles.groupWrapper}>
+                    <p className={styles.meineGruppen}>Meine Gruppen</p>
                     {loading && <p>Lade Gruppen...</p>}
                     {!loading &&
                         groups.map((group: Group) => (

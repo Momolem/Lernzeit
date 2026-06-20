@@ -1,0 +1,68 @@
+.centeredScreen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.layoutWrapper {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  min-height: 100vh;
+}
+
+.pageContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  margin: 0;
+}
+
+.centerColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  width: 6rem;
+  height: 6rem;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.introText {
+  margin-bottom: 2rem;
+  text-align: center;
+  max-width: 28rem;
+}
+
+.fullButtonContainer {
+  width: 100%;
+  height: 100%;
+}
+
+.errorMain {
+  padding-top: 4rem;
+  padding-right: 1rem;
+  padding-left: 1rem;
+  padding-bottom: 1rem;
+  width: min(100%, 80rem);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.errorStack {
+  width: 100%;
+  padding: 1rem;
+  overflow-x: auto;
+}
