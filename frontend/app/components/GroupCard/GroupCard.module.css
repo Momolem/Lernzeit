@@ -1,13 +1,17 @@
 .card {
   display: flex;
-  width: 349px;
-  height: 180px;
-  padding: 0 14px;
+  width: 100%;
+  height: fit-content;
+  padding: 18px 14px;
   flex-direction: column;
   align-items: center;
   gap: 8px;
   border-radius: 21px;
   background: var(--blue-4);
+}
+
+.card:hover {
+  background-color: #93def9;
 }
 
 .header {
@@ -26,9 +30,18 @@
   font-weight: 400;
   line-height: 27px; /* 67.5% */
 }
-.icon {
-  width: 47px;
-  height: 47px;
-  flex-shrink: 0;
-  aspect-ratio: 1/1;
+
+.nameLabel {
+  display: flex;
+  width: 313px;
+  padding: 5px 25px;
+  align-items: center;
+  border-radius: 20px;
+  background: var(--blue-6);
+  color: var(--white);
+  font-family: Jua;
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 27px; /* 96.429% */
 }

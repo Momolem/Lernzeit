@@ -1,6 +1,8 @@
 using FunicularSwitch;
+using Lernzeit.Application.ResultTypes;
 using Lernzeit.Application.Contracts;
 using Lernzeit.Domain;
+using Lernzeit.PostgresAdapter.Entities;
 using Lernzeit.PostgresAdapter.Mappers;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +14,19 @@ public class UserRepository : IUserRepository
     public UserRepository(LernzeitDbContext context)
     {
         this.context = context;
+    }
+    public async Task<RepositoryResult<Unit>> CreateUser(string name, string email, string? calUrl, string? calendar)
+    {
+        var user = await this.context.Users.FindAsync(email);
+        if (user != null)
+        {
+            return RepositoryResult.Error(RepositoryError.NotFound($"User with email {email} already exists"));
+        }
+
+        var newUser = User.Create(name, email, calUrl, calendar);
+        context.Users.Add(newUser.ToDbEntity());
+        await context.SaveChangesAsync();
+        return RepositoryResult.Ok(No.Thing);
     }
     public async Task<List<User>> GetAllUsers()
     {

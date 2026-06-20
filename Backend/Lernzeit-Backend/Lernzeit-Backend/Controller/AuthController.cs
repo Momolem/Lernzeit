@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Lernzeit.Application.Contracts;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -8,8 +9,10 @@ namespace LernzeitBackend.Controller;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController(IConfiguration configuration) : ControllerBase
+public class AuthController(IConfiguration configuration, IUserRepository userRepository) : ControllerBase
 {
+    private readonly IUserRepository userRepository = userRepository;
+    
     [HttpGet("login")]
     public IActionResult Login([FromQuery] string? returnUrl)
     {
@@ -36,6 +39,7 @@ public class AuthController(IConfiguration configuration) : ControllerBase
     {
         if (User.Identity?.IsAuthenticated == true)
         {
+            
             return Ok(new
             {
                 IsAuthenticated = true,

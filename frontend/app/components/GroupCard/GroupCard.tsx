@@ -1,26 +1,33 @@
 import styles from "./GroupCard.module.css";
-import qrCodeIcon from "~/resources/QR-Code_Icon.svg";
-import Icon from "../Icon";
-// icon qrcode
+import QRcodeBtn from "../QRcodeBtn/QRcodeBtn";
 
 export interface GroupCardProps {
+  groupId: number;
   groupName: string;
   members: Array<string>;
   onClick: () => void;
+  handleQRCodeClick: () => void;
 }
 export default function GroupCard({
+  groupId,
   groupName,
   members,
-  onClick,
+  onClick: onClick,
+  handleQRCodeClick: onQRcodeClick,
 }: GroupCardProps) {
+  function handleQRCode() {}
+
+  function handleShowGroup() {}
+
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={onClick}>
       <div className={styles.header}>
         <div className={styles.title}>Mathe</div>
+        <QRcodeBtn onClick={onQRcodeClick} />
       </div>
-      {members.map(() => (
-        <div className={styles.marieWrapper}>
-          <p className={styles.marie}>Marie</p>
+      {members.map((m, index) => (
+        <div key={index} className={styles.nameLabel}>
+          <span>{m}</span>
         </div>
       ))}
     </div>

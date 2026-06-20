@@ -1,37 +1,36 @@
 .btn-wrapper {
-    display: flex;
-    height: 56px;
-    width: 100%;
-    padding: 0 17px 0 24px;
-    align-items: center;
-    gap: 12px;
-
-    border-radius: 12px;
+  display: flex;
+  height: 56px;
+  width: 100%;
+  padding: 0 17px 0 24px;
+  align-items: center;
+  gap: 12px;
+  border-radius: 12px;
 }
 
 .btn-primary {
-    color: var(--white);
-    background: var(--orange-5);
-    border: 2px solid var(--neutral-700);
+  color: var(--white);
+  background: var(--orange-5);
+  border: 2px solid var(--neutral-700);
 }
 
 .btn-secondary {
-    color: var(--white);
-    background: var(--neutral-800);
-    border: 2px solid var(--neutral-700);
+  color: var(--white);
+  background: var(--neutral-800);
+  border: 2px solid var(--neutral-700);
 }
 
 .btn-ghost {
-    color: var(--black);
-    background: var(--white);
-    border: 2px solid var(--neutral-700);
+  color: var(--black);
+  background: var(--white);
+  border: 2px solid var(--neutral-700);
 }
 
 .btn-content {
-    text-align: center;
-    font-family: "Funnel Display";
-    font-size: 21px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 24px; /* 114.286% */
+  text-align: center;
+  font-family: "Funnel Display";
+  font-size: 21px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px; /* 114.286% */
 }

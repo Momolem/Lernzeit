@@ -1,6 +1,6 @@
 import type { TimetableEvents } from "~/types/timetable";
 
-const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL ?? "https://localhost:7113";
+const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL ?? "https://localhost:5161";
 
 export const apiClient = {
     async loginRaumzeit(username: string, password: string): Promise<boolean> {

@@ -1,0 +1,22 @@
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 47px;
+  height: 47px;
+  flex-shrink: 0;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  background-color: var(--blue-3);
+  box-shadow: 0 4px 0 var(--blue-6);
+}
+
+.button:hover {
+  background-color: #dcf6ff;
+}
+
+.button:active {
+  background-color: var(--blue-5);
+  transform: translate(0, 3px);
+  box-shadow: 0 1px 0 var(--blue-6);
+}

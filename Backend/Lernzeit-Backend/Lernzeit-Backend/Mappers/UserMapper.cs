@@ -9,10 +9,11 @@ public static class UserMapper
         => new(
             user.Id.ToString(),
             user.Name,
+            user.Email,
             user.CalUrl,
             user.Calendar
         );
 
     public static User ToDomain(this UserDto userDto)
-        => new(Guid.Parse(userDto.Id), userDto.Name, userDto.CalUrl, userDto.Calendar);
+        => new(Guid.Parse(userDto.Id), userDto.Name, userDto.Email, userDto.CalUrl, userDto.Calendar);
 }

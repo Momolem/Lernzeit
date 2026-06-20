@@ -1,7 +1,7 @@
 import type { Route } from "./+types/home";
 import plusIcon from "../resources/Plus.svg";
+import QRcodeIcon from "~/resources/QR-Code_Icon.svg";
 import calendarIcon from "../resources/Calendar.svg";
-import qrCode from "../resources/QR_Code.svg";
 import Button from "~/components/button/button";
 import Icon from "~/components/Icon";
 import { NavLink, useOutletContext } from "react-router";
@@ -12,6 +12,8 @@ import styles from "./home.module.css";
 import Input from "~/components/input/input";
 import ConfirmBtn from "~/components/confirmBtn/ConfirmBtn";
 import GroupCard from "~/components/GroupCard/GroupCard";
+import CreateGroupPopUp from "~/components/CreateGroupPopUp/CreateGroupPopUp";
+import InvitationPopUp from "~/components/InvitationPopUp/InvitationPopUp";
 
 interface User {
   isAuthenticated: boolean;
@@ -29,8 +31,10 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
   const { user } = useOutletContext<{ user: User }>();
+  console.log("user", user);
 
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [createModalIsOpen, setCreateModalIsOpen] = useState(false);
+  const [inviPopUpIsOpen, setInviPopUpIsOpen] = useState(false);
   const [groupName, setGroupName] = useState("");
 
   function confirmGroup() {
@@ -46,40 +50,20 @@ export default function Home() {
 
   return (
     <>
-      <Modal
-        title="Gruppe erstellen"
-        isOpen={modalIsOpen}
-        onClose={() => {
-          setModalIsOpen(false);
-        }}
-      >
-        <div className={styles.modalContent}>
-          <Input
-            placeholder="SuperGruppe"
-            value={groupName}
-            onChange={handleChange}
-          ></Input>
-          <div className={styles.btnWrapper}>
-            <ConfirmBtn
-              yes={true}
-              onClick={() => {
-                confirmGroup;
-                setModalIsOpen(false);
-              }}
-            ></ConfirmBtn>
-            <ConfirmBtn
-              yes={false}
-              onClick={() => {
-                setModalIsOpen(false);
-              }}
-            ></ConfirmBtn>
-          </div>
-        </div>
-      </Modal>
+      <InvitationPopUp
+        groupId="4"
+        groupName="TestGruppe"
+        setIsOpen={setInviPopUpIsOpen}
+        isOpen={inviPopUpIsOpen}
+      />
+      <CreateGroupPopUp
+        isOpen={createModalIsOpen}
+        setIsOpen={setCreateModalIsOpen}
+      />
       <div className={styles.verticalStack}>
         <Button
           onClick={() => {
-            setModalIsOpen(true);
+            setCreateModalIsOpen(true);
           }}
           variant="primary"
           icon={Icon(plusIcon, "plus icon")}
@@ -87,7 +71,7 @@ export default function Home() {
           Gruppe erstellen
         </Button>
         <NavLink to="/groups" className="d">
-          <Button variant="ghost" icon={Icon(qrCode, "qrcode icon")}>
+          <Button variant="ghost" icon={Icon(QRcodeIcon, "qrcode icon")}>
             Gruppe beitreten
           </Button>
         </NavLink>
@@ -99,9 +83,11 @@ export default function Home() {
         <p className={styles.meineGruppen}>Meine Gruppen</p>
         <div className={styles.groupWrapper}>
           <GroupCard
+            groupId={1}
             groupName="Mathe"
             members={["Marie", "Peter"]}
             onClick={selectGroup}
+            handleQRCodeClick={() => setInviPopUpIsOpen(true)}
           />
         </div>
       </div>
