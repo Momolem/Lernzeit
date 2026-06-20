@@ -17,7 +17,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpClient();
 builder.Services
+    .AddSingleton(TimeProvider.System)
     .AddScoped<RaumzeitService>()
+    .AddScoped<ICalendarService>(sp => sp.GetRequiredService<RaumzeitService>())
+    .AddScoped<Lernzeit.Application.GroupCalendarService>()
     .AddSingleton<ITokenEncryptionService, TokenEncryptionService>()
     .AddScoped<IRaumzeitTokenRepository, RaumzeitTokenRepository>();
 

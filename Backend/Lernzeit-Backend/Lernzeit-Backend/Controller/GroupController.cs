@@ -1,8 +1,10 @@
+using Lernzeit.Application;
 using Lernzeit.Application.Contracts;
 using Lernzeit.Application.ResultTypes;
 using LernzeitBackend.DTOs;
 using LernzeitBackend.Mappers;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol;
 
 namespace LernzeitBackend.Controller;
 
@@ -11,10 +13,12 @@ namespace LernzeitBackend.Controller;
 public class GroupController : ControllerBase
 {
     private readonly IGroupRepository groupRepository;
+    private readonly GroupCalendarService groupCalendarService;
 
-    public GroupController(IGroupRepository groupRepository)
+    public GroupController(IGroupRepository groupRepository, GroupCalendarService groupCalendarService)
     {
         this.groupRepository = groupRepository;
+        this.groupCalendarService = groupCalendarService;
     }
 
     [HttpGet]
@@ -62,6 +66,16 @@ public class GroupController : ControllerBase
             error: MapRepositoryErrorToActionResult);
     }
 
+    [HttpGet("{groupId}/calendar")]
+    public async Task<IActionResult> GetGroupCalendar(string groupId)
+    {
+        var calendar = await groupCalendarService.GetGroupCalendar(new Guid(groupId));
+        return calendar.Match<IActionResult>(
+            some: cal => this.Ok(cal.ToTimetableEvents()),
+            none: this.NotFound);
+    }
+    
+    
     private IActionResult MapRepositoryErrorToActionResult(RepositoryError e)
         => e.Match<IActionResult>(
             notFound: nf => this.NotFound(nf.Message),

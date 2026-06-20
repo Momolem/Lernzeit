@@ -8,5 +8,6 @@ public record Calendar(
 public enum CalendarType
 {
     Raumzeit,
+    Group,
     Manual
 }
