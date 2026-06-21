@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/Tests/">
+    <Project Path="Lernzeit-Backend.ApplicationTests/Lernzeit-Backend.ApplicationTests.csproj" />
     <Project Path="Lernzeit-Backend.IntegrationTests/Lernzeit-Backend.IntegrationTests.csproj" />
   </Folder>
   <Project Path="Lernzeit-Backend.ServiceDefaults/Lernzeit-Backend.ServiceDefaults.csproj" />

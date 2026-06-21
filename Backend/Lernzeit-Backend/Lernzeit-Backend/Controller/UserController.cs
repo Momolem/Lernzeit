@@ -1,6 +1,11 @@
+using System.Security.Claims;
+using FunicularSwitch;
 using Lernzeit.Application.Contracts;
+using Lernzeit.RaumzeitAPI;
+using LernzeitBackend.DTO;
 using LernzeitBackend.DTOs;
 using LernzeitBackend.Mappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LernzeitBackend.Controller;
@@ -10,10 +15,12 @@ namespace LernzeitBackend.Controller;
 public class UserController : ControllerBase
 {
     private readonly IUserRepository userRepository;
+    private readonly RaumzeitService raumzeitService;
 
-    public UserController(IUserRepository userRepository)
+    public UserController(IUserRepository userRepository, RaumzeitService raumzeitService)
     {
         this.userRepository = userRepository;
+        this.raumzeitService = raumzeitService;
     }
 
     [HttpGet]
@@ -49,5 +56,35 @@ public class UserController : ControllerBase
         return removeResult.Match<IActionResult>(
             ok: _ => this.Ok(),
             error: this.NotFound);
+    }
+    
+    [Authorize]
+    [HttpPost("raumzeit/login")]
+    public async Task<IActionResult> Login([FromBody] RaumzeitLoginRequest request)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return this.Unauthorized();
+        }
+        await this.raumzeitService.Login(userId, request.Username, request.Password);
+        return this.Ok();
+    }
+
+    [Authorize]
+    [HttpGet("calendar")]
+    public async Task<IActionResult> GetCalendar()
+    {
+        var calendarResult = await (
+            from userId in User.FindFirstValue(ClaimTypes.NameIdentifier).ToOption()
+                .ToResult(() => "UserID not found")
+            from calendar in raumzeitService.GetPersonalCalendar(new Guid(userId))
+            select calendar.ToTimetableEvents());
+
+        return calendarResult.Match<IActionResult>(
+            this.Ok,
+            this.NotFound
+        );
+
     }
 }

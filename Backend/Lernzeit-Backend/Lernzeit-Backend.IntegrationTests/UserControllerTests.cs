@@ -10,16 +10,28 @@ using Lernzeit.PostgresAdapter.Entities;
 
 namespace Lernzeit_Backend.IntegrationTests;
 
-[Collection("Database collection")]
-public class UserControllerTests
+public class UserControllerTests : IAsyncLifetime
 {
-    private readonly HttpClient client;
-    private readonly LernzeitWaf waf;
+    private HttpClient client = null!;
+    private LernzeitWaf waf = null!;
 
-    public UserControllerTests(LernzeitWaf waf)
+    public ValueTask InitializeAsync()
     {
-        this.waf = waf;
-        client = waf.CreateClient();
+        try
+        {
+            waf = new LernzeitWaf();
+            client = waf.CreateClient();
+            return ValueTask.CompletedTask;
+        }
+        catch (Exception exception)
+        {
+            return ValueTask.FromException(exception);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await waf.DisposeAsync();
     }
 
     [Fact]
