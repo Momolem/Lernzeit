@@ -38,11 +38,11 @@ public class RaumzeitService : ICalendarService
         return Result.Error("Authentication unsuccessful");
     }
 
-    public async Task<Result<Unit>> Login(string userId, string username, string password)
+    public async Task<Result<Unit>> Login(Guid userId, string username, string password)
         => await
             from token in await GetToken(username, password)
             from unit in this.raumzeitTokenRepository.SaveRaumzeitToken(
-                userId: new Guid(userId),
+                userId: userId,
                 token: token,
                 expiration: timeProvider.GetUtcNow().AddDays(185))
             select unit;

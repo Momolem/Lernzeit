@@ -11,4 +11,5 @@ public interface IUserRepository
     public Task<Result<Unit>> UpdateUser(User updatedUser);
     public Task<Result<Unit>> DeleteUser(Guid id);
     public Task<RepositoryResult<Unit>> CreateUserIfNotExists(GoogleUserId googleUserId, string name);
+    Task<Result<User>> GetUserByGoogleId(GoogleUserId googleUserId);
 }

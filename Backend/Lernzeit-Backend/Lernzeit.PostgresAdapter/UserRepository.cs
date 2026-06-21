@@ -46,6 +46,16 @@ public class UserRepository : IUserRepository
 
         return Result.Ok(user.ToDomain());    
     }
+    
+    public async Task<Result<User>> GetUserByGoogleId(GoogleUserId googleUserId)
+    {
+        var user = await this.context.Users.FirstOrDefaultAsync(u => u.GoogleUserId == googleUserId.Id);
+        if (user == null)
+        {
+            return Result.Error("User not found");
+        }
+        return Result.Ok(user.ToDomain());   
+    }
 
     public async Task<Result<Unit>> UpdateUser(User updatedUser)
     {

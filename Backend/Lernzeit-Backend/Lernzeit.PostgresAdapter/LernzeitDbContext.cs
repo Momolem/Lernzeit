@@ -23,7 +23,7 @@ public class LernzeitDbContext : DbContext
 public class RaumzeitToken
 {
     [Key]
-    public required string UserId { get; set; }
+    public required Guid UserId { get; set; }
     
     public required string EncryptedToken { get; set; }
     
