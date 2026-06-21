@@ -29,6 +29,8 @@
     #set text(size: 12pt, lang: "de")
     #set par(justify: true)
 
+    #set heading(numbering: "1.1.1.")
+
     #show table.cell.where(y: 0): strong
     #show table: set par(justify: false)
     #set table(
