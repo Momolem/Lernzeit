@@ -8,7 +8,6 @@
   gap: 12px;
   text-align: center;
   font-size: 21px;
-  color: var(--white);
   font-family: var(--font-funnel-display);
 }
 .qrCodeButton {
@@ -17,6 +16,8 @@
   border-radius: 12px;
   background-color: var(--neutral-800);
   border: 2px solid var(--neutral-800);
+  color: var(--white);
+
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
