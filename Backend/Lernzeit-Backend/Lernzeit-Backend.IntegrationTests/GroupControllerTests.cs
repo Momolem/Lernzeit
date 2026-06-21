@@ -31,6 +31,15 @@ public class GroupControllerTests : IAsyncLifetime
     [Fact]
     public async Task GetGroups_ReturnsEmpty_WhenNoGroupsExist()
     {
+        var userId = Guid.NewGuid();
+        using (var scope = waf.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<LernzeitDbContext>();
+            var user = new UserEntity(userId, "test-google-id", "Test User", "{}");
+            db.Users.Add(user);
+            await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+        }
+
         var response = await client.GetAsync("api/Group", TestContext.Current.CancellationToken);
         
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -45,12 +54,12 @@ public class GroupControllerTests : IAsyncLifetime
         using (var scope = waf.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<LernzeitDbContext>();
-            var user = new UserEntity(userId, "Test User", "", "{}");
+            var user = new UserEntity(userId, "test-google-id", "Test User", "{}");
             db.Users.Add(user);
             await db.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 
-        var response = await HttpClientJsonExtensions.PostAsJsonAsync(client, "api/Group", new { CreatorId = userId, GroupName = "TestGroup"}, TestContext.Current.CancellationToken);
+        var response = await HttpClientJsonExtensions.PostAsJsonAsync(client, "api/Group", new { GroupName = "TestGroup"}, TestContext.Current.CancellationToken);
         
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -96,19 +105,19 @@ public class GroupControllerTests : IAsyncLifetime
         using (var scope = waf.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<LernzeitDbContext>();
-            var user = new UserEntity(userId, "Test User", "", "{}");
+            var user = new UserEntity(userId, "test-google-id", "Test User", "{}");
             var group = new GroupEntity(groupId, "TestGroup");
             db.Users.Add(user);
             db.Groups.Add(group);
             await db.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 
-        var response = await System.Net.Http.Json.HttpClientJsonExtensions.PutAsJsonAsync(client, $"api/Group/join/{groupId}", userId.ToString(), TestContext.Current.CancellationToken);
+        var response = await client.PostAsync($"api/Group/join/{groupId}", null, TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var groupDto = await client.GetFromJsonAsync<GroupDto>($"api/Group/{groupId}",
             cancellationToken: TestContext.Current.CancellationToken);
         groupDto.Should().NotBeNull();
-        groupDto.Members.Should().ContainSingle(m => m.Id == userId.ToString());
+        groupDto.Members.Should().ContainSingle(m => m == "Test User");
     }
 }

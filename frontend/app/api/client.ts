@@ -147,6 +147,24 @@ export const apiClient = {
             console.error("Error joining group", error);
             throw error;
         }
+    },
+    async leaveGroup(groupId: string) {
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/group/leave/${groupId}`, {
+                method: "POST",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Error leaving group: ${response.status} ${errorText}`);
+            }
+
+            return true;
+        } catch (error) {
+            console.error("Error leaving group", error);
+            throw error;
+        }
     }
 };
 

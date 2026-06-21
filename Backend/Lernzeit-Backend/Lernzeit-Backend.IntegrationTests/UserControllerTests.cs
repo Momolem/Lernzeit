@@ -52,7 +52,7 @@ public class UserControllerTests : IAsyncLifetime
         using (var scope = waf.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<LernzeitDbContext>();
-            var user = new UserEntity(userId, "Test User", "", "{}");
+            var user = new UserEntity(userId, "test-google-id", "Test User", "{}");
             db.Users.Add(user);
             await db.SaveChangesAsync(TestContext.Current.CancellationToken);
         }

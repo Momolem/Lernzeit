@@ -8,7 +8,6 @@ using LernzeitBackend.DTOs;
 using LernzeitBackend.Mappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NuGet.Protocol;
 
 namespace LernzeitBackend.Controller;
 

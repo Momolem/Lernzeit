@@ -166,7 +166,7 @@ public class GetGroupCalendarTests
         return new Group(
             Guid.NewGuid(),
             name,
-            memberIds.Select(id => new User(id, "", "", "")).ToList());
+            memberIds.Select(id => new User(id, new(""), "", "", "")).ToList());
     }
 
     private static Result<Calendar> CreateCalendar(params Event[] events)

@@ -107,7 +107,7 @@ export default function Calendar() {
                             <Button onClick={handleCredentialsSubmit} disabled={isSubmitting}>
                                 {isSubmitting ? "Wird angemeldet..." : "Anmelden"}
                             </Button>
-                        </div>
+                        </div> 
                         
                         <div className="flex flex-col gap-2">
                             <h3 className="font-semibold">Alternativ: iCal-Link angeben</h3>
