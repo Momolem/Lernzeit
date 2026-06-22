@@ -1,48 +1,7 @@
-#import "assets/layout.typ": layout
+#import "assets/abgabe_layout.typ": layout
 #import "@preview/oxdraw:0.1.0": *
 #import "@preview/mmdr:0.2.1": mermaid
 #show: layout
-
-
-**Leitfragen zur Architektur**
-• ==Welche Architektur== habe ich gewählt – und warum?
-• ==Welche Komponenten== gibt es und wie sind diese zugeschnitten?
-• Wie ==kommunizieren== sie?
-• Wie werden ==Daten gespeichert== und verarbeitet?
-• Welche ==Qualitätsziele== beeinflussen mein Design?
-• Wie gut ist mein System ==testbar und erweiterbar==?
-
-
-**Labor-/Projektbericht**
-• Abgabe am Ende des Semesters, Umfang: ca. 15-20 Seiten
-• Inhalt / Strukturierung (kann an Struktur eines Pflichtenhefts angelehnt sein)
-1. [x] Einleitung
-2. [x] Motivation, Zielsetzung
-3. [x] Detaillierte Problemstellung
-4. [x] Technologieauswahl (mit Begründung)
-5. [ ] Use Cases (bissen ausformulierien)
-6. [ ] Muss-/Kann-Kriterien
-7. [ ] Umsetzung / Implementierung
-  1. Frontend (React):
-    1. [ ] Designprozess (Figma) - Simon
-    2. [x] Komponenten (Kalender Komponente...) - M
-    3. [x] Requests zum Backend Server - M
-  2. Backend (.NET API):
-    1. [ ] API Endpunkte - S
-    2. [x] Kalenderdaten-Verarbeitung - Moritz
-    3. [ ] Gruppenverwaltung - S
-    4. [ ] Datenbank (PostgreSQL): Datenbankstruktur - S
-    5. [x] Authentifizierung (Google Auth) - M
-    6. [x] Kommunikation zu anderen Systemen (RaumZeit API) - M
-  3. Deployment
-    1. [x] In welcher Umgebung wurde es deployed - M
-    2. [x] Containerisierung (ASPIRE) - M
-8. [ ] Fazit
-  - [ ] Was lief gut / wo gab es Herausforderungen? - S
-  - [ ] Ausblick (siehe Leitfragen, was sind Vorteile & was sind Schwächen des aktuellen Architektur-Designs?) - S
-9. [ ] Literaturverzeichnis (+ Verweise wo AI eingesetzt wurde)
-
-#pagebreak()
 
 #outline()
 #pagebreak()
@@ -253,14 +212,48 @@ Diese Entscheidung basiert auf folgenden Kriterien:
 = Umsetzung / Implementierung
 == Frontend (React)
 === Designprozess (Figma)
-// TODO: Simon - Hier den Designprozess, Wireframes und Figma-Iterationen beschreiben.
+Zu Beginn wurde ein Prototyp in Figma erstellt. Dabei wurde das in Figma integrierte KI-Tool genutzt,
+um die Vorteile von KI im Designprozess zu nutzen. Dies ermöglichte eine schnellere Erledigung von
+Routineaufgaben (Resizing, Layouts, Styles), ein schnelleres Testen mehrerer Ideen und
+Designvarianten sowie Unterstützung bei barrierefreiem und inklusivem Design.
+@figma
+
+Dabei gab es jedoch auch Herausforderungen: Das resultierende Design wirkte weniger durchdacht und
+generisch.
+
+#figure(
+  caption: "Iniziale Seite von Figma AI",
+  image("assets/Figma_AI_Beispiel.png"),
+)
+
+Mithilfe des KI-Tools wurde eine grobe Oberflächenstruktur erarbeitet, die anschließend verfeinert
+wurde. Dazu wurde der User-Flow von Seite zu Seite skizziert und sich am KI-generierten Seitenaufbau
+orientiert.
+(Bild von Skizzen)
+
+Um das visuelle Erscheinungsbild der Oberfläche festzulegen, wurde ein Moodboard erstellt.
+#figure(
+  caption: [Das Moodboard @moodboard_img1 @moodboard_img2],
+  image("assets/Moodboard.png"),
+)
+
+
+Die Referenzen helfen dabei, die visuellen Komponenten im Designprozess greifbar zu machen.
+Von den Referenzen ausgehend, wurden die einzelnen Komponenten erstellt und in den Seiten zusammengeführt.
+#figure(
+  caption: "Iniziale Seite von Figma AI",
+  image("assets/Figma_Comps.png"),
+)
+
+Die Seitenstruktur ist wie folgt aufgebaut:
+(UserFlow-Diagramm einfügen)
 
 === Komponenten
 Die Frontend-Architektur von *Lernzeit* folgt einem streng modularen Ansatz unter Verwendung von React. Das Ziel war es, eine hochgradig interaktive Benutzeroberfläche zu schaffen, die komplexe Kalenderdaten verständlich visualisiert.
 
 #figure(
   caption: "Übersicht der Hauptkomponenten in der Web-Oberfläche",
-  image("assets/overview_mainpage.png")
+  image("assets/overview_mainpage.png"),
 )
 
 Zentrale Bausteine der UI sind:
@@ -290,7 +283,7 @@ Das Backend ist als ASP.NET Core Web API realisiert und folgt den Prinzipien der
 Strukturell haben wir uns im Backend für eine hexagonale Architektur (auch bekannt als „Ports und Adapter“) entschieden. Hierbei werden spezifische Technologien in Adaptern abgekapselt und somit strikt von der Domänenlogik separiert. Die verschiedenen Schichten und Adapter werden in C\# als separate Projekte modelliert. Hierdurch können Zugriffe der Schichten in falscher Richtung, also von innen nach außen, strukturell verhindert werden. Im folgenden Abschnitt werden die verschiedenen Schichten erläutert:
 #figure(
   caption: "Architektur des Projekts",
-  image("assets/Hexagonal.drawio.png")
+  image("assets/Hexagonal.drawio.png"),
 )
 
 
@@ -304,8 +297,45 @@ Strukturell haben wir uns im Backend für eine hexagonale Architektur (auch beka
   - *DataProtection*: Hier wird ein Dienst implementiert, der Tokens sicher verschlüsselt, damit keine unverschlüsselten Tokens in die Datenbank geschrieben werden.
   - *RaumzeitAPI*: Dieser Adapter realisiert die Anbindung an die externe Raumzeit-Schnittstelle via REST. Über den DataProtection-Adapter werden die Tokens sicher verwaltet. Geladene iCal-Kalender werden mit einer Library geparsed und in das interne Domänenmodell überführt.
 
-=== API Endpunkte
-// TODO: Simon - Dokumentation der REST-Schnittstellen, Swagger/OpenAPI und Endpunkt-Struktur.
+=== API-Endpunkte
+Um die Zuständigkeitsbereiche der Adapter klar zu gliedern, wurden diese in die drei Hauptbereiche
+Authentication, Groups und User unterteilt. Das Adaptermodell wurde wie folgt in die Endpunkte
+überführt:
+
+*Authentication*
+(Quelle: Google) Für die Authentifizierung der Nutzer fiel die Entscheidung auf einen
+Drittanbieter: in diesem Fall Google. Der Google-Authentifizierungsprozess bietet Nutzern eine
+komfortable Möglichkeit, sich mit nur einem Schritt bei Apps oder Websites anzumelden, indem sie
+ihren bestehenden Google-Account verwenden. Damit entfällt die Notwendigkeit separater
+Zugangsdaten, komplexer Registrierungsformulare und vergessener Passwörter. Mit nur wenigen
+Codezeilen lässt sich der Login-Prozess integrieren.
+Weitere Details zum Authentifizierungsprozess finden sich unter (Hyperlink) Kapitel 2.5.
+
+- `GET api/auth/login`: Der Endpunkt leitet den Nutzer mit der entsprechend aufgerufenen URL zur
+  Google-Anmeldeseite weiter.
+- `GET api/auth/logout`: Der Nutzer wird abgemeldet.
+- `GET api/auth/me`: Der Nutzer registriert sich über den Google-Authentifizierungsprozess in der
+  LernZeit-Anwendung. Entsprechend wird der Nutzer anschließend in der Datenbank hinterlegt.
+
+*Group*
+- `GET api/group/`: Die Response gibt alle vorhandenen Lerngruppen zurück.
+- `GET api/group/{groupId}`: Die Response gibt die Gruppe mit der entsprechenden ID zurück.
+- `POST (protected) api/group`: Nimmt aus dem Request-Body ein GroupDTO-Objekt sowie den Token des
+  Nutzers entgegen und erstellt daraufhin eine neue Gruppe.
+- `POST (protected) api/group/join/{groupId}`: Fügt den eingeloggten Nutzer der Gruppe mit der
+  entsprechenden groupId hinzu.
+- `POST api/group/leave/{groupId}`: Entfernt den Nutzer aus der Gruppe mit der entsprechenden
+  groupId.
+- `GET api/group/{groupId}/calendar`: Response mit dem Gruppenkalender.
+
+*User*
+- `GET api/user`: Response mit allen registrierten Nutzern.
+- `GET api/user/{userId}`: Response des Nutzers mit der entsprechenden ID.
+- `PUT api/user`: Nimmt aus dem Request-Body das UserDTO-Objekt des aktualisierten Nutzers entgegen.
+- `DELETE api/user/{userId}`: Löscht den Nutzer aus der Datenbank.
+- `POST api/user/raumzeit/login`: Nimmt aus dem Request-Body die RaumZeit-Credentials entgegen und
+  ordnet die RaumZeit-Kalenderdaten dem Nutzerkonto zu.
+- `GET (protected) api/user/calendar`: Die Response enthält die Kalenderdaten des Nutzers.
 
 === Kalenderdaten-Verarbeitung
 Die Kernlogik zur Ermittlung gemeinsamer Termine ist im `GroupCalendarService` implementiert. Dieser führte folgende Schritte nacheinander aus:
@@ -326,10 +356,48 @@ Die Kernlogik zur Ermittlung gemeinsamer Termine ist im `GroupCalendarService` i
   - Dadurch entstehen zusammenhängende Zeitintervalle, die alle belegten Zeiten der Gruppenmitglieder abdecken.
 
 === Gruppenverwaltung
-// TODO: Simon - Logik zur Erstellung von Gruppen, Einladungs-Mechanismus (QR/Link) und Rollen.
+Gruppen können von jedem Nutzer erstellt werden. Dies geschieht auf der Hauptseite über den Button
+„_Gruppe erstellen_". Im daraufhin erscheinenden Dialogfenster kann ein Gruppenname vergeben werden,
+nach dessen Bestätigung die Gruppe erstellt wird. Um weitere Nutzer zu einer Gruppe hinzuzufügen,
+müssen diese vom Ersteller eingeladen werden. Die Einladung kann über einen Link oder das Scannen
+eines QR-Codes erfolgen, wofür der Nutzer auf der GroupCard auf das QR-Icon tippt.
 
-=== Datenbank (PostgreSQL): Datenbankstruktur
-// TODO: Simon - ER-Diagramm erläutern, Normalisierung und Repositories.
+Der Gruppenkalender kann durch einen Klick auf die Gruppenkarte aufgerufen werden. Er stellt das
+Ergebnis aller einzelnen Kalender der Gruppenmitglieder dar. Im Gruppenkalender werden ausschließlich
+bereits belegte Zeitblöcke angezeigt. Durch einen Klick auf eine freie Spalte lässt sich ein
+Gruppen-Event hinzufügen.
+
+Zum Verlassen einer Gruppe wird der Button „_Gruppe verlassen_" oberhalb des Gruppenkalenders
+betätigt.
+
+Die Verknüpfung zwischen Gruppen und ihren Mitgliedern ist in der Datenbank hinterlegt.
+Näheres dazu findet sich im folgenden Kapitel. Sind einer Gruppe keine Nutzer mehr zugeordnet,
+wird diese automatisch aus der Datenbank entfernt.
+
+
+=== Datenbank
+==== Datenbankstruktur
+
+#figure(
+  image("assets/database_diagram.png"),
+  caption: "Datenbank-Schema",
+) <dbSchema>
+
+Abbildung @dbSchema zeigt das Datenbankschema zwischen der User- und der Gruppentabelle. Die
+User_Groups-Tabelle ist eine Relationstabelle und steht zu den Tabellen users und groups jeweils
+in einer 1-zu-n-Beziehung. Die Relation wird über die Primärschlüssel von users und groups
+hergestellt.
+
+==== Implementierung
+Das gewählte Datenbankmanagementsystem ist PostgreSQL. Im Rahmen der Domain-Driven-Architektur
+erfolgt der Datenbankzugriff der LernZeit-Anwendung über den LernZeit.PostgresAdapter. Dieser
+enthält unter anderem den Datenbankkontext, die für das .NET-Framework EntityFrameworkCore
+erforderlichen Migrationen sowie die Repositories zu den Gruppen- und Nutzerobjekten,
+Datenbank-Entity-Klassen und Mapper-Klassen.
+
+Im LernZeitDBContext werden die Datenbank-Entities festgelegt und die UserGroups-Relation
+hergestellt. Das Group- und das UserRepository stellen diverse Schnittstellen zur Modifizierung
+der Datenbankobjekte bereit.
 
 === Authentifizierung (Google Auth)
 Die Sicherheit der Anwendung wird durch die Integration von Google OAuth 2.0 gewährleistet. Das Backend fungiert hierbei als Validierungsschicht:
@@ -366,12 +434,59 @@ Ein technologisches Highlight ist der Einsatz von .NET Aspire. Dies ermöglicht 
   _Abbildung: Laufzeit-Überwachung der Container-Infrastruktur_
 ]
 
+
 = Fazit
-== Was lief gut / wo gab es Herausforderungen?
-// TODO: Simon - Reflexion über den Entwicklungsprozess, Teamarbeit und technische Hürden.
+== Rückblick
+Im Rahmen dieses Moduls lag der Fokus auf der Software-Architektur des Projekts. Ein besonderes
+Augenmerk galt dabei der Strukturierung und Einordnung von Zuständigkeitsbereichen. Die Entscheidung
+fiel auf ein Domain-Driven-Modell, das eine klare Trennung zwischen Anwendungslogik und Adaptern
+gewährleistet.
+
+Eine zentrale Fragestellung war, welche Nutzerdaten gespeichert werden müssen, damit die Anwendung
+funktioniert. Das Ziel war es, so wenig wie möglich zu speichern, da der Großteil der
+nutzerbezogenen Daten von Drittanbietern wie Google Authentication und der RaumZeit-API
+bereitgestellt wird.
+
+Ebenfalls war die Authentifizierung der Nutzer zu Beginn ein wichtiges Thema. Die Auslagerung
+dieses Problems an einen Drittanbieter stellte sich als komfortable und zuverlässige Lösung heraus.
+
+Im Frontend stellte die Auswahl einer geeigneten Kalenderkomponente eine Herausforderung dar.
+Die Entscheidung für eine vorgefertigte React-Kalenderkomponente ermöglichte ein schnelleres
+Ergebnis, anstatt alle Funktionen von Grund auf selbst zu entwickeln. Da die Auswahl an verfügbaren
+Komponenten groß ist, wurden mithilfe des KI-Modells OpenCode mehrere Komponenten iterativ getestet,
+um die für den Anwendungsfall am besten geeignete zu ermitteln.
+
+Im Verlauf des Entwicklungsprozesses kam es vereinzelt dazu, dass Komponenten fehlerhafte Zustände
+annahmen oder nicht mehr korrekt funktionierten, was eine weitere Herausforderung darstellte.
+
+Darüber hinaus funktionierte die Authentifizierung aus verschiedenen Gründen nicht immer
+zuverlässig. Insbesondere die CORS-Policies stellten zu Beginn aufgrund von Client-Weiterleitungen
+ein Problem dar.
+
+Gegen Ende des Projekts ergaben sich in der Testphase weitere Herausforderungen. Das Testen der
+Anwendung mit mehreren Nutzern ist nicht trivial, da Nutzerkonten eng mit dem jeweiligen
+Google-Account verknüpft sind. Daher waren zusätzliche Google-Accounts erforderlich, um die
+Anwendung vollständig testen zu können.
 
 == Ausblick
-// TODO: Simon - Potenzielle Erweiterungen, Schwächen des aktuellen Designs und Skalierbarkeit.
+Das LernZeit-Projekt hat alle Mindestanforderungen erfüllt, die zu Beginn im Pflichtenheft
+festgelegt wurden. Es ist möglich, Lerngruppen zu erstellen, eigene Kalender aus RaumZeit zu
+importieren, diese mit den Mitgliedern der Lerngruppe abzugleichen und in einer übersichtlichen
+Benutzeroberfläche einen gemeinsamen freien Zeitraum festzulegen.
+
+Neben den funktionalen Anforderungen sind auch die nicht-funktionalen Anforderungen erfüllt.
+Die LernZeit-Anwendung entspricht den Prinzipien des Domain-Driven Designs: Komponenten sind klar
+in ihren Zuständigkeitsbereichen getrennt, was eine reibungslose Wartung ermöglicht. Ebenso können
+Komponenten bei Bedarf unkompliziert ausgetauscht oder erweitert werden. Darüber hinaus bietet eine klare Trennung eine einfache Möglichkeit Komponenten isoliert zu testen.
+
+Für zukünftige Erweiterungen wären weitere Use-Cases denkbar. So wäre eine Funktion zur
+gemeinsamen Terminabstimmung innerhalb einer Gruppe eine sinnvolle Ergänzung. Darüber hinaus würde
+eine Anzeige aller freien Räume auf dem Campus die Suche nach einem geeigneten Lernort erleichtern.
+Die Integration von Benachrichtigungen bei neuen Terminvorschlägen oder Änderungen wäre eine
+nützliche Erinnerungsfunktion. Schließlich wäre auch die Anbindung weiterer Kalender-Apps,
+beispielsweise Google Calendar oder Outlook, eine denkbare Erweiterung.
 
 = Literaturverzeichnis
 // TODO: Quellen und AI-Verzeichnis (wo wurde ChatGPT/Copilot eingesetzt?).
+
+#bibliography("quellen.yml")

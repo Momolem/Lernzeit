@@ -1,0 +1,36 @@
+example:
+  type: article
+  title: Breathing in O#sub[2] releases CO2
+  author:
+  - Smith, Joe
+  - Smith, Jane
+  date: 2025
+  parent:
+    type: periodical
+    title: Journal of Lungs
+    volume: 1
+
+figma:
+  type: web
+  url:
+   value: https://www.figma.com/resource-library/ai-in-design/
+   date: 2025-06-15
+
+google:
+  type: web
+  url:
+   value: https://developers.google.com/identity/siwg
+   date: 2025-06-22
+
+moodboard_img1:
+  type: web
+  url:
+   value: https://in.pinterest.com/pin/53339576832700058/
+   date: 2025-06-22
+
+moodboard_img2:
+  type: web
+  url:
+   value: https://se.pinterest.com/pin/20969954512913816/
+   date: 2025-06-22
+
