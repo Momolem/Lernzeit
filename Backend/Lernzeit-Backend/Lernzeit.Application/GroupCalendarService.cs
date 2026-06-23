@@ -23,8 +23,8 @@ public class GroupCalendarService
         return await groupOption.Bind(async group =>
         {
             var userIds = group.Members.Select(m => m.Id);
-            return (await userIds.SelectAsync(id => this.calendarService.GetPersonalCalendar(id))).Aggregate()
-                .ToOption().Map(cals => (group, cals));
+            return (await userIds.SelectAsync(id => this.calendarService.GetPersonalCalendar(id), 1))
+                .Where(cal => cal.IsOk).Select(r => r.GetValueOrThrow()).ToOption().Map(cals => (group, cals));
             
         })
         .Map(tuple =>

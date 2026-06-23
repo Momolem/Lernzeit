@@ -187,19 +187,19 @@ export default function Calendar() {
       </div>
     );
   }
-
   return (
-    <div className={styles.page}>
-      <Button
-        onClick={leaveGroup}
-        centred={true}
-        icon={Icon(leaveIcon, "leave")}
-        variant="secondary"
-        size="sm"
-      >
-        Gruppe verlassen
-      </Button>
-      <TimetableComponent initialEvents={events || undefined} />
-    </div>
-  );
+      <div className={styles.page}>
+        {groupId && (<Button
+            onClick={leaveGroup}
+            centred={true}
+            icon={Icon(leaveIcon, "leave")}
+            variant="secondary"
+            size="sm"
+        >
+          Gruppe verlassen
+        </Button>)}
+        <TimetableComponent initialEvents={events || undefined}/>
+      </div>
+    );  
+  
 }
