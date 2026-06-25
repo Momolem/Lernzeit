@@ -43,7 +43,7 @@ var backend = builder
 
 builder
     .AddViteApp("lernzeit-frontend", "../../../frontend", runScriptName: "dev")
-    .WithEnvironment("VITE_BACKEND_URL", backendUrl)
+    .WithEnvironment("REACT_APP_BACKEND_URL", backendUrl)
 #if !DEBUG
 .WithContainerRegistry(registry)
 #endif    
