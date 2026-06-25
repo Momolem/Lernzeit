@@ -1,7 +1,7 @@
 import type { TimetableEvents } from "~/types/timetable";
 import type {Group} from "~/types/groups";
 
-const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL ?? "https://localhost:7113";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? "https://localhost:7113";
 
 function parseCalendarData(rawData) {
     const parsedData: TimetableEvents = {

@@ -23,7 +23,7 @@ export default function Header({ user }: HeaderProps) {
     const currentMatch = [...matches].reverse().find((m) => m.handle && (m.handle as any).displayName);
     const displayName = currentMatch ? (currentMatch.handle as any).displayName : "LernZeit.";
 
-    const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL ?? "https://localhost:7113";
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? "https://localhost:7113";
 
     const logout = () => {
         fetch(`${BACKEND_URL}/api/auth/logout`, { credentials: 'include' })
