@@ -36,8 +36,8 @@ builder.Services.AddAuthentication(options =>
     {
         options.Cookie.Name = "Lernzeit.Auth";
         options.Cookie.HttpOnly = true;
-        options.Cookie.SameSite = SameSiteMode.None; 
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always; 
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         options.Events.OnRedirectToLogin = context =>
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -48,7 +48,7 @@ builder.Services.AddAuthentication(options =>
             context.Response.StatusCode = StatusCodes.Status403Forbidden;
             return Task.CompletedTask;
         };
-        options.LoginPath = "/api/auth/login"; 
+        options.LoginPath = "/api/auth/login";
         options.LogoutPath = "/api/auth/logout";
     })
     .AddGoogle(options =>
@@ -62,7 +62,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins(builder.Configuration["FrontendUrl"] ?? "http://localhost:3000")
+        policy.SetIsOriginAllowed(origin => true)
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -76,8 +76,6 @@ builder.Services.AddScoped<Lernzeit.Application.Contracts.IUserRepository, Lernz
 
 var app = builder.Build();
 
-app.UseCors();
-
 app.UseExceptionHandler(exceptionHandlerApp =>
 {
     exceptionHandlerApp.Run(async context =>
@@ -90,6 +88,11 @@ app.UseExceptionHandler(exceptionHandlerApp =>
         }
     });
 });
+app.UseRouting();
+
+app.UseCors();
+
+app.UseHttpsRedirection();
 
 if (app.Environment.IsDevelopment())
 {
@@ -98,8 +101,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

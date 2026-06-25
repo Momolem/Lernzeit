@@ -10,6 +10,11 @@
     align-items: center;
 }
 
+.input-wrapper::placeholder {
+    color: var(--neutral-700, #404252);
+    opacity: 1;
+}
+
 .input-wrapper:focus {
     outline-color: var(--orange-5);
 }
@@ -21,4 +26,8 @@
     font-style: normal;
     font-weight: 600;
     line-height: 24px; /* 114.286% */
+}
+
+.input {
+    border: none;
 }

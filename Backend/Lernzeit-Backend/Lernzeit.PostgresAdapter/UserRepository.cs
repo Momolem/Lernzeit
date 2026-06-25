@@ -1,6 +1,8 @@
 using FunicularSwitch;
+using Lernzeit.Application.ResultTypes;
 using Lernzeit.Application.Contracts;
 using Lernzeit.Domain;
+using Lernzeit.PostgresAdapter.Entities;
 using Lernzeit.PostgresAdapter.Mappers;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +14,20 @@ public class UserRepository : IUserRepository
     public UserRepository(LernzeitDbContext context)
     {
         this.context = context;
+    }
+    
+    public async Task<RepositoryResult<Unit>> CreateUserIfNotExists(GoogleUserId googleUserId, string name)
+    {
+        var user = await this.context.Users.FirstOrDefaultAsync(u => u.GoogleUserId == googleUserId.Id);
+        if (user != null)
+        {
+            return RepositoryResult.Ok(No.Thing);
+        }
+
+        var newUser = User.Create(name, googleUserId);
+        context.Users.Add(newUser.ToDbEntity());
+        await context.SaveChangesAsync();
+        return RepositoryResult.Ok(No.Thing);
     }
     public async Task<List<User>> GetAllUsers()
     {
@@ -30,6 +46,16 @@ public class UserRepository : IUserRepository
 
         return Result.Ok(user.ToDomain());    
     }
+    
+    public async Task<Result<User>> GetUserByGoogleId(GoogleUserId googleUserId)
+    {
+        var user = await this.context.Users.FirstOrDefaultAsync(u => u.GoogleUserId == googleUserId.Id);
+        if (user == null)
+        {
+            return Result.Error("User not found");
+        }
+        return Result.Ok(user.ToDomain());   
+    }
 
     public async Task<Result<Unit>> UpdateUser(User updatedUser)
     {
@@ -47,14 +73,15 @@ public class UserRepository : IUserRepository
 
     public async Task<Result<Unit>> DeleteUser(Guid id)
     {
-        var user = await this.context.Users.FindAsync(id);
+        var user = await this.context.Users
+            .Include(u => u.Groups)
+            .FirstOrDefaultAsync(u => u.Id == id);
         if (user == null)
         {
             return Result.Error("User not found");
         }
 
-        var userGroups = context.UserGroups.Where(ug => ug.UserId == id);
-        context.UserGroups.RemoveRange(userGroups);
+        user.Groups.Clear();
         context.Users.Remove(user);
         await context.SaveChangesAsync();
         return Result.Ok(No.Thing);   

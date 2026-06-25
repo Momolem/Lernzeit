@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using FunicularSwitch;
 using Lernzeit.Application.Contracts;
+using Lernzeit.Domain;
 using Lernzeit.RaumzeitAPI;
 using LernzeitBackend.DTO;
 using LernzeitBackend.DTOs;
@@ -62,13 +63,16 @@ public class UserController : ControllerBase
     [HttpPost("raumzeit/login")]
     public async Task<IActionResult> Login([FromBody] RaumzeitLoginRequest request)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null)
-        {
-            return this.Unauthorized();
-        }
-        await this.raumzeitService.Login(userId, request.Username, request.Password);
-        return this.Ok();
+        var result = await 
+            from userId in User.FindFirstValue(ClaimTypes.NameIdentifier).ToOption().ToResult(() => "User not logged in")
+            from user in this.userRepository.GetUserByGoogleId(new GoogleUserId(userId))
+            from loginResult in this.raumzeitService.Login(user.Id, request.Username, request.Password)
+            select loginResult;
+
+        return result.Match<IActionResult>(
+            ok => this.Ok(),
+            error => this.Unauthorized()
+        );
     }
 
     [Authorize]
@@ -78,7 +82,8 @@ public class UserController : ControllerBase
         var calendarResult = await (
             from userId in User.FindFirstValue(ClaimTypes.NameIdentifier).ToOption()
                 .ToResult(() => "UserID not found")
-            from calendar in raumzeitService.GetPersonalCalendar(new Guid(userId))
+            from user in userRepository.GetUserByGoogleId(new GoogleUserId(userId))
+            from calendar in raumzeitService.GetPersonalCalendar(user.Id)
             select calendar.ToTimetableEvents());
 
         return calendarResult.Match<IActionResult>(

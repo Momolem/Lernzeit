@@ -47,7 +47,7 @@ public class RaumzeitTokenRepository : IRaumzeitTokenRepository
                 {
                     this.dbContext.RaumzeitTokens.Add(new RaumzeitToken()
                         {
-                            UserId = userId.ToString(),
+                            UserId = userId,
                             EncryptedToken = tokenEncryptionService.Encrypt(token),
                             Expiration = expiration
                         }

@@ -1,0 +1,115 @@
+.buttonContainer {
+  width: 100%;
+  max-width: 600px;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  font-size: 21px;
+  font-family: var(--font-funnel-display);
+}
+.qrCodeButton {
+  align-self: stretch;
+  height: 150px;
+  border-radius: 12px;
+  background-color: var(--neutral-800);
+  border: 2px solid var(--neutral-800);
+  color: var(--white);
+
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  gap: 2px;
+}
+.qrCodeButton:hover {
+  cursor: pointer;
+  background-color: var(--neutral-700);
+}
+.iconFrame {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 1/1;
+  border-radius: 12px;
+  overflow: hidden;
+  /* flex-shrink: 0; */
+  object-fit: cover;
+  padding: 15px;
+  background-color: var(--white);
+}
+.qrCodeIcon {
+  width: 78px;
+  height: 78px;
+  position: relative;
+  border-radius: 9px;
+}
+.homepage {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0px 9px;
+}
+.qrCodeButtonText {
+  position: relative;
+  line-height: 24px;
+  font-weight: 600;
+}
+.openCamText {
+  position: relative;
+  font-size: 12px;
+  line-height: 24px;
+  font-weight: 600;
+  margin-top: -1px;
+}
+.oderParent {
+  width: 355px;
+  height: 27px;
+  position: relative;
+  text-align: left;
+  font-size: 28px;
+  color: var(--neutral-800);
+  font-family: Jua;
+}
+.oder {
+  position: absolute;
+  top: 0px;
+  left: 151px;
+  line-height: 27px;
+}
+.groupChild {
+  position: absolute;
+  top: 13.5px;
+  left: 0px;
+  max-height: 100%;
+  width: 355px;
+}
+.input {
+  align-self: stretch;
+  height: 44px;
+  border-radius: 8px;
+  background-color: var(--neutral-100);
+  border: 2px solid var(--neutral-100);
+  box-sizing: border-box;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 4px 16px;
+  text-align: left;
+  font-size: 19px;
+  color: var(--neutral-800);
+}
+.tolleGruppe {
+  position: relative;
+  font-weight: 500;
+}
+.beitretenBtn {
+  text-align: center;
+}

@@ -28,10 +28,6 @@ namespace Lernzeit.PostgresAdapter.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Calendar")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -55,6 +51,10 @@ namespace Lernzeit.PostgresAdapter.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("GoogleUserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -64,48 +64,52 @@ namespace Lernzeit.PostgresAdapter.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Lernzeit.PostgresAdapter.Entities.UserGroupEntity", b =>
+            modelBuilder.Entity("Lernzeit.PostgresAdapter.RaumzeitToken", b =>
                 {
                     b.Property<Guid>("UserId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("GroupId")
+                    b.Property<string>("EncryptedToken")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("Expiration")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("RaumzeitTokens");
+                });
+
+            modelBuilder.Entity("UserGroups", b =>
+                {
+                    b.Property<Guid>("GroupsId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("UserId", "GroupId");
+                    b.Property<Guid>("MembersId")
+                        .HasColumnType("uuid");
 
-                    b.HasIndex("GroupId");
+                    b.HasKey("GroupsId", "MembersId");
+
+                    b.HasIndex("MembersId");
 
                     b.ToTable("UserGroups");
                 });
 
-            modelBuilder.Entity("Lernzeit.PostgresAdapter.Entities.UserGroupEntity", b =>
+            modelBuilder.Entity("UserGroups", b =>
                 {
-                    b.HasOne("Lernzeit.PostgresAdapter.Entities.GroupEntity", "Group")
-                        .WithMany("UserGroups")
-                        .HasForeignKey("GroupId")
+                    b.HasOne("Lernzeit.PostgresAdapter.Entities.GroupEntity", null)
+                        .WithMany()
+                        .HasForeignKey("GroupsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Lernzeit.PostgresAdapter.Entities.UserEntity", "User")
-                        .WithMany("UserGroups")
-                        .HasForeignKey("UserId")
+                    b.HasOne("Lernzeit.PostgresAdapter.Entities.UserEntity", null)
+                        .WithMany()
+                        .HasForeignKey("MembersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Group");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Lernzeit.PostgresAdapter.Entities.GroupEntity", b =>
-                {
-                    b.Navigation("UserGroups");
-                });
-
-            modelBuilder.Entity("Lernzeit.PostgresAdapter.Entities.UserEntity", b =>
-                {
-                    b.Navigation("UserGroups");
                 });
 #pragma warning restore 612, 618
         }

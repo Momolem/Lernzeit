@@ -1,7 +1,7 @@
 # UserController endpoints
 # Start the app: dotnet run --project Lernzeit-Backend/Lernzeit-Backend
 
-@baseUrl = http://localhost:5161
+@baseUrl = http://localhost:7113
 
 ### Get all users
 GET {{baseUrl}}/api/user

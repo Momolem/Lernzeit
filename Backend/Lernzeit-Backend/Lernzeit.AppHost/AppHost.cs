@@ -43,7 +43,9 @@ var backend = builder
 
 builder
     .AddViteApp("lernzeit-frontend", "../../../frontend", runScriptName: "dev")
-    .WithContainerRegistry(registry)    
+#if !DEBUG
+.WithContainerRegistry(registry)
+#endif    
     .WithEndpoint(name: "https", scheme: "http", port: 3000, targetPort: 3000, isProxied: false)
     .PublishAsDockerComposeService((resource, service) =>
     {

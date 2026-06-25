@@ -1,19 +1,28 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Jua";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./resources/Jua-Regular.woff2") format("woff2");
+}
+
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans:
+    "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-jua: "Jua", ui-sans-serif, system-ui, sans-serif;
 }
 
 html,
 body {
-  background-color: #FFE2D1;
+  background-color: #ffe2d1;
   color: #000;
 }
 
 .App {
   text-align: center;
-
 }
 
 .App-header {
@@ -33,27 +42,32 @@ body {
   min-height: 100vh;
   background-color: var(--paper);
   background-image:
-          linear-gradient(to right, rgba(0, 0, 0, 0.08) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 0, 0, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
 .paper {
   border: black 1px solid;
-  box-shadow: 0px 0px 41px 1px rgba(0,0,0,0.87);
-  -webkit-box-shadow: 0px 0px 41px 1px rgba(0,0,0,0.87);
-  -moz-box-shadow: 0px 0px 41px 1px rgba(0,0,0,0.87);
+  box-shadow: 0px 0px 41px 1px rgba(0, 0, 0, 0.87);
+  -webkit-box-shadow: 0px 0px 41px 1px rgba(0, 0, 0, 0.87);
+  -moz-box-shadow: 0px 0px 41px 1px rgba(0, 0, 0, 0.87);
 }
 
 :root {
-  --orange-5: #FD6001;
+  --orange-5: #fd6001;
+  --blue-3: #bee8f7;
+  --blue-4: #7dd1f0;
+  --blue-5: #4dbfea;
+  --blue-6: #1796c4;
+  --blue-8: #083241;
   --paper: #fffdf7;
-  --white: #FFF;
+  --white: #fff;
   --black: #000;
-  --neutral-100: #F3F4F8;
-  --neutral-200: #D2D4DA;
+  --neutral-100: #f3f4f8;
+  --neutral-200: #d2d4da;
   --neutral-700: #404252;
   --neutral-800: #101223;
-  --Grey-Blue-35: #2D3C59;
+  --Grey-Blue-35: #2d3c59;
   --Grey-Blue-25: #202b40;
 }

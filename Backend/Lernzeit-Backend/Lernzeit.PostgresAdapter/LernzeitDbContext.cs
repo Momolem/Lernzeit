@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Lernzeit.PostgresAdapter.Entities;
 
@@ -11,26 +11,19 @@ public class LernzeitDbContext : DbContext
         public DbSet<RaumzeitToken> RaumzeitTokens { get; set; }
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<GroupEntity> Groups { get; set; }
-        public DbSet<UserGroupEntity> UserGroups { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<UserGroupEntity>()
-                .HasKey(ug => new { ug.UserId, ug.GroupId });
-            modelBuilder.Entity<UserGroupEntity>()
-                .HasOne(ug => ug.User)
-                .WithMany(u => u.UserGroups)
-                .HasForeignKey(ug => ug.UserId);
-            modelBuilder.Entity<UserGroupEntity>()
-                .HasOne(ug => ug.Group)
-                .WithMany(g => g.UserGroups)
-                .HasForeignKey(ug => ug.GroupId);
+            modelBuilder.Entity<GroupEntity>()
+                .HasMany(g => g.Members)
+                .WithMany(u => u.Groups)
+                .UsingEntity("UserGroups");
         }
 }
 
 public class RaumzeitToken
 {
     [Key]
-    public required string UserId { get; set; }
+    public required Guid UserId { get; set; }
     
     public required string EncryptedToken { get; set; }
     
