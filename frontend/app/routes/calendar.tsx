@@ -33,7 +33,7 @@ export default function Calendar() {
   const [icalLink, setIcalLink] = useState("");
 
   const BACKEND_URL =
-    import.meta.env.REACT_APP_BACKEND_URL ?? "https://localhost:7113";
+    import.meta.env.VITE_BACKEND_URL ?? "https://localhost:7113";
 
   useEffect(() => {
     const loadGroupCal = () => {
