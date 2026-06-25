@@ -5,6 +5,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "react-router";
 import { useEffect, useState } from "react";
 import type { Route } from "./+types/root";
@@ -13,6 +14,14 @@ import styles from "./root.module.css";
 import Header from "~/components/header/header";
 import logo from "~/resources/icon.svg";
 import Button from "~/components/button/button";
+
+export async function loader() {
+  return {
+    env: {
+      BACKEND_URL: "https://api.lernzeit.vogel.business",
+    }
+  };
+}
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -62,10 +71,10 @@ interface User {
 }
 
 export default function App() {
+  const { env } = useLoaderData<typeof loader>();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const BACKEND_URL =
-    import.meta.env.REACT_APP_BACKEND_URL ?? "https://localhost:7113";
+  const BACKEND_URL = env.BACKEND_URL;
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/api/auth/me`, { credentials: "include" })
@@ -94,6 +103,11 @@ export default function App() {
 
   return (
     <div className={`${styles.layoutWrapper} paper-bg paper`}>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `window.__ENV__ = ${JSON.stringify(env)}`,
+        }}
+      />
       <Header user={user} />
       <div className={styles.pageContent}>
         {!user?.isAuthenticated ? (

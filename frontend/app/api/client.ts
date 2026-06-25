@@ -1,7 +1,12 @@
 import type { TimetableEvents } from "~/types/timetable";
 import type {Group} from "~/types/groups";
 
-const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL ?? "https://localhost:7113";
+export const getBackendUrl = () => {
+    if (typeof window !== "undefined" && (window as any).__ENV__?.BACKEND_URL) {
+        return (window as any).__ENV__.BACKEND_URL;
+    }
+    return "https://api.lernzeit.vogel.business";
+};
 
 function parseCalendarData(rawData) {
     const parsedData: TimetableEvents = {
@@ -53,7 +58,7 @@ function parseCalendarData(rawData) {
 export const apiClient = {
     async loginRaumzeit(username: string, password: string): Promise<boolean> {
         try {
-            const response = await fetch(`${BACKEND_URL}/api/user/raumzeit/login`, {
+            const response = await fetch(`${getBackendUrl()}/api/user/raumzeit/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -76,7 +81,7 @@ export const apiClient = {
 
     async getCalendar(): Promise<{ status: number; data: TimetableEvents | null }> {
         try {
-            const response = await fetch(`${BACKEND_URL}/api/user/calendar`, {
+            const response = await fetch(`${getBackendUrl()}/api/user/calendar`, {
                 credentials: "include",
             });
 
@@ -95,7 +100,7 @@ export const apiClient = {
     },
     async getGroupCalendar(groupId:string): Promise<{ status: number; data: TimetableEvents | null }> {
         try {
-            const response = await fetch(`${BACKEND_URL}/api/group/${groupId}/calendar`, {
+            const response = await fetch(`${getBackendUrl()}/api/group/${groupId}/calendar`, {
                 credentials: "omit",
             });
             console.log("resp:", response)
@@ -116,7 +121,7 @@ export const apiClient = {
     async createGroup(name: string) : Promise<boolean> {
         try {
             console.log("create group")
-            const response = await fetch(`${BACKEND_URL}/api/group`, {
+            const response = await fetch(`${getBackendUrl()}/api/group`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -139,7 +144,7 @@ export const apiClient = {
     
     async getGroups(): Promise<{ status: number; data: Group[] }> {
         try {
-            const response = await fetch(`${BACKEND_URL}/api/group`, {
+            const response = await fetch(`${getBackendUrl()}/api/group`, {
                 credentials: "include",
             });
 
@@ -156,7 +161,7 @@ export const apiClient = {
     },
     async joinGroup(groupId: string) {
         try {
-            const response = await fetch(`${BACKEND_URL}/api/group/join/${groupId}`, {
+            const response = await fetch(`${getBackendUrl()}/api/group/join/${groupId}`, {
                 method: "POST",
                 credentials: "include",
             });
@@ -174,7 +179,7 @@ export const apiClient = {
     },
     async leaveGroup(groupId: string) {
         try {
-            const response = await fetch(`${BACKEND_URL}/api/group/leave/${groupId}`, {
+            const response = await fetch(`${getBackendUrl()}/api/group/leave/${groupId}`, {
                 method: "POST",
                 credentials: "include",
             });

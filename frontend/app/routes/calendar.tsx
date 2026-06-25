@@ -4,7 +4,7 @@ import type { TimetableEvents } from "~/types/timetable";
 import Button from "~/components/button/button";
 import Input from "~/components/input/input";
 import { Modal } from "~/components/modal/modal";
-import { apiClient } from "~/api/client";
+import {apiClient, getBackendUrl} from "~/api/client";
 import { useNavigate, useSearchParams } from "react-router";
 import styles from "./calendar.module.css";
 import Icon from "~/components/Icon";
@@ -33,7 +33,7 @@ export default function Calendar() {
   const [icalLink, setIcalLink] = useState("");
 
   const BACKEND_URL =
-    import.meta.env.REACT_APP_BACKEND_URL ?? "https://localhost:7113";
+    getBackendUrl();
 
   useEffect(() => {
     const loadGroupCal = () => {

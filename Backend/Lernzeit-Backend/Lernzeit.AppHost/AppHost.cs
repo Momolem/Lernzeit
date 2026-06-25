@@ -43,10 +43,10 @@ var backend = builder
 
 builder
     .AddViteApp("lernzeit-frontend", "../../../frontend", runScriptName: "dev")
-    .WithEnvironment("REACT_APP_BACKEND_URL", backendUrl)
 #if !DEBUG
 .WithContainerRegistry(registry)
 #endif    
+    .WithEnvironment("VITE_BACKEND_URL", backendUrl)
     .WithEndpoint(name: "https", scheme: "http", port: 3000, targetPort: 3000, isProxied: false)
     .PublishAsDockerComposeService((resource, service) =>
     {

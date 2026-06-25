@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useLocation, Link, useMatches } from "react-router";
 import "./header.css";
 import backIcon from "~/resources/Back.svg";
@@ -13,6 +14,8 @@ interface HeaderProps {
     user?: User | null;
 }
 
+import { getBackendUrl } from "~/api/client";
+
 export default function Header({ user }: HeaderProps) {
     const location = useLocation();
     const matches = useMatches();
@@ -23,7 +26,8 @@ export default function Header({ user }: HeaderProps) {
     const currentMatch = [...matches].reverse().find((m) => m.handle && (m.handle as any).displayName);
     const displayName = currentMatch ? (currentMatch.handle as any).displayName : "LernZeit.";
 
-    const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL ?? "https://localhost:7113";
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const BACKEND_URL = getBackendUrl();
 
     const logout = () => {
         fetch(`${BACKEND_URL}/api/auth/logout`, { credentials: 'include' })
