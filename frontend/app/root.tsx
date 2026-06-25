@@ -65,7 +65,7 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const BACKEND_URL =
-    import.meta.env.VITE_BACKEND_URL ?? "https://localhost:7113";
+    import.meta.env.REACT_APP_BACKEND_URL ?? "https://localhost:7113";
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/api/auth/me`, { credentials: "include" })
