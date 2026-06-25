@@ -208,17 +208,17 @@ Diese Entscheidung basiert auf folgenden Kriterien:
     - Integration von Kalender-Apps (Google Calendar, Outlook) \
   ],
 )
+#pagebreak()
 
 = Umsetzung / Implementierung
 == Frontend (React)
 === Designprozess (Figma)
-Zu Beginn wurde ein Prototyp in Figma erstellt. Dabei wurde das in Figma integrierte KI-Tool genutzt,
-um die Vorteile von KI im Designprozess zu nutzen. Dies ermöglichte eine schnellere Erledigung von
-Routineaufgaben (Resizing, Layouts, Styles), ein schnelleres Testen mehrerer Ideen und
-Designvarianten sowie Unterstützung bei barrierefreiem und inklusivem Design.
+Zu Beginn wird ein Prototyp in Figma erstellt. Dabei wird das in Figma integrierte KI-Tool genutzt. Dies ermöglicht das Erledigen von
+Routineaufgaben (Resizing, Layouts, Styles), ein schnelleres Iterrieren mehrerer Ideen und
+Designvarianten sowie eine Unterstützung der Umsetzung von barrierefreiem und inklusivem Design.
 @figma
 
-Dabei gab es jedoch auch Herausforderungen: Das resultierende Design wirkte weniger durchdacht und
+Jedoch wirkt das generierte Design anfangs wenig durchdacht und
 generisch.
 
 #figure(
@@ -226,27 +226,26 @@ generisch.
   image("assets/Figma_AI_Beispiel.png"),
 )
 
-Mithilfe des KI-Tools wurde eine grobe Oberflächenstruktur erarbeitet, die anschließend verfeinert
-wurde. Dazu wurde der User-Flow von Seite zu Seite skizziert und sich am KI-generierten Seitenaufbau
-orientiert.
-(Bild von Skizzen)
+Die mit dem KI-Tool erarbeitet Oberflächenstruktur wird nun verfeinert. Dazu werden die Seiten skizziert und der User-Flow von Seite zu Seite organisiert.
+#figure(
+  caption: "Skizze zum User-Flow",
+  image("assets/UI_Sketch.jpg"),
+)
 
-Um das visuelle Erscheinungsbild der Oberfläche festzulegen, wurde ein Moodboard erstellt.
+Um das visuelle Erscheinungsbild der Oberfläche festzulegen, wird ein Moodboard erstellt.
 #figure(
   caption: [Das Moodboard @moodboard_img1 @moodboard_img2],
   image("assets/Moodboard.png"),
 )
 
 
-Die Referenzen helfen dabei, die visuellen Komponenten im Designprozess greifbar zu machen.
-Von den Referenzen ausgehend, wurden die einzelnen Komponenten erstellt und in den Seiten zusammengeführt.
+Das Moodboard hilft dabei, die visuellen Komponenten im Designprozess greifbar zu machen.
+Von den Referenzen ausgehend, werden die einzelnen Komponenten erstellt und in Figma zusammengeführt.
 #figure(
   caption: "Iniziale Seite von Figma AI",
   image("assets/Figma_Comps.png"),
 )
 
-Die Seitenstruktur ist wie folgt aufgebaut:
-(UserFlow-Diagramm einfügen)
 
 === Komponenten
 Die Frontend-Architektur von *Lernzeit* folgt einem streng modularen Ansatz unter Verwendung von React. Das Ziel war es, eine hochgradig interaktive Benutzeroberfläche zu schaffen, die komplexe Kalenderdaten verständlich visualisiert.
@@ -264,6 +263,7 @@ Zentrale Bausteine der UI sind:
 
 === API-Kommunikation und State-Management
 Die Anbindung an das Backend erfolgt über eine dedizierte Schicht im Frontend, die in `client.ts` definiert ist. Wir setzen hierbei auf die native `fetch`-API, ergänzt um Error-Handling-Wrapper.
+
 
 #block(fill: luma(240), inset: 10pt, radius: 4pt, width: 100%)[
   #set align(center)
@@ -356,6 +356,13 @@ Die Kernlogik zur Ermittlung gemeinsamer Termine ist im `GroupCalendarService` i
   - Dadurch entstehen zusammenhängende Zeitintervalle, die alle belegten Zeiten der Gruppenmitglieder abdecken.
 
 === Gruppenverwaltung
+#figure(
+  caption: "Sequenzdiagram von dem Erstellen und Verlassen einer Gruppe",
+  image("assets/Sequenzdiagram.png", height: 95%),
+) <CreateGroup>
+
+@CreateGroup zeigt den zeitlichen Ablauf von der Erstellung, dem Modifizieren des Kalenders bis hin zu dem Verlassen einer Gruppe. Um eine Gruppe zu erstellen oder beizutreten, ist vorausgesetzt, dass alle Mitglieder zuvor ihren eigenen Stundenplan eingepflegt haben.
+
 Gruppen können von jedem Nutzer erstellt werden. Dies geschieht auf der Hauptseite über den Button
 „_Gruppe erstellen_". Im daraufhin erscheinenden Dialogfenster kann ein Gruppenname vergeben werden,
 nach dessen Bestätigung die Gruppe erstellt wird. Um weitere Nutzer zu einer Gruppe hinzuzufügen,
@@ -383,19 +390,16 @@ wird diese automatisch aus der Datenbank entfernt.
   caption: "Datenbank-Schema",
 ) <dbSchema>
 
-Abbildung @dbSchema zeigt das Datenbankschema zwischen der User- und der Gruppentabelle. Die
-User_Groups-Tabelle ist eine Relationstabelle und steht zu den Tabellen users und groups jeweils
-in einer 1-zu-n-Beziehung. Die Relation wird über die Primärschlüssel von users und groups
-hergestellt.
+@dbSchema zeigt das Datenbankschema zwischen der User- und der Gruppentabelle. Die
+`user_groups`-Tabelle ist eine Relationstabelle und steht zu den Tabellen users und groups jeweils
+in einer 1-zu-n-Beziehung. Die Relation wird über die Primärschlüssel von users und groups hergestellt.
 
 ==== Implementierung
-Das gewählte Datenbankmanagementsystem ist PostgreSQL. Im Rahmen der Domain-Driven-Architektur
-erfolgt der Datenbankzugriff der LernZeit-Anwendung über den LernZeit.PostgresAdapter. Dieser
-enthält unter anderem den Datenbankkontext, die für das .NET-Framework EntityFrameworkCore
-erforderlichen Migrationen sowie die Repositories zu den Gruppen- und Nutzerobjekten,
+Das gewählte Datenbankmanagementsystem ist PostgreSQL. Im Rahmen der Domain-Driven-Architektur erfolgt der Datenbankzugriff der LernZeit-Anwendung über den _LernZeit.PostgresAdapter_. Dieser
+enthält unter anderem den Datenbankkontext, die für das .NET-Framework EntityFrameworkCore erforderlichen Migrationen sowie die Repositories zu den Gruppen- und Nutzerobjekten,
 Datenbank-Entity-Klassen und Mapper-Klassen.
 
-Im LernZeitDBContext werden die Datenbank-Entities festgelegt und die UserGroups-Relation
+Im _LernZeitDBContext_ werden die Datenbank-Entities festgelegt und die UserGroups-Relation
 hergestellt. Das Group- und das UserRepository stellen diverse Schnittstellen zur Modifizierung
 der Datenbankobjekte bereit.
 
@@ -442,49 +446,30 @@ Augenmerk galt dabei der Strukturierung und Einordnung von Zuständigkeitsbereic
 fiel auf ein Domain-Driven-Modell, das eine klare Trennung zwischen Anwendungslogik und Adaptern
 gewährleistet.
 
-Eine zentrale Fragestellung war, welche Nutzerdaten gespeichert werden müssen, damit die Anwendung
-funktioniert. Das Ziel war es, so wenig wie möglich zu speichern, da der Großteil der
-nutzerbezogenen Daten von Drittanbietern wie Google Authentication und der RaumZeit-API
-bereitgestellt wird.
+Eine zentrale Fragestellung während der Ausarbeitung war es festzulegen, welche Nutzerdaten nötig sind, damit die Anwendung
+funktioniert. Das Ziel war es, nur das Nötigste in der Datenbank zu hinterlegen, da der Großteil der
+nutzerbezogenen Daten von Drittanbietern wie Google Authentication und der RaumZeit-API stammen.
 
 Ebenfalls war die Authentifizierung der Nutzer zu Beginn ein wichtiges Thema. Die Auslagerung
 dieses Problems an einen Drittanbieter stellte sich als komfortable und zuverlässige Lösung heraus.
 
-Im Frontend stellte die Auswahl einer geeigneten Kalenderkomponente eine Herausforderung dar.
-Die Entscheidung für eine vorgefertigte React-Kalenderkomponente ermöglichte ein schnelleres
-Ergebnis, anstatt alle Funktionen von Grund auf selbst zu entwickeln. Da die Auswahl an verfügbaren
-Komponenten groß ist, wurden mithilfe des KI-Modells OpenCode mehrere Komponenten iterativ getestet,
-um die für den Anwendungsfall am besten geeignete zu ermitteln.
+Im Frontend war zu Beginn die Auswahl einer geeigneten Kalenderkomponente eine Herausforderung. Die Entscheidung für eine vorgefertigte React-Kalenderkomponente ermöglichte ein schnelleres
+Ergebnis, anstatt alle Funktionen von Grund auf selbst zu entwickeln. Da die Auswahl an verfügbaren Komponenten groß ist und jede Komponente anders funktioniert, wurden mithilfe des KI-Modells OpenCode mehrere Komponenten iterativ getestet, um die für den Anwendungsfall am besten geeignete zu ermitteln.
 
 Im Verlauf des Entwicklungsprozesses kam es vereinzelt dazu, dass Komponenten fehlerhafte Zustände
 annahmen oder nicht mehr korrekt funktionierten, was eine weitere Herausforderung darstellte.
 
-Darüber hinaus funktionierte die Authentifizierung aus verschiedenen Gründen nicht immer
-zuverlässig. Insbesondere die CORS-Policies stellten zu Beginn aufgrund von Client-Weiterleitungen
-ein Problem dar.
+Darüber hinaus funktionierte die Authentifizierung aus verschiedenen Gründen nicht immer zuverlässig. Insbesondere die CORS-Policies stellten zu Beginn aufgrund von Client-Weiterleitungen ein Problem dar.
 
-Gegen Ende des Projekts ergaben sich in der Testphase weitere Herausforderungen. Das Testen der
-Anwendung mit mehreren Nutzern ist nicht trivial, da Nutzerkonten eng mit dem jeweiligen
-Google-Account verknüpft sind. Daher waren zusätzliche Google-Accounts erforderlich, um die
-Anwendung vollständig testen zu können.
+Gegen Ende des Projekts ergaben sich in der Testphase weitere Herausforderungen. Das Testen der Anwendung mit mehreren Nutzern ist nicht trivial, da Nutzerkonten eng mit dem jeweiligen Google-Account verknüpft sind. Daher waren zusätzliche Google-Accounts erforderlich, um die Anwendung vollständig testen zu können.
 
 == Ausblick
-Das LernZeit-Projekt hat alle Mindestanforderungen erfüllt, die zu Beginn im Pflichtenheft
-festgelegt wurden. Es ist möglich, Lerngruppen zu erstellen, eigene Kalender aus RaumZeit zu
-importieren, diese mit den Mitgliedern der Lerngruppe abzugleichen und in einer übersichtlichen
+Das LernZeit-Projekt hat alle Mindestanforderungen erfüllt, die zu Beginn im Pflichtenheft festgelegt wurden. Es ist möglich, Lerngruppen zu erstellen, eigene Kalender aus RaumZeit zu importieren, diese mit den Mitgliedern der Lerngruppe abzugleichen und in einer übersichtlichen
 Benutzeroberfläche einen gemeinsamen freien Zeitraum festzulegen.
 
-Neben den funktionalen Anforderungen sind auch die nicht-funktionalen Anforderungen erfüllt.
-Die LernZeit-Anwendung entspricht den Prinzipien des Domain-Driven Designs: Komponenten sind klar
-in ihren Zuständigkeitsbereichen getrennt, was eine reibungslose Wartung ermöglicht. Ebenso können
-Komponenten bei Bedarf unkompliziert ausgetauscht oder erweitert werden. Darüber hinaus bietet eine klare Trennung eine einfache Möglichkeit Komponenten isoliert zu testen.
+Neben den funktionalen Anforderungen sind auch die nicht-funktionalen Anforderungen erfüllt. Die LernZeit-Anwendung entspricht den Prinzipien des Domain-Driven Designs: Komponenten sind klar in ihren Zuständigkeitsbereichen getrennt, was eine reibungslose Wartung ermöglicht. Ebenso können Komponenten bei Bedarf unkompliziert ausgetauscht oder erweitert werden. Darüber hinaus bietet eine klare Trennung eine einfache Möglichkeit Komponenten isoliert zu testen.
 
-Für zukünftige Erweiterungen wären weitere Use-Cases denkbar. So wäre eine Funktion zur
-gemeinsamen Terminabstimmung innerhalb einer Gruppe eine sinnvolle Ergänzung. Darüber hinaus würde
-eine Anzeige aller freien Räume auf dem Campus die Suche nach einem geeigneten Lernort erleichtern.
-Die Integration von Benachrichtigungen bei neuen Terminvorschlägen oder Änderungen wäre eine
-nützliche Erinnerungsfunktion. Schließlich wäre auch die Anbindung weiterer Kalender-Apps,
-beispielsweise Google Calendar oder Outlook, eine denkbare Erweiterung.
+Für zukünftige Erweiterungen wären weitere Use-Cases denkbar. So wäre eine Funktion zur gemeinsamen Terminabstimmung innerhalb einer Gruppe eine sinnvolle Ergänzung. Darüber hinaus würde eine Anzeige aller freien Räume auf dem Campus die Suche nach einem geeigneten Lernort erleichtern. Die Integration von Benachrichtigungen bei neuen Terminvorschlägen oder Änderungen wäre eine nützliche Erinnerungsfunktion. Schließlich wäre auch die Anbindung weiterer Kalender-Apps, beispielsweise Google Calendar oder Outlook, eine denkbare Erweiterung.
 
 = Literaturverzeichnis
 // TODO: Quellen und AI-Verzeichnis (wo wurde ChatGPT/Copilot eingesetzt?).
