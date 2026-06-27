@@ -248,44 +248,36 @@ Von den Referenzen ausgehend, werden die einzelnen Komponenten erstellt und in F
 
 
 === Komponenten
-Die Frontend-Architektur von *Lernzeit* folgt einem streng modularen Ansatz unter Verwendung von React. Das Ziel war es, eine hochgradig interaktive Benutzeroberfläche zu schaffen, die komplexe Kalenderdaten verständlich visualisiert.
+Die Frontend-Architektur von *Lernzeit* folgt einem streng modularen Ansatz unter Verwendung von React. Das Ziel war es, eine einfach bedienbare Benutzeroberfläche zu schaffen, die es einfach ermöglicht Kalenderdaten verständlich zu visualisieren.
 
 #figure(
   caption: "Übersicht der Hauptkomponenten in der Web-Oberfläche",
   image("assets/overview_mainpage.png"),
-)
+)<fig-mainpage>
 
-Zentrale Bausteine der UI sind:
-- *Timetable-Komponente*: Dies ist das Herzstück der Anwendung. Sie visualisiert Zeitfenster in einem wöchentlichen Raster. Die Logik zur Berechnung der relativen Positionen der Event-Boxen ist in der Komponente gekapselt.
-- *GroupCard*: Ein wiederverwendbares Element zur Darstellung von Gruppeninformationen, das den schnellen Wechsel zwischen verschiedenen Lerngruppen ermöglicht.
-- *Interaktive Modals*: Für die Erstellung von Gruppen und die Einladung von Mitgliedern wurden spezialisierte Pop-Up-Komponenten entwickelt, die einen geführten Workflow bieten.
+Architektonisch wurde hier darauf geachtet, dass das UI möglichst modular gestaltet ist und Komponenten leicht wieder zu verwenden sind.
+
+Hierbei sind folgende Komponenten entstanden:
+- *Timetable-Komponente*: Dies ist das Herzstück der Anwendung. Sie visualisiert Zeitfenster in einem wöchentlichen Raster. Die Logik zur Berechnung der relativen Positionen der Event-Boxen ist in der Komponente gekapselt. Sie wird sowohl beim persönlichen, als auch beim Gruppenkalender verwendet um die Kalenderdaten anzuzeigen.
+- *Button*: Die Button Komponente wird an vielen Stelle verwendet und bietet vielseitige Möglichkeiten um Symbole und Text zu integrieren und verschiedene Varianten des Buttons anzuzeigen. 
+- *GroupCard*: Ein wiederverwendbares Element zur Darstellung von Gruppeninformationen, das den schnellen Wechsel zwischen verschiedenen Lerngruppen ermöglicht. In #ref(<fig-mainpage>) sind die GroupCards zu erkennen.
+- *Interaktive Modals*: In der Anwendung gibt es an vielen Stellen Modale, welche den Nutzer zu Aktionen auffordern. Zum Beitreten zu Gruppen, beim Hinzufügen eines Kalenders und beim Erstellen von Gruppen kommen diese zum Einsatz. Hierfür gibt es eine Basiskomponente, welche zum Erstellen der verschiedenen Modale verwendet wird.
 - *Header & Navigation*: Eine konsistente Navigationsleiste, die den Nutzerstatus (Login/Logout via Google) reflektiert und schnellen Zugriff auf die Profil- und Gruppeneinstellungen bietet.
 
 === API-Kommunikation und State-Management
 Die Anbindung an das Backend erfolgt über eine dedizierte Schicht im Frontend, die in `client.ts` definiert ist. Wir setzen hierbei auf die native `fetch`-API, ergänzt um Error-Handling-Wrapper.
 
-
-#block(fill: luma(240), inset: 10pt, radius: 4pt, width: 100%)[
-  #set align(center)
-  *TODO: Sequenzdiagramm eines API-Requests (z.B. GetGroupCalendar) hier einfügen* \
-  _Abbildung: Fluss eines Datenabrufs vom UI-Trigger bis zum Backend-Response_
-]
-
-Wichtige Aspekte der Implementierung sind:
-- *Asynchrone Hooks*: Daten werden mittels React-Hooks (`useState`, `useEffect`) geladen. Für komplexere Datenflüsse wurden eigene Hooks wie `useTimetableICS` erstellt, die die Transformation von Rohdaten in das für die UI benötigte Format übernehmen.
-- *Typisierung*: Durch den Einsatz von TypeScript werden die DTOs (Data Transfer Objects) des Backends im Frontend gespiegelt, was die Fehlerquote bei der Datenverarbeitung massiv reduziert.
-- *Fehlerbehandlung*: Jeder Request prüft den HTTP-Statuscode. Bei Fehlern (z.B. 401 Unauthorized oder 500 Server Error) erhält der Nutzer über die UI direktes Feedback.
+In dieser Typescript Klasse werden alle Backend Endpunkte als Methoden definiert und können dann in React Hooks wie `useEffect` aufgerufen werden. Durch den Einsatz von DTOs im Backend ist hier eine klare Schnittstelle definiert, wodurch die Übertragung von den Daten auch bei Änderungen im Backend stabil bleiben kann. 
 
 == Backend (.NET API)
 Das Backend ist als ASP.NET Core Web API realisiert und folgt den Prinzipien der Clean Architecture (Trennung von Domain, Application und Infrastruktur).
 
 === Architekturprinzipien
-Strukturell haben wir uns im Backend für eine hexagonale Architektur (auch bekannt als „Ports und Adapter“) entschieden. Hierbei werden spezifische Technologien in Adaptern abgekapselt und somit strikt von der Domänenlogik separiert. Die verschiedenen Schichten und Adapter werden in C\# als separate Projekte modelliert. Hierdurch können Zugriffe der Schichten in falscher Richtung, also von innen nach außen, strukturell verhindert werden. Im folgenden Abschnitt werden die verschiedenen Schichten erläutert:
+Strukturell haben wir uns im Backend für eine hexagonale Architektur (auch bekannt als "Ports und Adapter") entschieden. Hierbei werden spezifische Technologien in Adaptern abgekapselt und somit strikt von der Domänenlogik separiert. Die verschiedenen Schichten und Adapter werden in C\# als separate Projekte modelliert. Hierdurch können Zugriffe der Schichten in falscher Richtung, also von innen nach außen, strukturell verhindert werden. Im folgenden Abschnitt werden die verschiedenen Schichten erläutert:
 #figure(
   caption: "Architektur des Projekts",
   image("assets/Hexagonal.drawio.png"),
 )
-
 
 - *Domain*: Hier ist das Domänenmodell in Form von C\#-Records definiert. Im C\#-Kontext werden Records als Datenhüllen verwendet, da diese standardmäßig immutable (unveränderlich) sind. Dies hilft dabei, unerwartete Seiteneffekte in der Domäne zu vermeiden. Es wird empfohlen, in diesem Projekt den Prinzipien des Domain-Driven Designs (DDD) zu folgen und beispielsweise nach Möglichkeit Value Objects zu verwenden
 
