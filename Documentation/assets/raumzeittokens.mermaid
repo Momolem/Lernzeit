@@ -1,0 +1,36 @@
+sequenceDiagram
+    actor User as Nutzer / Frontend
+    participant UC as UserController
+    participant RS as RaumzeitService
+    participant RAPI as Raumzeit-API (HKA)
+    participant Repo as IRaumzeitTokenRepository
+    participant GCS as GroupCalendarService
+    autonumber
+
+    %% PHASE 1: LOGIN & SPEICHERUNG
+    Note over User, Repo: PHASE 1: Login & Token-Speicherung
+    User->>UC: HTTP POST /raumzeit/login<br>(User/Passwort)
+    Note over UC: Validiert Google-User & holt interne User-ID
+    UC->>RS: Login
+    RS->>RAPI: HTTP POST /private/api/v1/authentication
+    RAPI-->>RS: 200 OK
+    RS->>Repo: SaveRaumzeitToken
+    Repo-->>RS: Unit (Erfolg)
+    RS-->>UC: Result.Ok
+    UC-->>User: 200 OK (Erfolgreich verknüpft)
+
+    %% PHASE 2: VERWENDUNG
+    Note over User, Repo: PHASE 2: Token-Verwendung & Kalender-Abfrage
+    User->>GCS: GetGroupCalendar(groupId)
+    Note over GCS: Holt alle Gruppenmitglieder (userIds)
+    loop Für jedes Gruppenmitglied parallel
+        GCS->>RS: GetPersonalCalendar(userId)
+        RS->>Repo: GetRaumzeitToken(userId)
+        Repo-->>RS: Gibt gespeicherten Token zurück
+        RS->>RAPI: HTTP GET /cal
+        RAPI-->>RS: 200 OK (iCal Stream)
+        Note over RS: MapToDomain: Parst iCal in interne Event-Struktur
+        RS-->>GCS: Result<Calendar> (Persönlicher Kalender)
+    end
+    Note over GCS: Kalender zusammenführen
+    GCS-->>User: Option<Calendar> (Gemeinsamer Gruppenkalender)

@@ -11,7 +11,7 @@ Studierende stehen regelmäßig vor der Herausforderung, gemeinsame Termine für
 
 In der Praxis erfolgt die Terminfindung meist über Gruppenchats oder persönliche Absprachen. Dabei werden Vorschläge von einzelnen Gruppenmitgliedern eingebracht und anschließend von den übrigen Teilnehmenden auf mögliche Konflikte geprüft. Dieser iterative Abstimmungsprozess führt häufig zu einem "Hin und Her"-Austausch, der sowohl zeitintensiv als auch organisatorisch aufwendig ist.
 
-Die Anwendung *Lernzeit* adressiert dieses Problem, indem sie die Terminfindung automatisiert unterstützt. Nutzerinnen und Nutzer können Gruppen erstellen und ihre individuell blockierten Zeiten hinterlegen. Auf Basis dieser Informationen generiert die Anwendung geeignete Terminvorschläge, zu denen alle Gruppenmitglieder verfügbar sind. Ziel ist es, den Abstimmungsaufwand zu reduzieren und eine effiziente sowie transparente Terminplanung zu ermöglichen.
+Die Anwendung *Lernzeit* adressiert dieses Problem, indem sie die Terminfindung automatisiert unterstützt. Nutzerinnen und Nutzer können Gruppen erstellen und ihre individuell blockierten Zeiten hinterlegen. Auf Basis dieser Informationen generiert die Anwendung geeignete Terminvorschläge, zu denen alle Gruppenmitglieder verfügbar sind. Ziel ist es, den Abstimmungsauf wand zu reduzieren und eine effiziente sowie transparente Terminplanung zu ermöglichen.
 
 = Architekturvorschlag
 Es wurden im Rahmen des Pflichtenhefts verschiedene Systemarchitekturen verglichen. Eine Gegenüberstellung hierzu ist in #ref(<vergleich_architektur>) zu finden.
@@ -255,12 +255,12 @@ Die Frontend-Architektur von *Lernzeit* folgt einem streng modularen Ansatz unte
   image("assets/overview_mainpage.png"),
 )<fig-mainpage>
 
-Architektonisch wurde hier darauf geachtet, dass das UI möglichst modular gestaltet ist und Komponenten leicht wieder zu verwenden sind.
+Im Hinblick auf Softwarearchitektur wurde hier darauf geachtet, dass das UI möglichst modular gestaltet ist und Komponenten leicht wieder zu verwenden sind.
 
 Hierbei sind folgende Komponenten entstanden:
 - *Timetable-Komponente*: Dies ist das Herzstück der Anwendung. Sie visualisiert Zeitfenster in einem wöchentlichen Raster. Die Logik zur Berechnung der relativen Positionen der Event-Boxen ist in der Komponente gekapselt. Sie wird sowohl beim persönlichen, als auch beim Gruppenkalender verwendet um die Kalenderdaten anzuzeigen.
 - *Button*: Die Button Komponente wird an vielen Stelle verwendet und bietet vielseitige Möglichkeiten um Symbole und Text zu integrieren und verschiedene Varianten des Buttons anzuzeigen. 
-- *GroupCard*: Ein wiederverwendbares Element zur Darstellung von Gruppeninformationen, das den schnellen Wechsel zwischen verschiedenen Lerngruppen ermöglicht. In #ref(<fig-mainpage>) sind die GroupCards zu erkennen.
+- *GroupCard*: Ein wiederverwendbares Element zur Darstellung von Gruppeninformationen, das den schnellen Wechsel zwischen verschiedenen Lerngruppen ermöglicht. In @fig-mainpage sind die GroupCards zu erkennen.
 - *Interaktive Modals*: In der Anwendung gibt es an vielen Stellen Modale, welche den Nutzer zu Aktionen auffordern. Zum Beitreten zu Gruppen, beim Hinzufügen eines Kalenders und beim Erstellen von Gruppen kommen diese zum Einsatz. Hierfür gibt es eine Basiskomponente, welche zum Erstellen der verschiedenen Modale verwendet wird.
 - *Header & Navigation*: Eine konsistente Navigationsleiste, die den Nutzerstatus (Login/Logout via Google) reflektiert und schnellen Zugriff auf die Profil- und Gruppeneinstellungen bietet.
 
@@ -281,33 +281,31 @@ Strukturell haben wir uns im Backend für eine hexagonale Architektur (auch beka
 
 - *Domain*: Hier ist das Domänenmodell in Form von C\#-Records definiert. Im C\#-Kontext werden Records als Datenhüllen verwendet, da diese standardmäßig immutable (unveränderlich) sind. Dies hilft dabei, unerwartete Seiteneffekte in der Domäne zu vermeiden. Es wird empfohlen, in diesem Projekt den Prinzipien des Domain-Driven Designs (DDD) zu folgen und beispielsweise nach Möglichkeit Value Objects zu verwenden
 
-- *Application*: In dieser Schicht erfolgt die Verknüpfung der Schichten. Hier werden die Schnittstellen (Ports) in Form von Interfaces definiert. Zudem werden hier Services implementiert, welche die Verarbeitung von Domänenobjekten und die Logik der Anwendungsfälle (Use Cases) definieren. In unserem Beispiel erfolgt hier die Berechnung der Gruppenkalender.
+- *Application*: In dieser Schicht erfolgt die Verknüpfung der Schichten. Hier werden die Schnittstellen (Ports) in Form von Interfaces definiert. Zudem werden dort Services implementiert, welche die Verarbeitung von Domänenobjekten und die Logik der Anwendungsfälle (Use Cases) definieren. In unserem Beispiel erfolgt hier die Berechnung der Gruppenkalender.
 
 - *Adapter*:
-  - *ASP.NET Core Webprojekt*: Hier wird die REST-Schnittstelle implementiert, über die Anwender*innen mit der Anwendung interagieren. In diesem Adapter werden Domänenobjekte zu DTOs (Data Transfer Objects) gemappt, um sie an das Frontend zu übergeben
+  - *ASP.NET Core Webprojekt*: Hier wird die REST-Schnittstelle implementiert, über die Anwender:innen mit der Anwendung interagieren. In diesem Adapter werden Domänenobjekte zu DTOs (Data Transfer Objects) gemappt, um sie an das Frontend zu übergeben
   - *EFCore*: Entity Framework Core dient als ORM für die Interaktion mit der Postgres-Datenbank. Hier werden Repositories implementiert, um Domänenobjekte zu speichern und zu laden. Die Domänenmodelle werden nicht direkt via EFCore persistiert, sondern zunächst auf separate Persistenz-Objekte gemappt, um keine technischen Details (wie Datenbank-Annotationen) in die Domäne propagieren zu lassen
   - *DataProtection*: Hier wird ein Dienst implementiert, der Tokens sicher verschlüsselt, damit keine unverschlüsselten Tokens in die Datenbank geschrieben werden.
   - *RaumzeitAPI*: Dieser Adapter realisiert die Anbindung an die externe Raumzeit-Schnittstelle via REST. Über den DataProtection-Adapter werden die Tokens sicher verwaltet. Geladene iCal-Kalender werden mit einer Library geparsed und in das interne Domänenmodell überführt.
 
 === API-Endpunkte
-Um die Zuständigkeitsbereiche der Adapter klar zu gliedern, wurden diese in die drei Hauptbereiche
-Authentication, Groups und User unterteilt. Das Adaptermodell wurde wie folgt in die Endpunkte
-überführt:
+Um die Zuständigkeitsbereiche der Adapter klar zu gliedern, wurden diese in die drei Hauptbereiche Authentication, Groups und User unterteilt. Das Adaptermodell wurde wie folgt in die Endpunkte überführt:
 
-*Authentication*
-(Quelle: Google) Für die Authentifizierung der Nutzer fiel die Entscheidung auf einen
+*Authentication*@google
+
+Für die Authentifizierung der Nutzer fiel die Entscheidung auf einen
 Drittanbieter: in diesem Fall Google. Der Google-Authentifizierungsprozess bietet Nutzern eine
 komfortable Möglichkeit, sich mit nur einem Schritt bei Apps oder Websites anzumelden, indem sie
 ihren bestehenden Google-Account verwenden. Damit entfällt die Notwendigkeit separater
 Zugangsdaten, komplexer Registrierungsformulare und vergessener Passwörter. Mit nur wenigen
 Codezeilen lässt sich der Login-Prozess integrieren.
-Weitere Details zum Authentifizierungsprozess finden sich unter (Hyperlink) Kapitel 2.5.
+Weitere Details zum Authentifizierungsprozess finden sich unter @sec-auth
 
 - `GET api/auth/login`: Der Endpunkt leitet den Nutzer mit der entsprechend aufgerufenen URL zur
   Google-Anmeldeseite weiter.
 - `GET api/auth/logout`: Der Nutzer wird abgemeldet.
-- `GET api/auth/me`: Der Nutzer registriert sich über den Google-Authentifizierungsprozess in der
-  LernZeit-Anwendung. Entsprechend wird der Nutzer anschließend in der Datenbank hinterlegt.
+- `GET api/auth/me`: Beim Laden der Frontendanwendung werden hier die Daten wie Name und Profilbild geladen. Ist hier der Nutzer noch nicht in unserer Datenbank hinterlegt, wird er angelegt
 
 *Group*
 - `GET api/group/`: Die Response gibt alle vorhandenen Lerngruppen zurück.
@@ -395,22 +393,25 @@ Im _LernZeitDBContext_ werden die Datenbank-Entities festgelegt und die UserGrou
 hergestellt. Das Group- und das UserRepository stellen diverse Schnittstellen zur Modifizierung
 der Datenbankobjekte bereit.
 
-=== Authentifizierung (Google Auth)
-Die Sicherheit der Anwendung wird durch die Integration von Google OAuth 2.0 gewährleistet. Das Backend fungiert hierbei als Validierungsschicht:
-- Der Client sendet ein von Google ausgestelltes ID-Token.
-- Das Backend validiert dieses Token gegen die Google-Server (Signatur- und Audience-Check).
-- Nach erfolgreicher Validierung wird die `GoogleUserId` extrahiert. Diese dient als Primärschlüssel in unserer internen `User`-Entität, wodurch wir keine sensiblen Passwortdaten speichern müssen.
+=== Authentifizierung (Google Auth)<sec-auth>
+Die Anwendung nutzt das **Backend-for-Frontend (BFF)** Architekturmuster, um die Benutzerauthentifizierung abzusichern. Statt die sensiblen Anmeldedaten und Token direkt im Webbrowser (Frontend) zu verarbeiten, übernimmt der Server (Backend) die gesamte Kommunikation mit Google.
+
+1. *Anmeldung über Google:* Wenn sich ein Nutzer anmeldet, wird er sicher zu Google weitergeleitet. Nach erfolgreichem Login schickt Google die Bestätigung und die Zugriffstoken direkt an das Backend, nicht an den Browser.
+2. *Sicherer Datentresor (Server):* Der Server behält diese Token sicher bei sich. Der Browser bekommt den Token nie ausgestellt. Dadurch können sie nicht durch z. B. Cross-Site-Scripting abgegriffen werden.
+3. *Abgesichertes Sitzungs-Cookie:* Als Ersatz für die Token stellt der Server einen eigenen HTTPS-ONLY Session-Cookie aus. Dieser Cookie ist für JavaScript im Browser unsichtbar und wird nur über verschlüsselte Verbindungen (HTTPS) transportiert. Der Browser sendet es bei jeder zukünftigen Anfrage automatisch im Hintergrund mit.
+4. *API-optimierte Kommunikation:* Wenn ein nicht angemeldeter Nutzer versucht, auf geschützte Daten zuzugreifen, schickt der Server keine unschönen Webseiten-Weiterleitungen, sondern eine direkte, standardisierte Fehlermeldung (HTTP 401/403). Das Frontend kann diese Fehler abfangen und den Nutzer elegant zur Anmeldung führen.
+
+Die Authentifizierung über Google erspart uns den Umgang von Zugangsdaten der Nutzer:innen. Nach erfolgreicher Anmeldung wird in den Endpunkten die `GoogleUserId` extrahiert. Über diese kann unsere interne `User`-Entität identifiziert werden.
 
 === Kommunikation mit der RaumZeit API
 Um den manuellen Aufwand für Studierende zu minimieren, integriert *Lernzeit* die RaumZeit-API der Hochschule.
 - *RaumzeitService*: Diese Komponente kapselt die HTTP-Kommunikation mit dem Hochschul-System. Sie übernimmt das Mapping der proprietären RaumZeit-Strukturen auf unsere internen Domain-Modelle.
 - *Sicherheit & Token-Management*: Da der Zugriff auf Stundenpläne autorisiert erfolgen muss, speichern wir die notwendigen Zugriffstoken verschlüsselt in der PostgreSQL-Datenbank. Hierfür kommt der `TokenEncryptionService` zum Einsatz, der die `IDataProtectionProvider`-Infrastruktur von .NET nutzt.
 
-#block(fill: luma(240), inset: 10pt, radius: 4pt, width: 100%)[
-  #set align(center)
-  *TODO: Klassendiagramm des Raumzeit-Integrationsmoduls einfügen* \
-  _Abbildung: Struktur des Raumzeit-Services und dessen Datenfluss_
-]
+#figure(
+  caption: "Raumzeit Tokenverwaltung & Nutzung",
+  image("assets/raumzeittokens.png")
+)
 
 == Deployment und Infrastruktur
 Das Projekt verfolgt einen modernen "Infrastructure as Code" Ansatz.
@@ -424,12 +425,10 @@ Ein technologisches Highlight ist der Einsatz von .NET Aspire. Dies ermöglicht 
 - *Observability*: .NET Aspire bietet ein integriertes Dashboard, in dem Logs, Traces und Metriken aller Komponenten in Echtzeit eingesehen werden können.
 - *Konfigurationsmanagement*: Connection Strings für die Datenbank und API-Keys werden zentral im `AppHost` verwaltet und sicher an die jeweiligen Services durchgereicht.
 
-#block(fill: luma(240), inset: 10pt, radius: 4pt, width: 100%)[
-  #set align(center)
-  *TODO: Screenshot des .NET Aspire Dashboards einfügen* \
-  _Abbildung: Laufzeit-Überwachung der Container-Infrastruktur_
-]
-
+#figure(
+  caption: ".NET Aspire Dashboard",
+  image("assets/aspire-dashboard.png")
+)
 
 = Fazit
 == Rückblick

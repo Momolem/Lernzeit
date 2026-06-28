@@ -3,7 +3,7 @@
 
     #set page(
       fill: white,
-      margin: (left: 2in),
+      margin: (left: 1in),
       header: none,
     )
 
