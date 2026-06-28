@@ -413,6 +413,20 @@ Um den manuellen Aufwand für Studierende zu minimieren, integriert *Lernzeit* d
   image("assets/raumzeittokens.png")
 )
 
+== Testbarkeit
+Die gewählte Architektur ermöglicht eine hohe Testbarkeit der Anwendung. Die Trennung von Domänenlogik und Adaptern erlaubt es, die Kernlogik isoliert zu testen, ohne dass externe Systeme (wie Datenbanken oder Drittanbieter-APIs) involviert sind.
+
+Um die funktionale Korrektheit der API-Schnittstellen und des Datenflusses verlässlich zu gewährleisten, wurde eine automatisierte Integrations-Testsuite implementiert. Im Gegensatz zu klassischen Unit-Tests, die interne Services isoliert unter starkem Mocking-Einsatz prüfen, fokussieren sich diese Integrationstests auf die Überprüfung an der tatsächlichen Systemgrenze.
+
+Das Bootstrapping des Backends erfolgt über die von Microsoft bereitgestellte WebApplicationFactory, welche im Speicher einen virtuellen TestHost hochfährt. Test-Requests werden über einen vom TestHost bereitgestellten HttpClient direkt an das Routing- und Middleware-System übergeben. Dadurch lassen sich Routing, Modell-Validierungen, DTO-Mapping, Authentifizierungs-Filter und HTTP-Antworten ohne echten Netzwerk-Overhead simulieren und testen.
+
+Da In-Memory-Datenbanken (wie SQLite oder die EF Core In-Memory-Datenbank) PostgreSQL-spezifische SQL-Features, Trigger oder n:m-Kaskadierungen nicht originalgetreu abbilden, kommt für die Persistenzprüfung das Framework Testcontainers zum Einsatz. Bei der Initialisierung der Testklasse startet Testcontainers vollautomatisch einen temporären PostgreSQL-Docker-Container. 
+
+Dieser Ansatz bietet wesentliche Vorteile für die Softwarequalität:
+1. Realitätsnahe Validierung: Es wird gegen ein echtes PostgreSQL-Datenbanksystem getestet, wodurch datenbankspezifische Eigenheiten (wie Foreign-Key-Constraints in der user_groups-Relationstabelle) exakt geprüft werden.
+2. Isolierte Sandbox-Umgebung: Jeder Testlauf startet in einer sauberen Datenbankumgebung ohne verbleibende Seiteneffekte vorheriger Durchläufe.
+3. Zero-Configuration-Testing: Entwickler und CI/CD-Runner (z. B. GitHub Actions) benötigen außer einer installierten Docker-Engine keine lokal konfigurierte PostgreSQL-Instanz.
+
 == Deployment und Infrastruktur
 Das Projekt verfolgt einen modernen "Infrastructure as Code" Ansatz.
 

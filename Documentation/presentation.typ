@@ -273,6 +273,28 @@ card("Datenbank-Schema (Relational)", stroke-color: rgb("#0f172a"))[
 )
 ]
 
+
+
+#slide[
+= Integrationstests & Qualitätssicherung
+
+#grid(
+columns: (1.2fr, 1fr),
+gutter: 20pt,
+[
+Testing an der Systemgrenze (REST-API):
+- Virtueller TestHost: Bootstrapping des gesamten App-Kontexts im Speicher mittels WebApplicationFactory.
+- Echte HTTP-Anfragen: Validierung von Routing, DTO-Mapping und Statuscodes ohne Netzwerk-Overhead.
+- Keine Mock-Hölle: Echte Zusammenarbeit der Services und Middleware-Pipelines wird verifiziert.
+],
+card("Datenbank-Realismus via Testcontainers", stroke-color: rgb("#f59e0b"))[
+- PostgreSQL im Docker: Automatischer Start einer isolierten PostgreSQL-Container-Instanz pro Testlauf.
+- Echtes SQL-Verhalten: Verhindert False-Positives von In-Memory-Datenbanken (z.B. bei komplexen n:m-Joins).
+- Isolierter Zustand: Garantiert komplett unbeeinflusste Testläufe in einer Sandbox.
+]
+)
+]
+
 #slide[
 = Deployment & Orchestrierung
 
