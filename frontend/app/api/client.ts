@@ -5,7 +5,7 @@ export const getBackendUrl = () => {
     if (typeof window !== "undefined" && (window as any).__ENV__?.BACKEND_URL) {
         return (window as any).__ENV__.BACKEND_URL;
     }
-    return "https://api.lernzeit.vogel.business";
+    return "https://api.vogel.business";
 };
 
 function parseCalendarData(rawData) {

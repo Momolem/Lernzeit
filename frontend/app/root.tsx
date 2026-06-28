@@ -18,7 +18,7 @@ import Button from "~/components/button/button";
 export async function loader() {
   return {
     env: {
-      BACKEND_URL: "https://api.lernzeit.vogel.business",
+      BACKEND_URL: "https://api.vogel.business",
     }
   };
 }
