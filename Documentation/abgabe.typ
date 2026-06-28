@@ -348,7 +348,7 @@ Die Kernlogik zur Ermittlung gemeinsamer Termine ist im `GroupCalendarService` i
 === Gruppenverwaltung
 #figure(
   caption: "Sequenzdiagram von dem Erstellen und Verlassen einer Gruppe",
-  image("assets/Sequenzdiagram.png", height: 95%),
+  image("assets/Sequenzdiagram.png", height: 85%),
 ) <CreateGroup>
 
 @CreateGroup zeigt den zeitlichen Ablauf von der Erstellung, dem Modifizieren des Kalenders bis hin zu dem Verlassen einer Gruppe. Um eine Gruppe zu erstellen oder beizutreten, ist vorausgesetzt, dass alle Mitglieder zuvor ihren eigenen Stundenplan eingepflegt haben.
