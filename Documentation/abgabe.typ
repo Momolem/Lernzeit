@@ -210,9 +210,9 @@ Diese Entscheidung basiert auf folgenden Kriterien:
 )
 #pagebreak()
 
-= Umsetzung / Implementierung
-== Frontend (React)
-=== Designprozess (Figma)
+= Umsetzung und Implementierung
+== Frontend
+=== Designprozess
 Zu Beginn wird ein Prototyp in Figma erstellt. Dabei wird das in Figma integrierte KI-Tool genutzt. Dies ermöglicht das Erledigen von
 Routineaufgaben (Resizing, Layouts, Styles), ein schnelleres Iterrieren mehrerer Ideen und
 Designvarianten sowie eine Unterstützung der Umsetzung von barrierefreiem und inklusivem Design.
@@ -259,7 +259,7 @@ Im Hinblick auf Softwarearchitektur wurde hier darauf geachtet, dass das UI mög
 
 Hierbei sind folgende Komponenten entstanden:
 - *Timetable-Komponente*: Dies ist das Herzstück der Anwendung. Sie visualisiert Zeitfenster in einem wöchentlichen Raster. Die Logik zur Berechnung der relativen Positionen der Event-Boxen ist in der Komponente gekapselt. Sie wird sowohl beim persönlichen, als auch beim Gruppenkalender verwendet um die Kalenderdaten anzuzeigen.
-- *Button*: Die Button Komponente wird an vielen Stelle verwendet und bietet vielseitige Möglichkeiten um Symbole und Text zu integrieren und verschiedene Varianten des Buttons anzuzeigen. 
+- *Button*: Die Button Komponente wird an vielen Stelle verwendet und bietet vielseitige Möglichkeiten um Symbole und Text zu integrieren und verschiedene Varianten des Buttons anzuzeigen.
 - *GroupCard*: Ein wiederverwendbares Element zur Darstellung von Gruppeninformationen, das den schnellen Wechsel zwischen verschiedenen Lerngruppen ermöglicht. In @fig-mainpage sind die GroupCards zu erkennen.
 - *Interaktive Modals*: In der Anwendung gibt es an vielen Stellen Modale, welche den Nutzer zu Aktionen auffordern. Zum Beitreten zu Gruppen, beim Hinzufügen eines Kalenders und beim Erstellen von Gruppen kommen diese zum Einsatz. Hierfür gibt es eine Basiskomponente, welche zum Erstellen der verschiedenen Modale verwendet wird.
 - *Header & Navigation*: Eine konsistente Navigationsleiste, die den Nutzerstatus (Login/Logout via Google) reflektiert und schnellen Zugriff auf die Profil- und Gruppeneinstellungen bietet.
@@ -267,9 +267,9 @@ Hierbei sind folgende Komponenten entstanden:
 === API-Kommunikation und State-Management
 Die Anbindung an das Backend erfolgt über eine dedizierte Schicht im Frontend, die in `client.ts` definiert ist. Wir setzen hierbei auf die native `fetch`-API, ergänzt um Error-Handling-Wrapper.
 
-In dieser Typescript Klasse werden alle Backend Endpunkte als Methoden definiert und können dann in React Hooks wie `useEffect` aufgerufen werden. Durch den Einsatz von DTOs im Backend ist hier eine klare Schnittstelle definiert, wodurch die Übertragung von den Daten auch bei Änderungen im Backend stabil bleiben kann. 
+In dieser Typescript Klasse werden alle Backend Endpunkte als Methoden definiert und können dann in React Hooks wie `useEffect` aufgerufen werden. Durch den Einsatz von DTOs im Backend ist hier eine klare Schnittstelle definiert, wodurch die Übertragung von den Daten auch bei Änderungen im Backend stabil bleiben kann.
 
-== Backend (.NET API)
+== Backend
 Das Backend ist als ASP.NET Core Web API realisiert und folgt den Prinzipien der Clean Architecture (Trennung von Domain, Application und Infrastruktur).
 
 === Architekturprinzipien
@@ -393,7 +393,7 @@ Im _LernZeitDBContext_ werden die Datenbank-Entities festgelegt und die UserGrou
 hergestellt. Das Group- und das UserRepository stellen diverse Schnittstellen zur Modifizierung
 der Datenbankobjekte bereit.
 
-=== Authentifizierung (Google Auth)<sec-auth>
+=== Authentifizierung<sec-auth>
 Die Anwendung nutzt das **Backend-for-Frontend (BFF)** Architekturmuster, um die Benutzerauthentifizierung abzusichern. Statt die sensiblen Anmeldedaten und Token direkt im Webbrowser (Frontend) zu verarbeiten, übernimmt der Server (Backend) die gesamte Kommunikation mit Google.
 
 1. *Anmeldung über Google:* Wenn sich ein Nutzer anmeldet, wird er sicher zu Google weitergeleitet. Nach erfolgreichem Login schickt Google die Bestätigung und die Zugriffstoken direkt an das Backend, nicht an den Browser.
@@ -410,7 +410,7 @@ Um den manuellen Aufwand für Studierende zu minimieren, integriert *Lernzeit* d
 
 #figure(
   caption: "Raumzeit Tokenverwaltung & Nutzung",
-  image("assets/raumzeittokens.png")
+  image("assets/raumzeittokens.png"),
 )
 
 == Testbarkeit
@@ -420,7 +420,7 @@ Um die funktionale Korrektheit der API-Schnittstellen und des Datenflusses verl�
 
 Das Bootstrapping des Backends erfolgt über die von Microsoft bereitgestellte WebApplicationFactory, welche im Speicher einen virtuellen TestHost hochfährt. Test-Requests werden über einen vom TestHost bereitgestellten HttpClient direkt an das Routing- und Middleware-System übergeben. Dadurch lassen sich Routing, Modell-Validierungen, DTO-Mapping, Authentifizierungs-Filter und HTTP-Antworten ohne echten Netzwerk-Overhead simulieren und testen.
 
-Da In-Memory-Datenbanken (wie SQLite oder die EF Core In-Memory-Datenbank) PostgreSQL-spezifische SQL-Features, Trigger oder n:m-Kaskadierungen nicht originalgetreu abbilden, kommt für die Persistenzprüfung das Framework Testcontainers zum Einsatz. Bei der Initialisierung der Testklasse startet Testcontainers vollautomatisch einen temporären PostgreSQL-Docker-Container. 
+Da In-Memory-Datenbanken (wie SQLite oder die EF Core In-Memory-Datenbank) PostgreSQL-spezifische SQL-Features, Trigger oder n:m-Kaskadierungen nicht originalgetreu abbilden, kommt für die Persistenzprüfung das Framework Testcontainers zum Einsatz. Bei der Initialisierung der Testklasse startet Testcontainers vollautomatisch einen temporären PostgreSQL-Docker-Container.
 
 Dieser Ansatz bietet wesentliche Vorteile für die Softwarequalität:
 1. Realitätsnahe Validierung: Es wird gegen ein echtes PostgreSQL-Datenbanksystem getestet, wodurch datenbankspezifische Eigenheiten (wie Foreign-Key-Constraints in der user_groups-Relationstabelle) exakt geprüft werden.
@@ -441,7 +441,7 @@ Ein technologisches Highlight ist der Einsatz von .NET Aspire. Dies ermöglicht 
 
 #figure(
   caption: ".NET Aspire Dashboard",
-  image("assets/aspire-dashboard.png")
+  image("assets/aspire-dashboard.png"),
 )
 
 = Fazit
@@ -459,7 +459,7 @@ Ebenfalls war die Authentifizierung der Nutzer zu Beginn ein wichtiges Thema. Di
 dieses Problems an einen Drittanbieter stellte sich als komfortable und zuverlässige Lösung heraus.
 
 Im Frontend war zu Beginn die Auswahl einer geeigneten Kalenderkomponente eine Herausforderung. Die Entscheidung für eine vorgefertigte React-Kalenderkomponente ermöglichte ein schnelleres
-Ergebnis, anstatt alle Funktionen von Grund auf selbst zu entwickeln. Da die Auswahl an verfügbaren Komponenten groß ist und jede Komponente anders funktioniert, wurden mithilfe des KI-Modells OpenCode mehrere Komponenten iterativ getestet, um die für den Anwendungsfall am besten geeignete zu ermitteln.
+Ergebnis, anstatt alle Funktionen von Grund auf selbst zu entwickeln. Da die Auswahl an verfügbaren Komponenten groß ist und jede Komponente anders funktioniert, wurden mithilfe des KI-Modells _BigPickle_ von OpenCode mehrere Komponenten iterativ getestet, um die für den Anwendungsfall am besten geeignete zu ermitteln.
 
 Im Verlauf des Entwicklungsprozesses kam es vereinzelt dazu, dass Komponenten fehlerhafte Zustände
 annahmen oder nicht mehr korrekt funktionierten, was eine weitere Herausforderung darstellte.
@@ -476,7 +476,6 @@ Neben den funktionalen Anforderungen sind auch die nicht-funktionalen Anforderun
 
 Für zukünftige Erweiterungen wären weitere Use-Cases denkbar. So wäre eine Funktion zur gemeinsamen Terminabstimmung innerhalb einer Gruppe eine sinnvolle Ergänzung. Darüber hinaus würde eine Anzeige aller freien Räume auf dem Campus die Suche nach einem geeigneten Lernort erleichtern. Die Integration von Benachrichtigungen bei neuen Terminvorschlägen oder Änderungen wäre eine nützliche Erinnerungsfunktion. Schließlich wäre auch die Anbindung weiterer Kalender-Apps, beispielsweise Google Calendar oder Outlook, eine denkbare Erweiterung.
 
-= Literaturverzeichnis
 // TODO: Quellen und AI-Verzeichnis (wo wurde ChatGPT/Copilot eingesetzt?).
 
-#bibliography("quellen.yml")
+#bibliography("quellen.yml", title: "Literaturverzeichnis")
