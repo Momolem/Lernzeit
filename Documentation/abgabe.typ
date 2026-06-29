@@ -346,12 +346,7 @@ Die Kernlogik zur Ermittlung gemeinsamer Termine ist im `GroupCalendarService` i
   - Dadurch entstehen zusammenhängende Zeitintervalle, die alle belegten Zeiten der Gruppenmitglieder abdecken.
 
 === Gruppenverwaltung
-#figure(
-  caption: "Sequenzdiagram von dem Erstellen und Verlassen einer Gruppe",
-  image("assets/Sequenzdiagram.png", height: 85%),
-) <CreateGroup>
-
-@CreateGroup zeigt den zeitlichen Ablauf von der Erstellung, dem Modifizieren des Kalenders bis hin zu dem Verlassen einer Gruppe. Um eine Gruppe zu erstellen oder beizutreten, ist vorausgesetzt, dass alle Mitglieder zuvor ihren eigenen Stundenplan eingepflegt haben.
+Um eine Gruppe zu erstellen oder beizutreten, ist vorausgesetzt, dass alle Mitglieder zuvor ihren eigenen Stundenplan eingepflegt haben.
 
 Gruppen können von jedem Nutzer erstellt werden. Dies geschieht auf der Hauptseite über den Button
 „_Gruppe erstellen_". Im daraufhin erscheinenden Dialogfenster kann ein Gruppenname vergeben werden,
@@ -382,7 +377,8 @@ wird diese automatisch aus der Datenbank entfernt.
 
 @dbSchema zeigt das Datenbankschema zwischen der User- und der Gruppentabelle. Die
 `user_groups`-Tabelle ist eine Relationstabelle und steht zu den Tabellen users und groups jeweils
-in einer 1-zu-n-Beziehung. Die Relation wird über die Primärschlüssel von users und groups hergestellt.
+in einer 1-zu-n-Beziehung. Die Relation wird über die Primärschlüssel von `Users` und `Groups` hergestellt.
+Zur Authentifizierung bei der RaumZeit-API werden zusätzlich die dafür erforderlichen RaumZeit-Tokens der User verschlüsselt in der Datenbank abgelegt.
 
 ==== Implementierung
 Das gewählte Datenbankmanagementsystem ist PostgreSQL. Im Rahmen der Domain-Driven-Architektur erfolgt der Datenbankzugriff der LernZeit-Anwendung über den _LernZeit.PostgresAdapter_. Dieser
