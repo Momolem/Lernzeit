@@ -472,6 +472,14 @@ Neben den funktionalen Anforderungen sind auch die nicht-funktionalen Anforderun
 
 Für zukünftige Erweiterungen wären weitere Use-Cases denkbar. So wäre eine Funktion zur gemeinsamen Terminabstimmung innerhalb einer Gruppe eine sinnvolle Ergänzung. Darüber hinaus würde eine Anzeige aller freien Räume auf dem Campus die Suche nach einem geeigneten Lernort erleichtern. Die Integration von Benachrichtigungen bei neuen Terminvorschlägen oder Änderungen wäre eine nützliche Erinnerungsfunktion. Schließlich wäre auch die Anbindung weiterer Kalender-Apps, beispielsweise Google Calendar oder Outlook, eine denkbare Erweiterung.
 
-// TODO: Quellen und AI-Verzeichnis (wo wurde ChatGPT/Copilot eingesetzt?).
-
+#pagebreak()
 #bibliography("quellen.yml", title: "Literaturverzeichnis")
+
+#heading("Hinweise auf KI-Unterstützung", numbering: none)
+Zur Umsetzung des Projekts wurde auf verschiedene KI-gestützte Tools zurückgegriffen. Diese wurden insbesondere für die Erstellung von Prototypen, die Generierung von Code-Snippets und die Unterstützung bei der Implementierung genutzt. Die folgenden Tools kamen zum Einsatz:
+- **Figma AI**: Für die Erstellung von UI-Prototypen und Designideen
+- **OpenCode + BigPickle**: Für die Auswahl und Evaluierung von React-Komponenten
+- **OpenCode + Gemini 3 (Flash und Pro)**: 
+  - Erster Entwurf für .NET Aspire Anbindung (Wurde großteils wieder verworfen, da die Anbindung über die .NET Aspire Dokumentation doch besser nachvollziehbar war)
+  - Vervollständigung von Testsetup: Hierbei wurde folgender Prompt genutzt: _"I started a integration test project for lernzeit-backend. Finish setting up Testcontainers for the postgres db and write tests covering the group and user controller"_. Die Anschließend generierten Tests wurden in Teilen übernommen und erweitert um die gewünschten Funktionalitäten abzudecken.
+  - Die Button Komponente des Frontends wurde mit Hilfe von Gemini erstellt um zu lernen wie Komponenten in React funktionieren. Hierzu wurde folgender Prompt genutzt: _"create a react button component with different states like primary secondary ghost"_. Zusätzlich wurde ein Screenshot aus dem Figma Design hinzugefügt. Die entstandene Komponente wurde dann um Funktionen wie das Anzeigen von Icons erweitert. Zudem wurden die exakten Designvorgaben aus Figma übernommen, da die generierte Komponente nicht exakt den Designvorgaben entsprach.
